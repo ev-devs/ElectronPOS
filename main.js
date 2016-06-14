@@ -6,6 +6,11 @@ const {app} = electron
 // Module to create native browser window.
 const {BrowserWindow} = electron
 
+
+// Report crashes to our server.
+electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
@@ -15,7 +20,7 @@ function createWindow() {
   win = new BrowserWindow({width: 800, height: 600});
 
   // and load the index.html of the app.
-  win.loadURL(`file://${__dirname}/app/index.html`);
+  win.loadURL(`file://${__dirname}/mdl/index.html`);
 
   // Open the DevTools.
   win.webContents.openDevTools();
