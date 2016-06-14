@@ -1,0 +1,17 @@
+{
+  "name": "ElectronPOS",
+  "homepage": "https://github.com/ev-devs/ElectronPOS",
+  "authors": [
+    "jruel006 <jruel006@ucr.edu>"
+  ],
+  "description": "A point of sale system written on top of Electron",
+  "main": "main.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
