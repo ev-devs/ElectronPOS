@@ -1,4 +1,4 @@
-const electron = require('electron-prebuilt')
+
 var app = require('app')
 var BrowserWindow = require('browser-window')
 
