@@ -1,5 +1,7 @@
 'use strict'
 
+console.log(process.platform)
+
 const electron = require('electron');
 // Module to control application life.
 const app = require('app');
