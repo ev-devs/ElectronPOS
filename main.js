@@ -1,26 +1,10 @@
 'use strict'
 
 const electron = require('electron');
-
-if (process.platform == 'linux') {
-
-    // Module to control application life
-    const {app} = electron
-    // Module to create native browser window.
-    const {BrowserWindow} = electron
-}
-else if (process.platform == 'darwin') {
-    // Module to control application life
-    const app = require('app');
-    // Module to create native browser window.
-    const BrowserWindow = require('browser-window');
-}
-else {
-    // this is windows
-    console.log('we dont support windows at this momont')
-}
-
-
+// Module to control application life
+const {app} = electron
+// Module to create native browser window.
+const {BrowserWindow} = electron
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
