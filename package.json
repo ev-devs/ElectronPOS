@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ev-devs/ElectronPOS/issues"
   },
-  "homepage": "https://github.com/ev-devs/ElectronPOS#readme"
+  "homepage": "https://github.com/ev-devs/ElectronPOS#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.2"
+  }
 }
