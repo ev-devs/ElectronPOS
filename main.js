@@ -15,34 +15,38 @@ electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 
-function createWindow() {
+function createWindow(window) {
   // Create the browser window.
-  win = new BrowserWindow({
+  window = new BrowserWindow({
       fullscreen : true,
-      autoHideMenuBar : true
+      autoHideMenuBar : true,
+      scrollBounce : true
   });
 
-  win.setMenu(null)
+  window.setMenu(null);
+
 
   // and load the index.html of the app.
-  win.loadURL(`file://${__dirname}/app/index.html`);
+  window.loadURL(`file://${__dirname}/app/index.html`);
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  window.webContents.openDevTools();
 
   // Emitted when the window is closed.
-  win.on('closed', () => {
+  window.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    win = null;
+    window = null;
   });
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    createWindow(win)
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
