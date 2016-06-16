@@ -9,6 +9,13 @@ exec("ls -la", puts);*/
 var fs = require('fs');
 var ejs = require('ejs');
 
-var file = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8')
-var rendered = ejs.render(file, {});
+/*THIS RENDERS THE NAV*/
+var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
+var rendered = ejs.render(nav, {});
 $('nav').html(rendered)
+
+
+/*THIS RENDERS THE MAIN*/
+var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
+var rendered = ejs.render(internet, {});
+$('main').html(rendered)
