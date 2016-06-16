@@ -10,10 +10,14 @@
 
     <!--We are includeing jquery for our everyday javascript needs-->
     <script type="text/javascript">
+        window.hammer = require('../bower_components/hammerjs/hammer.js')
         window.$ = window.jQuery = require('../bower_components/jquery/dist/jquery.js');
     </script>
 
     <!-- we are including our material design CSS for our everday GUI needs-->
+    <link rel="stylesheet" href="../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
+    <!--We are inlcuding our material design lite js for our everyday GUI needs-->
+    <script src="../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
 
     <title>Hello World!</title>
   </head>
@@ -32,7 +36,6 @@
       <script src="./index.js" charset="utf-8"></script>
       <!--This is the style sheets for our index page-->
       <link rel="stylesheet" href="./index.css" media="screen" title="no title" charset="utf-8">
-      <!--We are inlcuding our material design lite js for our everyday GUI needs-->
 
   </body>
 </html>
