@@ -19,3 +19,20 @@ $('nav').html(rendered)
 var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
 var rendered = ejs.render(internet, {});
 $('main').html(rendered)
+
+/*
+THE COOL THING About electron is that you have full access to the node.js api
+FROM THE HTML VIEW. (aka the rendere process). That means we can run a web server from within the index.html file. Check it
+*/
+
+var express = require('express');
+var app = express();
+
+app.get('/', function(req, res){
+    res.send('hello world!');
+    console.log('we in BROOO!');
+});
+
+app.listen(3000, function(){
+    console.log('listening on port 3000');
+})
