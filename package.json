@@ -1,7 +1,7 @@
 {
   "name": "electronpos",
   "version": "0.0.1",
-  "description": "A point of sale system make on top of Electron",
+  "description": "A point of sale system made on top of Electron",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
