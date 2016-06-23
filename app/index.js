@@ -9,16 +9,18 @@ var execSync = require('child_process').execSync
 */
 
 
-
 var fs = require('fs');
 var ejs = require('ejs');
 
 var output = "";
 
 /*This calls our function*/
-(function list_connections(){
+function list_connections(){
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh')
-})()
+    console.log(output.toString('utf-8'))
+}
+
+list_connections()
 
 
 /*THIS RENDERS THE NAV*/
