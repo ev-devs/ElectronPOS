@@ -5,7 +5,7 @@ var execSync = require('child_process').execSync
 /*
     1 connect to get wifi list
     2 connect to actual wifi
-    3 display current connections
+    3 display current connection
 */
 
 
@@ -64,7 +64,6 @@ function list_connections(){
     output = JSONify(output);
     return output
 }
-
 
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
