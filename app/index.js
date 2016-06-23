@@ -17,12 +17,10 @@ var output = "";
 /*This calls our function*/
 function list_connections(){
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh')
-    var test = output.toString('utf-8').split('\n')
-    console.log(test)
+    return output.toString('utf-8').split('\n');
+
+
 }
-
-
-list_connections()
 
 
 /*THIS RENDERS THE NAV*/
@@ -33,7 +31,7 @@ $('nav').html(rendered)
 
 /*THIS RENDERS THE MAIN*/
 var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
-var rendered = ejs.render(internet, {output : output});
+var rendered = ejs.render(internet, {output : list_connections()});
 $('main').html(rendered)
 
 /*
