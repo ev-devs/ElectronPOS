@@ -13,13 +13,30 @@ var fs = require('fs');
 var ejs = require('ejs');
 
 var output = "";
-
+function remove_dup(wifis) {
+  /*You may be wondering why? What the hell is this fam? Well it removes the second index of the wifis array because the second index is "" and that is annoying*/
+  var i = wifis.indexOf("");
+  if(i != -1) {
+     wifis.splice(i, 1);
+  }
+  /*This new array will hold the wifis without duplicates. */
+  var connections = [];
+  /*We start at the bottom because by default the connections are sorted from lowets to highest connection quality
+  with the worst connection being at the top and best at the bottom*/
+  for(var i = wifis.length - 2; i > 1; i--) {
+    console.log(wifis[i].substring(wifis[i].search("\""), wifis[i].length - 1));
+    /*var wifi = {
+      "essid" : wifis[i].substring(wifis.indexOf("ESSID:"), wifis.length - 1),
+      "quality" : "Test"
+    }*/
+    //console.log(wifi.essid);
+  }
+}
 /*This calls our function*/
 function list_connections(){
-    output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh')
+    output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n');
+    remove_dup(output);
     return output.toString('utf-8').split('\n');
-
-
 }
 
 
