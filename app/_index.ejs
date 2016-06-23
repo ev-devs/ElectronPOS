@@ -4,9 +4,6 @@
 
 <% if (output) { %>
 
-
-<% } %>
-
 <div class="container">
     <div class="row">
         <div class="col s12 left">
@@ -17,13 +14,19 @@
 
 <div class="container center">
     <ul class="collection">
-         <a href="#!" class="collection-item">Alan<span class="badge">1</span>  <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>  </a>
-         <a href="#!" class="collection-item">Alan<span class="badge">1</span>    </a>
-         <a href="#!" class="collection-item">Alan<span class="badge">1</span>   <span class="typcn typcn-lock-open right" style="font-size: 2em"></span> </a>
-         <a href="#!" class="collection-item">Alan<span class="badge">1</span>    </a>
+      <%for(var i = 0; i < output.length; i++) { %>
+         <a href="#!" class="collection-item wifi_option"><%= output[i].essid%><span class="badge">1</span>
+           <% if(output[i].psk == "on") { %>
+             <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
+           <%} else if (output[i].psk == "off") { %>
+             <span class="typcn typcn-lock-open right" style="font-size: 2em"></span>
+           <%}%>
+         </a>
+       <%}%>
+         <!--<a href="#!" class="collection-item">Alan<span class="badge">1</span>   <span class="typcn typcn-lock-open right" style="font-size: 2em"></span> </a>-->
    </ul>
 </div>
-
+<% } %>
 <div class="container">
     <div class="row">
         <div class="col s12 left">

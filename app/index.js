@@ -31,17 +31,24 @@ function remove_dup(wifis) {
     /*Grabs whether or not the connection needs a passkey, so either on or off*/
     var psk = wifis[i].substring(wifis[i].search(":o") + 1, wifis[i].search("ES") - 1);
     /*Combines them into one string*/
-    var combined = essid + "|" + psk;
+    var combined = essid + "~" + psk;
     /*If that string is not found within the connections array then put it in. If it is then exclude it. */
     if(connections.indexOf(combined) == -1) {
       connections.push(combined);
     }
   }
-  return connections
+  return connections;
 }
 
-fuction JSONify(connections) {
-  for(var i = 0; i < connections.length - 1; i++)
+function JSONify(connections) {
+  for(var i = 0; i < connections.length; i++) {
+    var wifi = {
+      "essid" : connections[i].substring(0, connections[i].search("~")),
+      "psk" : connections[i].substring(connections[i].search("~") + 1, connections[i].length)
+    }
+    connections[i] = wifi;
+  }
+  return connections;
 }
 /*This calls our function*/
 function list_connections(){
@@ -49,6 +56,8 @@ function list_connections(){
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n');
     /*Removes any duplicate essids*/
     output = remove_dup(output);
+    output = JSONify(output);
+    return output
 }
 
 
