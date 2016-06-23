@@ -18,6 +18,7 @@ var output = "";
 function list_connections(){
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh')
     var test = output.toString('utf-8').split('\n')
+    console.log(test)
 }
 
 
