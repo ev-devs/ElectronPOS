@@ -1,28 +1,35 @@
 var util = require('util')
 var execSync = require('child_process').execSync
 
-/*
-function puts(error, stdout, stderr) {
-    output = stdout;
-    console.log(output)
-}
-*/ // this is for asynchrous exec
 
-/*run this*/
-var output = execSync("ls -la");
+/*
+    1 connect to get wifi list
+    2 connect to actual wifi
+    3 display current connections
+*/
+
+
 
 var fs = require('fs');
 var ejs = require('ejs');
 
+var output = "";
+
+/*This calls our function*/
+(function list_connections(){
+    output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh')
+})()
+
+
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
-var rendered = ejs.render(nav, {output : output});
+var rendered = ejs.render(nav);
 $('nav').html(rendered)
 
 
 /*THIS RENDERS THE MAIN*/
 var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
-var rendered = ejs.render(internet, {});
+var rendered = ejs.render(internet, {output : output});
 $('main').html(rendered)
 
 /*
