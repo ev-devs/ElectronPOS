@@ -1,17 +1,22 @@
-// or more concisely\
-/*
 var util = require('util')
-var exec = require('child_process').exec;
-function puts(error, stdout, stderr) { console.log(stdout) }
-exec("ls -la", puts);*/
+var execSync = require('child_process').execSync
 
+/*
+function puts(error, stdout, stderr) {
+    output = stdout;
+    console.log(output)
+}
+*/ // this is for asynchrous exec
+
+/*run this*/
+var output = execSync("ls -la");
 
 var fs = require('fs');
 var ejs = require('ejs');
 
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
-var rendered = ejs.render(nav, {});
+var rendered = ejs.render(nav, {output : output});
 $('nav').html(rendered)
 
 
@@ -22,7 +27,7 @@ $('main').html(rendered)
 
 /*
 THE COOL THING About electron is that you have full access to the node.js api
-FROM THE HTML VIEW. (aka the rendere process). That means we can run a web server from within the index.html file. Check it
+FROM THE HTML VIEW. (aka the render process). That means we can run a web server from within the index.html file. Check it
 */
 
 var express = require('express');
@@ -35,4 +40,4 @@ app.get('/', function(req, res){
 
 app.listen(3000, function(){
     console.log('listening on port 3000');
-})
+});
