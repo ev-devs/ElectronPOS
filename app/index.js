@@ -1,6 +1,6 @@
 var util = require('util')
 var execSync = require('child_process').execSync
-
+var exec = require('child_process').exec
 
 /*
     1 connect to get wifi list
@@ -72,6 +72,8 @@ $(document).on('click', '.wifi_option', function() {
 /*Simply grabss the password and invokes the wificon script*/
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
+  console.log(psk + ap_name);
+
 });
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
