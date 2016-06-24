@@ -11,14 +11,25 @@
         </div>
     </div>
 </div>
+<!-- Modal Structure for the password input. Will need to either scrap OR interface with the digital keyboard.-->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <h4>Enter password</h4>
+    <input id="password" type="text">
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="accept">Accept</a>
+  </div>
+</div>
 
 <div class="container center">
-    <ul class="collection">
+    <ul class="collection wifi_holder">
       <%for(var i = 0; i < output.length; i++) { %>
-         <a href="#!" class="collection-item wifi_option"><%= output[i].essid%><span class="badge">1</span>
            <% if(output[i].psk == "on") { %>
+             <a href="#modal1" class="collection-item wifi_option modal-trigger" id="<%= output[i].essid%>"><%= output[i].essid%><span class="badge">1</span>
              <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
            <%} else if (output[i].psk == "off") { %>
+             <a href="#!" class="collection-item wifi_option" id="<%= output[i].essid%>"><%= output[i].essid%><span class="badge">1</span>
              <span class="typcn typcn-lock-open right" style="font-size: 2em"></span>
            <%}%>
          </a>

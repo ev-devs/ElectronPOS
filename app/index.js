@@ -13,7 +13,8 @@ var fs = require('fs');
 var ejs = require('ejs');
 
 var output = "";
-
+var ap_name = "";
+var psk = "";
 function remove_dup(wifis) {
   /*You may be wondering why? What the hell is this fam? Well it removes the second index of the wifis array because the second index is "" and that is annoying*/
   var i = wifis.indexOf("");
@@ -33,7 +34,7 @@ function remove_dup(wifis) {
     /*Combines them into one string*/
     var combined = essid + "~" + psk;
     /*If that string is not found within the connections array then put it in. If it is then exclude it. */
-    if(connections.indexOf(combined) == -1) {
+    if(connections.indexOf(combined) == -1 && essid != "") {
       connections.push(combined);
     }
   }
@@ -54,7 +55,7 @@ function JSONify(connections) {
   }
   return connections;
 }
-/*This calls our function*/
+/*This calls our function which lists connections*/
 function list_connections(){
     /*Grabs the output ofthe script and makes it into an array*/
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n');
@@ -64,7 +65,14 @@ function list_connections(){
     output = JSONify(output);
     return output
 }
-
+/*Simply grabs the name of the ssid*/
+$(document).on('click', '.wifi_option', function() {
+  ap_name = $(this).attr('id');
+});
+/*Simply grabss the password and invokes the wificon script*/
+$(document).on('click', '#accept', function() {
+  psk = $("#password").val()
+});
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
 var rendered = ejs.render(nav);
@@ -76,6 +84,13 @@ var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
 var rendered = ejs.render(internet, {output : list_connections()});
 $('main').html(rendered)
 
+$('.modal-trigger').leanModal({
+     dismissible: true, // Modal can be dismissed by clicking outside of the modal
+     opacity: .5, // Opacity of modal background
+     in_duration: 300, // Transition in duration
+     out_duration: 200, // Transition out duration
+   }
+ );
 /*
 THE COOL THING About electron is that you have full access to the node.js api
 FROM THE HTML VIEW. (aka the render process). That means we can run a web server from within the index.html file. Check it
