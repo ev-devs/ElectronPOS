@@ -2,11 +2,15 @@ var util = require('util')
 var execSync = require('child_process').execSync
 var exec = require('child_process').exec
 
-/*
-    1 connect to get wifi list
-    2 connect to actual wifi
-    3 display current connection
-*/
+
+
+
+
+
+
+
+
+
 
 
 var fs = require('fs');
@@ -40,7 +44,7 @@ function remove_dup(wifis) {
   }
   return connections;
 }
-
+/*Makes the eleemtns of the connections array into json objects, hence the stuid name*/
 function JSONify(connections) {
   for(var i = 0; i < connections.length; i++) {
     /*Makes the elements of the array into JSON*/
@@ -53,14 +57,15 @@ function JSONify(connections) {
     /*Overwrites the current index value with the JSON object*/
     connections[i] = wifi;
   }
+  /*Runs the wifi_cur.sh script to get the output and store it as a string*/
   var cur = execSync('sudo '+ __dirname + '/../pw/wifi_cur.sh').toString();
-  console.log(cur);
+  /*pushes it as the last element for easy access*/
   connections.push(cur);
   return connections;
 }
 /*This calls our function which lists connections*/
 function list_connections(){
-    /*Grabs the output ofthe script and makes it into an array*/
+    /*Grabs the output of the script and makes it into an array*/
     output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n');
     /*Removes any duplicate essids*/
     output = remove_dup(output);
@@ -68,16 +73,18 @@ function list_connections(){
     output = JSONify(output);
     return output
 }
-/*Simply grabs the name of the ssid*/
+/*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
 });
-/*Simply grabss the password and invokes the wificon script*/
+/*Simply grabs the password and invokes the wifi_con script*/
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
-  /*To be replaced*/
-  execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk " && sleep 2");
+  /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
+  execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");
+  /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var cur = "Wi-Fi: " + execSynch("sudo ../pw/wifi_cur.sh ").toString();
+  /* **THIS LINE IS NOT YET TESTED ON THE RPI** */
   $("#cur_connection").text() = cur;
 });
 /*THIS RENDERS THE NAV*/
@@ -90,7 +97,7 @@ $('nav').html(rendered)
 var internet = fs.readFileSync( __dirname + '/_index.ejs', 'utf-8');
 var rendered = ejs.render(internet, {output : list_connections()});
 $('main').html(rendered)
-
+/*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
      opacity: .5, // Opacity of modal background
