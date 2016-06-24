@@ -72,8 +72,8 @@ $(document).on('click', '.wifi_option', function() {
 /*Simply grabss the password and invokes the wificon script*/
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
-  console.log(psk + ap_name);
-
+  /*To be replaced*/
+  exec("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
 });
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
