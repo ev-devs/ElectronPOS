@@ -53,6 +53,9 @@ function JSONify(connections) {
     /*Overwrites the current index value with the JSON object*/
     connections[i] = wifi;
   }
+  var cur = execSync('sudo '+ __dirname + '/../pw/wifi_cur.sh').toString();
+  console.log(cur);
+  connections.push(cur);
   return connections;
 }
 /*This calls our function which lists connections*/
@@ -73,7 +76,9 @@ $(document).on('click', '.wifi_option', function() {
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
   /*To be replaced*/
-  exec("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
+  execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk " && sleep 2");
+  var cur = "Wi-Fi: " + execSynch("sudo ../pw/wifi_cur.sh ").toString();
+  $("#cur_connection").text() = cur;
 });
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
@@ -108,4 +113,5 @@ app.get('/', function(req, res){
 
 app.listen(3000, function(){
     console.log('listening on port 3000');
+
 });

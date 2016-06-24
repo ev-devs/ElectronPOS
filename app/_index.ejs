@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         <div class="col s12 left">
-             <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 style="display: inline">Wireless Internet</h2 >
+             <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 id="cur_connection">style="display: inline">Wi-Fi: <%= output[output.length - 1]%></h2 >
         </div>
     </div>
 </div>
@@ -24,7 +24,7 @@
 
 <div class="container center">
     <ul class="collection wifi_holder">
-      <%for(var i = 0; i < output.length; i++) { %>
+      <%for(var i = 0; i < output.length - 1; i++) { %>
            <% if(output[i].psk == "on") { %>
              <a href="#modal1" class="collection-item wifi_option modal-trigger" id="<%= output[i].essid%>"><%= output[i].essid%><span class="badge">1</span>
              <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
