@@ -4,21 +4,14 @@ var exec = require('child_process').exec
 
 
 
-
-
-
-
-
-
-
-
-
 var fs = require('fs');
 var ejs = require('ejs');
 
 var output = "";
 var ap_name = "";
 var psk = "";
+
+
 function remove_dup(wifis) {
   /*You may be wondering why? What the hell is this fam? Well it removes the second index of the wifis array because the second index is "" and that is annoying*/
   var i = wifis.indexOf("");
@@ -44,6 +37,7 @@ function remove_dup(wifis) {
   }
   return connections;
 }
+
 /*Makes the eleemtns of the connections array into json objects, hence the stuid name*/
 function JSONify(connections) {
   for(var i = 0; i < connections.length; i++) {
@@ -63,21 +57,21 @@ function JSONify(connections) {
   connections.push(cur);
   return connections;
 }
+
 /*This calls our function which lists connections*/
 function list_connections(){
-    /*Grabs the output of the script and makes it into an array*/
-    output = execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n');
-    /*Removes any duplicate essids*/
-    output = remove_dup(output);
-    /*Makes the elements of the array into JSON*/
-    output = JSONify(output);
-    return output
+    return JSONify(remove_dup(execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n')));
 }
+
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
 });
+
 /*Simply grabs the password and invokes the wifi_con script*/
+$('#keyboard').click(function(event){
+    console.log(event)
+})
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
   /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
@@ -87,6 +81,7 @@ $(document).on('click', '#accept', function() {
   /* **THIS LINE IS NOT YET TESTED ON THE RPI** */
   $("#cur_connection").text() = cur;
 });
+
 /*THIS RENDERS THE NAV*/
 var nav = fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8');
 var rendered = ejs.render(nav);
