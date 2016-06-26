@@ -75,11 +75,12 @@ $('#keyboard').click(function(event){
 $(document).on('click', '#accept', function() {
   psk = $("#password").val()
   /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
-  execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");
+  /*execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");*/
+  execSynch("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var cur = "Wi-Fi: " + execSynch("sudo ../pw/wifi_cur.sh ").toString();
   /* **THIS LINE IS NOT YET TESTED ON THE RPI** */
-  $("#cur_connection").text() = cur;
+  /**$("#cur_connection").text() = cur;**/
 });
 
 /*THIS RENDERS THE NAV*/
