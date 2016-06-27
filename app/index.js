@@ -114,6 +114,15 @@ var session = require('express-session');
 var tkn_strtgy = require('passport-token-auth').Strategy;
 var app = express();
 
+app.use(session({
+  cookie : {maxAge : 60000},
+  store : sessionStore,
+  secret: 'biticks',
+  resave : true,
+  saveUninitialized : false
+}));
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 app.get('/', function(req, res){
     res.send('hello world!');
     console.log('we in BROOO!');
