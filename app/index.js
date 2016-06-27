@@ -109,6 +109,9 @@ FROM THE HTML VIEW. (aka the render process). That means we can run a web server
 */
 
 var express = require('express');
+var passport = require('passport');
+var session = require('express-session');
+var tkn_strtgy = require('passport-token-auth').Strategy;
 var app = express();
 
 app.get('/', function(req, res){
