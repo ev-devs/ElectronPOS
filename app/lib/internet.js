@@ -39,14 +39,14 @@ var internet = {
           connections[i] = wifi;
         }
         /*Runs the wifi_cur.sh script to get the output and store it as a string*/
-        var cur = execSync('sudo '+ __dirname + '/../pw/wifi_cur.sh').toString();
+        var cur = execSync('sudo '+ __dirname + '/../../pw/wifi_cur.sh').toString();
         /*pushes it as the last element for easy access*/
         connections.push(cur);
         return connections;
     },
 
     list_connections : function(){
-        return this.JSONify(this.remove_dup(execSync('sudo ' + __dirname + '/../pw/wifi_script.sh').toString('utf-8').split('\n')));
+        return this.JSONify(this.remove_dup(execSync('sudo ' + __dirname + '/../../pw/wifi_script.sh').toString('utf-8').split('\n')));
     }
 }
 
