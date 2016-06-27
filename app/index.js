@@ -128,6 +128,12 @@ app.get('/', function(req, res){
     console.log('we in BROOO!');
 });
 
+app.post('/login', passport.authenticate('local-login', {
+    successRedirect : '/profile', // redirect to the secure profile section
+    failureRedirect : '/', // redirect back to the signup page if there is an error
+    failureFlash : true // allow flash messages
+}));
+
 app.listen(3000, function(){
     console.log('listening on port 3000');
 

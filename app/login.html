@@ -36,10 +36,11 @@
     <!-- keyboard extensions (optional) -->
       <script src="../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
 
-      <title>Hello World!</title>
+      <title>Login</title>
   </head>
   <body>
-  <nav>
+  <!-- I assume we render the same way we did in index html but I am unsure as to where we put the code for, so insteadI just rendered the noob way and will wait for you to refactor-->
+  <nav style="background-color: #125CA0;">
     <div class="container">
         <div class="nav-wrapper">
           <a href="#!" class="brand-logo">Equipo Vision</a>
@@ -60,5 +61,34 @@
 
   </nav>
 
+  <main>
+    <div class="container center">
+      <h1>Welcome!</h1>
+      <div class="section">
+        <div class="row">
+          <form class="col s12" action="/login" method="POST">
+            <div class="row">
+              <div class="input-field col s6">
+                <input placeholder="First Name" id="first_name" type="text" class="validate">
+                <label for="first_name">First Name</label>
+              </div>
+              <div class="input-field col s6">
+                <input placeholder="Last Name" id="last_name" type="text" class="validate">
+                <label for="last_name">Last Name</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input placeholder="IBO#" id="password" type="password" class="validate">
+                <label for="password">IBO#</label>
+              </div>
+            </div>
+            </div>
+          </form>
+        </div>
+
+     </div>
+    </div>
+  </main>
   </body>
 </html>
