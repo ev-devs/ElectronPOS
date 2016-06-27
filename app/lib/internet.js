@@ -1,3 +1,5 @@
+var execSync = require('child_process').execSync
+
 var internet = {
 
     remove_dup : function(wifis){
@@ -47,6 +49,9 @@ var internet = {
 
     list_connections : function(){
         return this.JSONify(this.remove_dup(execSync('sudo ' + __dirname + '/../../pw/wifi_script.sh').toString('utf-8').split('\n')));
+    },
+    connect : function(){
+        // ideally you would connect using this function
     }
 }
 
