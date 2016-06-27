@@ -69,15 +69,15 @@ $(document).on('click', '.wifi_option', function() {
 });
 
 /*Simply grabs the password and invokes the wifi_con script*/
-$('#keyboard').click(function(event){
+/*$('#keyboard').click(function(event){
     console.log(event)
-})
+})*/
 $(document).on('click', '#accept', function() {
-  psk = $("#password").val()
+  psk = $("#keyboard").val()
   /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
-
+  console.log(ap_name + psk);
   /*execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");*/
-  execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
+  //execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var cur = "Wi-Fi: " + execSync("sudo ../pw/wifi_cur.sh ").toString();
