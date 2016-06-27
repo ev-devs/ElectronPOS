@@ -30,18 +30,15 @@ $(document).on('click', '#accept', function() {
 });
 
 /*THIS RENDERS THE NAV*/
-$('nav').html(ejs.render(fs.readFileSync( __dirname + '/_nav.ejs', 'utf-8')));
+$('nav').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/_beginning_nav.html', 'utf-8')));
 
 /*THIS RENDERS THE MAIN*/
-$('main').html(ejs.render(fs.readFileSync( __dirname + '/_index.ejs', 'utf-8') , {
+$('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet.html', 'utf-8') , {
     output : internet.list_connections(),
     anything: "goes here"
 }))
 
-/*initiate session*/
 
-
-/*re-render nav with persons name*/
 
 
 /*Used to trigger the modal located in _index.ejs*/
