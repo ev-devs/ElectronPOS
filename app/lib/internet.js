@@ -1,7 +1,5 @@
 var internet = {
 
-
-
     remove_dup : function(wifis){
         /*You may be wondering why? What the hell is this fam? Well it removes the second index of the wifis array because the second index is "" and that is annoying*/
         var i = wifis.indexOf("");
