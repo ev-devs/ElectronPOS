@@ -10,7 +10,9 @@ var psk = "";
 
 
 /*THIS RENDERS THE NAV*/
-$('nav').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/_beginning_nav.html', 'utf-8')));
+$('nav').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/_beginning_nav.html', 'utf-8'), {
+    /*any JSON object can go here*/
+}));
 
 /*THIS RENDERS THE MAIN*/
 $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet.html', 'utf-8') , {
@@ -22,7 +24,6 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
 });
-
 
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val()
