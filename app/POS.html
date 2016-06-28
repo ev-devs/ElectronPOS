@@ -96,6 +96,7 @@
         </div>
       </div>
       <script>
+      /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         $("#scan_sim").click(
           function()  {
               var price = 6.67;
@@ -107,7 +108,10 @@
               </tr>";
               $("#sale_list tbody").append(item);
               var total = $("#total").text().toString();
-              total = Number(total.substring(1, total.length - 1)) + 1.123;
+              console.log("Before: " + total);
+              total = Number(total.substring(1, total.length - 1));
+              total+=price;
+              $("#total").text("$" + total.toString())
               console.log(total);
           })
       </script>
