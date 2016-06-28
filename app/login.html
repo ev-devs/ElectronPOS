@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <!--This makes device rendering scale--->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+      <!--We are includeing jquery for our everyday javascript needs-->
+      <script type="text/javascript">
+          window.hammer = require('../bower_components/hammerjs/hammer.js')
+          window.$ = window.jQuery = require('../bower_components/jquery/dist/jquery.js');
+      </script>
+
+      <!---This is for our icons that are hosted locally-->
+      <link rel='stylesheet' href='../bower_components/typicons.font/src/font/typicons.min.css' />
+      <!-- we are including our material design CSS for our everday GUI needs-->
+      <link rel="stylesheet" href="../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
+      <!--We are inlcuding our material design js for our everyday GUI needs-->
+      <script src="../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
+
+
+      <!--- THIS IS NEEDED FOR US TO GET A KEYBOARD ON THE SCREEN---->
+      <!-- jQuery (required) & jQuery UI + theme (optional) -->
+    <script src="../bower_components/jquery-ui/jquery-ui.min.js" rel="stylesheet"></script>
+
+
+
+    <!-- keyboard widget css & script (required) -->
+    <link href="../bower_components/keyboard/dist/css/keyboard-basic.min.css" rel="stylesheet">
+    <script src="../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
+
+    <!-- keyboard extensions (optional) -->
+      <script src="../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
+
+      <title>Login</title>
+  </head>
+  <body>
+  <!-- I assume we render the same way we did in index html but I am unsure as to where we put the code for, so insteadI just rendered the noob way and will wait for you to refactor-->
+  <nav style="background-color: #125CA0;">
+    <div class="container">
+        <div class="nav-wrapper">
+          <a href="#!" class="brand-logo">Equipo Vision</a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul class="right hide-on-med-and-down">
+
+          </ul>
+          <ul class="side-nav" id="mobile-demo">
+
+          </ul>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        /*This starts the sid-nav*/
+        $(".button-collapse").sideNav();
+    </script>
+
+  </nav>
+
+
+
+  <main>
+    <div class="container center">
+      <h1>Welcome!</h1>
+      <div class="section">
+        <div class="row">
+          <form class="col s12" action="/login" method="POST">
+            <div class="row">
+              <div class="input-field col s6">
+                <input placeholder="First Name" id="first_name" type="text" class="validate">
+                <label for="first_name">First Name</label>
+              </div>
+              <div class="input-field col s6">
+                <input placeholder="Last Name" id="last_name" type="text" class="validate">
+                <label for="last_name">Last Name</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input placeholder="IBO#" id="password" type="password" class="validate">
+                <label for="password">IBO#</label>
+              </div>
+            </div>
+            </div>
+          </form>
+        </div>
+
+     </div>
+    </div>
+  </main>
+
+
+
+  </body>
+</html>
