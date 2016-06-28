@@ -56,24 +56,26 @@
         </div>
     </div>
   </nav>
+
+
+
   <main>
-    <!--<div class="row"></div>-->
       <div class="row">
 
       <div class="col s4 m4 l4">
 
-
+        <!--Most likely unnecessary
         <div class="row">
           <table class="centered responsive-table striped">
              <thead>
                <tr>
-                   <th data-field="name">Item Name</th>
-                   <th data-field="price">Item Price</th>
+                   <th data-field="name">Item</th>
+                   <th data-field="price">Price</th>
                </tr>
              </thead>
           </table>
         </div>
-
+      -->
         <div class="row" style="height: 750px; overflow-y: scroll;">
           <table class="centered responsive-table striped" id="sale_list">
              <tbody id="sale_list_body">
@@ -85,11 +87,15 @@
              <tbody>
                <tr>
                    <td data-field="name">Subtotal</th>
-                   <td data-field="price" id="#subtotal">$0.00</th>
+                   <td data-field="price" id="subtotal">$0.00</th>
                </tr>
                <tr>
-                   <td data-field="name">Total</th>
-                   <td data-field="price" id="total">$0.00</th>
+                   <td data-field="name">Tax</th>
+                   <td data-field="price" id="tax">$0.00</th>
+               </tr>
+               <tr>
+                   <td data-field="name"><h5>Total</h5></th>
+                   <td data-field="price"><h5 id="total">$0.00</h5></th>
                </tr>
              </tbody>
           </table>
@@ -99,7 +105,7 @@
       /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         $("#scan_sim").click(
           function()  {
-              var price = 6.67;
+              var price = 6.99;
               var item = "Curry";
               var barcode =  6767676767;
               var item = "<tr class=\"animated bounceInUp\"> \
@@ -107,18 +113,52 @@
                 <td>$" + price + "<td> \
               </tr>";
               $("#sale_list tbody").append(item);
-              var total = $("#total").text().toString();
-              console.log("Before: " + total);
-              total = Number(total.substring(1, total.length - 1));
-              total+=price;
-              $("#total").text("$" + total.toString())
-              console.log(total);
+              var subtotal = $("#subtotal").text().toString();
+              console.log("Before: " + subtotal);
+              subtotal = Number(subtotal.substring(1, subtotal.length));
+              console.log(subtotal + "+" + price);
+              subtotal+=price;
+              $("#subtotal").text("$" + subtotal.toString())
           })
       </script>
-        <div class="col s8 m8 l8 blue lighten-5">
-          <span>My nizzle</span>
+        <div class="col s8 m8 l8">
+
+
+
+          <div class="row blue lighten-5">
+
+            <form>
+              <input type="text" name="search" placeholder="Search..">
+            </form>
+          </div>
+
+
+
+
+          <div class="row blue lighten-5" style="height: 750px; overflow-y: scroll;">
+
+          </div>
+
+
+
+          <div class="row">
+          </div>
+
         </div>
       </div>
     </main>
+    <style>
+input[type=text] {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('searchicon.png');
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+}
+</style>
   </body>
 </html>
