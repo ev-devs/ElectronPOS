@@ -30,13 +30,25 @@ $(document).on('click', '#accept', function() {
   /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
   console.log(ap_name + psk);
   /*execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");*/
-  //execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk);
+  execSync( __dirname + "/../pw/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
-  var cur = "Wi-Fi: " + execSync("sudo ../pw/wifi_cur.sh ").toString();
+  var cur = "Wi-Fi: " + execSync(__dirname + "/../pw/wifi_cur.sh ").toString();
   /* **THIS LINE IS NOT YET TESTED ON THE RPI** */
   /**$("#cur_connection").text() = cur;**/
 });
+
+
+/*Used to trigger the modal located in _index.ejs*/
+$('.modal-trigger').leanModal({
+     dismissible: true, // Modal can be dismissed by clicking outside of the modal
+     opacity: .5, // Opacity of modal background
+     in_duration: 300, // Transition in duration
+     out_duration: 200, // Transition out duration
+   }
+ );
+/*
+
 
 /*WE LAUNCH OUR SERVER TO START SESSIONS*/
 require('./lib/server.js')
