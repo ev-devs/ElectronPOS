@@ -56,12 +56,13 @@
         </div>
     </div>
   </nav>
+  <!--ABVOE IS ALL NAV ABR STUFFS-->
 
-
-
+  <!--Where the magic happens-->
   <main>
       <div class="row">
-        <!--Builds the elft side-->
+
+      <!--Builds the left side where the items are placed as well as the totla and subtotal-->
       <div class="col s4 m4 l4">
 
         <div class="row grey lighten-1 no-space">
@@ -100,15 +101,18 @@
           </table>
         </div>
       </div>
-      <!--Builds the right side-->
+      <!--END LEFT SIDE-->
+
+      <!--Builds the right side where the search charm is and where the confirm and cancel buttons are-->
         <div class="col s8 m8 l8">
 
 
           <div class="row blue lighten-1 no-space">
             <div class="col s11 m11 l11" style="margin-top: 13px;">
-              <input style="background-color: white;" placeholder="Search inventory.." type="text">
+              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
             </div>
             <div class="col s1 m1 l1">
+              <!--Experimented with the pagination stuff. Didn't make the search button look any better. Needs fixing-->
               <ul class="pagination">
                 <a href="#!" class="waves-effect"><li style="background-color:white;" class="waves-effect"><i class="material-icons">search</i></li></a>
               </ul>
@@ -118,15 +122,17 @@
 
 
           <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: scroll;">
-
           </div>
 
 
-
+          <!--NEEDS TO BE STYLIZED-->
           <div class="row blue lighten-1 no-space">
+            <div class="col s6 m6 l6"><h4 id="confirm">Confirm</h4></div><!--BUT CAN YOU?!?!?-->
+            <div class="col s6 m6 l6"><h4 id="cancel">Cancel</h4></div>
           </div>
 
         </div>
+        <!--END RIGHT SIDE-->
         <script>
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
           $("#scan_sim").click(
@@ -149,6 +155,7 @@
                 $("#subtotal").text("$" + subtotal.toString())
             })
         </script>
+        <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
           .no-space {
             margin: 0px;
