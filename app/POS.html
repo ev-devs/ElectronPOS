@@ -101,6 +101,8 @@
           </table>
         </div>
       </div>
+
+
       <script>
       /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         $("#scan_sim").click(
@@ -124,14 +126,14 @@
         <div class="col s8 m8 l8">
 
 
-
-          <div class="row blue lighten-5">
-
-            <form>
-              <input type="text" name="search" placeholder="Search..">
-            </form>
-          </div>
-
+          <!--<div class="row row blue lighten-5">-->
+            <table style="width:100%; padding: 0px;" class="row row blue lighten-5">
+              <tr>
+                <td style="width:85%"><input type="text"></td>
+                <td style="width:15%"><a class="waves-effect waves-light btn"><i class="material-icons left">search</i>Search</a></td>
+              </tr>
+            </table>
+          <!--</div>-->
 
 
 
@@ -147,18 +149,5 @@
         </div>
       </div>
     </main>
-    <style>
-input[type=text] {
-    width: 100%;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: white;
-    background-image: url('searchicon.png');
-    background-position: 10px 10px;
-    background-repeat: no-repeat;
-}
-</style>
   </body>
 </html>
