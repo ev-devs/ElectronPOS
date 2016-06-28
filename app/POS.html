@@ -61,29 +61,28 @@
 
   <main>
       <div class="row">
-
+        <!--Builds the elft side-->
       <div class="col s4 m4 l4">
 
-        <!--Most likely unnecessary
-        <div class="row">
+        <div class="row grey lighten-1 no-space">
           <table class="centered responsive-table striped">
              <thead>
                <tr>
                    <th data-field="name">Item</th>
                    <th data-field="price">Price</th>
+                   <th data-field="quantity">Quantity</th>
                </tr>
              </thead>
           </table>
         </div>
-      -->
-        <div class="row" style="height: 750px; overflow-y: scroll;">
+        <div class="row grey lighten-5 no-space" style="height: 650px; overflow-y: scroll;">
           <table class="centered responsive-table striped" id="sale_list">
              <tbody id="sale_list_body">
              </tbody>
            </table>
         </div>
-        <div class="row">
-          <table class="centered responsive-table striped">
+        <div class="row grey lighten-1 no-space">
+          <table class="centered responsive-table bordered">
              <tbody>
                <tr>
                    <td data-field="name">Subtotal</th>
@@ -101,52 +100,63 @@
           </table>
         </div>
       </div>
-
-
-      <script>
-      /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
-        $("#scan_sim").click(
-          function()  {
-              var price = 6.99;
-              var item = "Curry";
-              var barcode =  6767676767;
-              var item = "<tr class=\"animated bounceInUp\"> \
-                <td>" + item + "</td> \
-                <td>$" + price + "<td> \
-              </tr>";
-              $("#sale_list tbody").append(item);
-              var subtotal = $("#subtotal").text().toString();
-              console.log("Before: " + subtotal);
-              subtotal = Number(subtotal.substring(1, subtotal.length));
-              console.log(subtotal + "+" + price);
-              subtotal+=price;
-              $("#subtotal").text("$" + subtotal.toString())
-          })
-      </script>
+      <!--Builds the right side-->
         <div class="col s8 m8 l8">
 
 
-          <!--<div class="row row blue lighten-5">-->
-            <table style="width:100%; padding: 0px;" class="row row blue lighten-5">
-              <tr>
-                <td style="width:85%"><input type="text"></td>
-                <td style="width:15%"><a class="waves-effect waves-light btn"><i class="material-icons left">search</i>Search</a></td>
-              </tr>
-            </table>
-          <!--</div>-->
+          <div class="row blue lighten-1 no-space">
+            <div class="col s11 m11 l11 no-space" style="margin-top: 13px;">
+              <input style="background-color: white;" type="text">
+            </div>
+            <div class="col s1 m1 l1 no-space">
+              <ul class="pagination">
+                <a href="#!" class="waves-effect"><li style="background-color:white;" class="waves-effect"><i class="material-icons">search</i></li></a>
+              </ul>
+            </div>
+          </div>
 
 
 
-          <div class="row blue lighten-5" style="height: 750px; overflow-y: scroll;">
+          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: scroll;">
 
           </div>
 
 
 
-          <div class="row">
+          <div class="row blue lighten-1 no-space">
           </div>
 
         </div>
+        <script>
+        /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
+          $("#scan_sim").click(
+            function()  {
+                var price = 6.99;
+                var item = "Curry";
+                var quantity = 1;
+                var barcode =  6767676767;
+                var item = "<tr class=\"animated bounceInUp\"> \
+                  <td>" + item + "</td> \
+                  <td>$" + price + "<td> \
+                  <td>" + quantity + "<td> \
+                </tr>";
+                $("#sale_list tbody").append(item);
+                var subtotal = $("#subtotal").text().toString();
+                console.log("Before: " + subtotal);
+                subtotal = Number(subtotal.substring(1, subtotal.length));
+                console.log(subtotal + "+" + price);
+                subtotal+=price;
+                $("#subtotal").text("$" + subtotal.toString())
+            })
+        </script>
+        <style media="screen">
+          .no-space {
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+          }
+        </style>
+
       </div>
     </main>
   </body>
