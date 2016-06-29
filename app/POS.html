@@ -137,32 +137,72 @@
         <script>
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         var inventory = [{
-          "name" : "Item A",
+          "item_name" : "Item A",
           "inv_quantity" : 12,
           "cust_quantity" : 0,
           "price" : 6.99,
-          "bar" : 56563821
-        }]
-        var item_list = []
+          "bar" : 1
+        },
+        {
+          "item_name" : "Item B",
+          "inv_quantity" : 12,
+          "cust_quantity" : 0,
+          "price" : 7.99,
+          "bar" : 2
+        }];
+
+        var item_list = [];
+
+        function determine_item_status(item_list, inventory) {
+          var i = -1;
+          /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
+          var inv_result = $.grep(inventory, function(e) {
+            return e.bar == 1;
+          });
+          /*If it's in the inventory go here*/
+          if(inv_result.length != 0) {
+            /*Check the customers current list to see if they already have it in their choices*/
+            console.log("In inventory");
+            cus_result = $.grep(item_list, function(e) {
+              /*This i will keep track of where it is in the list*/
+              i++;
+              return e.bar == 1;
+            });
+            /*If the customer alreayd has one then just increment the quantity counter*/
+            if(cus_result.length != 0) {
+              console.log("Customer already has");
+              item_list[i].cust_quantity+=1;
+              console.log(item_list);
+            }
+            else {
+              console.log("Customer does not have");
+              inv_result[0].cust_quantity = 1;
+              item_list.push(inv_result[0]);
+              console.log(item_list);
+              i = item_list.length - 1;
+            }
+            return i;
+          }
+        }
           $("#scan_sim").click(
             function()  {
-              var result = $.grep(inventory, function(e){ return e.bar == 56563821; });
-              if(result.length != 0)
-                result[0].quantity
-              /*
-                var item = "<tr class=\"animated bounceInUp\"> \
-                  <td class=\"eq-cells\">" + item + "</td> \
-                  <td class=\"eq-cells\">$" + price + "<td> \
-                  <td class=\"eq-cells\">" + quantity + "<td> \
-                </tr>";
-                $("#sale_list tbody").append(item);
-                var subtotal = $("#subtotal").text().toString();
-                console.log("Before: " + subtotal);
-                subtotal = Number(subtotal.substring(1, subtotal.length));
-                console.log(subtotal + "+" + price);
-                subtotal+=price;
-                $("#subtotal").text("$" + subtotal.toString())*/
-            })
+              var i = determine_item_status(item_list, inventory);
+              if(item_list[i].cust_quantity == 1) {
+                  var item = "<tr class=\"animated bounceInUp\"> \
+                    <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
+                    <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
+                    <td class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
+                  </tr>";
+                  $("#sale_list tbody").append(item);/*
+                  var subtotal = $("#subtotal").text().toString();
+                  console.log("Before: " + subtotal);
+                  subtotal = Number(subtotal.substring(1, subtotal.length));
+                  console.log(subtotal + "+" + price);
+                  subtotal+=price;
+                  $("#subtotal").text("$" + subtotal.toString())*/
+              }
+              else
+        })
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
