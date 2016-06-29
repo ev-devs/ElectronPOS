@@ -77,7 +77,7 @@
           </table>
         </div>
 
-        <div class="row grey lighten-5 no-space" style="height: 670px; overflow-y: auto;">
+        <div class="row grey no-space" style="height: 670px; overflow-y: auto;">
           <table class="responsive-table striped centered" id="sale_list" style="table-layout: fixed;">
              <tbody id="sale_list_body">
              </tbody>
@@ -215,13 +215,13 @@
                 var item_id = "qnt-item-" + i;
                 $("#" + item_id).text(item_list[i].cust_quantity);
                 console.log($("#" + item_id).text());
-              }console.log(tax);
+              }
               subtotal+=item_list[i].price;
-              console.log(subtotal);
-              tax = subtotal * .0075;
-              console.log(tax);
+              $("#subtotal").text("$" + subtotal.toString());
+              tax = subtotal * .075;
+              $("#tax").text("$"+tax.toString());
               total = subtotal + tax;
-              console.log(total);
+              $("#total").text("$"+total.toString());
         })
         /*
         var subtotal = $("#subtotal").text().toString();
