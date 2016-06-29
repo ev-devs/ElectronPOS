@@ -116,11 +116,12 @@
               <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
             </div>
             <div class="col s1 m1 l1 center">
+              <a href="#!"><i class="material-icons medium" style="background-color: white; margin: auto;">format_quote</i><a>
             </div>
           </div>
 
 
-          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: scroll;">
+          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: auto;">
 
           </div>
 
@@ -135,12 +136,20 @@
         <!--END RIGHT SIDE-->
         <script>
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
+        var inventory = [{
+          "name" : "Item A",
+          "inv_quantity" : 12,
+          "cust_quantity" : 0,
+          "price" : 6.99,
+          "bar" : 56563821
+        }]
+        var item_list = []
           $("#scan_sim").click(
             function()  {
-                var price = 6.99;
-                var item = "Curry";
-                var quantity = 1;
-                var barcode =  6767676767;
+              var result = $.grep(inventory, function(e){ return e.bar == 56563821; });
+              if(result.length != 0)
+                result[0].quantity
+              /*
                 var item = "<tr class=\"animated bounceInUp\"> \
                   <td class=\"eq-cells\">" + item + "</td> \
                   <td class=\"eq-cells\">$" + price + "<td> \
@@ -152,7 +161,7 @@
                 subtotal = Number(subtotal.substring(1, subtotal.length));
                 console.log(subtotal + "+" + price);
                 subtotal+=price;
-                $("#subtotal").text("$" + subtotal.toString())
+                $("#subtotal").text("$" + subtotal.toString())*/
             })
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
