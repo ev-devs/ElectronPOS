@@ -194,7 +194,7 @@
             function()  {
               var barcode = $("#barcode").val()
               var i = determine_item_status(item_list, inventory, barcode);
-              /*if(item_list[i].cust_quantity == 1) {
+              if(item_list[i].cust_quantity == 1) {
                   var item = "<tr class=\"animated bounceInUp\"> \
                     <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
                     <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
@@ -206,7 +206,7 @@
                 var item_id = "qnt-item-" + i;
                 $("#" + item_id).text(item_list[i].cust_quantity);
                 console.log($("#" + item_id).text());
-              }*/
+              }
 
         })
         /*
