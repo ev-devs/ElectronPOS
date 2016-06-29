@@ -111,11 +111,9 @@
             <div class="col s11 m11 l11" style="margin-top: 13px;">
               <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
             </div>
-            <div class="col s1 m1 l1">
+            <div class="col s1 m1 l1 center">
               <!--Experimented with the pagination stuff. Didn't make the search button look any better. Needs fixing-->
-              <ul class="pagination">
-                <a href="#!" class="waves-effect"><li style="background-color:white;" class="waves-effect"><i class="material-icons">search</i></li></a>
-              </ul>
+              <!--Search charm goes here-->
             </div>
           </div>
 
@@ -124,11 +122,11 @@
           <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: scroll;">
           </div>
 
-
+          <div class="row no-space"></div>
           <!--NEEDS TO BE STYLIZED-->
-          <div class="row blue lighten-1 no-space">
-            <div class="col s6 m6 l6"><h4 id="confirm">Confirm</h4></div><!--BUT CAN YOU?!?!?-->
-            <div class="col s6 m6 l6"><h4 id="cancel">Cancel</h4></div>
+          <div class="row blue lighten-1">
+            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="confirm">Confirm</h4></div></a><!--BUT CAN YOU?!?!?-->
+            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel">Cancel</h4></div></a>
           </div>
 
         </div>
@@ -161,6 +159,11 @@
             margin: 0px;
             border: 0px;
             padding: 0px;
+          }
+          .center {
+            margin: auto;
+            width: 60%;
+            padding: 10px;
           }
         </style>
 
