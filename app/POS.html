@@ -110,7 +110,7 @@
 
           <div class="row blue lighten-1 no-space">
             <div class="col s6 m6 l6" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Item code.." type="text">
+              <input style="background-color: white; padding: 5px;" id="barcode" type="text">
             </div>
             <div class="col s5 m5 l5" style="margin-top: 13px;">
               <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
@@ -153,56 +153,69 @@
 
         var item_list = [];
 
-        function determine_item_status(item_list, inventory) {
+        function determine_item_status(item_list, inventory, barcode) {
           var i = -1;
           /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
-          var inv_result = $.grep(inventory, function(e) {
-            return e.bar == 1;
+          var inv_result = inventory.find(function(e) {
+            return e.bar == barcode;
           });
+          console.log(inv_result);
           /*If it's in the inventory go here*/
-          if(inv_result.length != 0) {
+          if(inv_result != undefined) {
             /*Check the customers current list to see if they already have it in their choices*/
             console.log("In inventory");
-            cus_result = $.grep(item_list, function(e) {
+            var flag = 0;
+            cus_result = item_list.find(function(e) {
               /*This i will keep track of where it is in the list*/
               i++;
-              return e.bar == 1;
+              return e.bar == barcode;
             });
-            /*If the customer alreayd has one then just increment the quantity counter*/
-            if(cus_result.length != 0) {
-              console.log("Customer already has");
+            /*If the customer already has one then just increment the quantity counter*/
+            if(cus_result != undefined) {
+              console.log("Customer already has: item " + i);
               item_list[i].cust_quantity+=1;
               console.log(item_list);
             }
             else {
               console.log("Customer does not have");
-              inv_result[0].cust_quantity = 1;
-              item_list.push(inv_result[0]);
+              inv_result.cust_quantity = 1;
+              item_list.push(inv_result);
               console.log(item_list);
               i = item_list.length - 1;
             }
             return i;
           }
-        }
+          else {
+            return "Not in inventory";
+          }
+        };
+        /*END FUNCTION*/
           $("#scan_sim").click(
             function()  {
-              var i = determine_item_status(item_list, inventory);
-              if(item_list[i].cust_quantity == 1) {
+              var barcode = $("#barcode").val()
+              var i = determine_item_status(item_list, inventory, barcode);
+              /*if(item_list[i].cust_quantity == 1) {
                   var item = "<tr class=\"animated bounceInUp\"> \
                     <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
                     <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
                     <td id=\"qnt-item-" + i + "\"class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
                   </tr>";
-                  $("#sale_list tbody").append(item);/*
-                  var subtotal = $("#subtotal").text().toString();
-                  console.log("Before: " + subtotal);
-                  subtotal = Number(subtotal.substring(1, subtotal.length));
-                  console.log(subtotal + "+" + price);
-                  subtotal+=price;
-                  $("#subtotal").text("$" + subtotal.toString())*/
+                  $("#sale_list tbody").append(item);
               }
-              
+              else {
+                var item_id = "qnt-item-" + i;
+                $("#" + item_id).text(item_list[i].cust_quantity);
+                console.log($("#" + item_id).text());
+              }*/
+
         })
+        /*
+        var subtotal = $("#subtotal").text().toString();
+        console.log("Before: " + subtotal);
+        subtotal = Number(subtotal.substring(1, subtotal.length));
+        console.log(subtotal + "+" + price);
+        subtotal+=price;
+        $("#subtotal").text("$" + subtotal.toString())*/
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
