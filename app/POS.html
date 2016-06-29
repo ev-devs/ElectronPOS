@@ -110,13 +110,13 @@
 
           <div class="row blue lighten-1 no-space">
             <div class="col s6 m6 l6" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" id="barcode" type="text">
+              <input style="background-color: white; padding: 5px;" placeholder="Barcode.." id="barcode" type="text">
             </div>
             <div class="col s5 m5 l5" style="margin-top: 13px;">
               <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
             </div>
             <div class="col s1 m1 l1 center">
-              <a href="#!"><i class="material-icons medium" style="background-color: white; margin: auto;">format_quote</i><a>
+              <span>FIX</span>
             </div>
           </div>
 
@@ -159,7 +159,9 @@
         }];
 
         var item_list = [];
-
+        var subtotal = 0.00;
+        var tax = 0.00;
+        var total = 0.00;
         function determine_item_status(item_list, inventory, barcode) {
           var i = -1;
           /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
@@ -213,8 +215,13 @@
                 var item_id = "qnt-item-" + i;
                 $("#" + item_id).text(item_list[i].cust_quantity);
                 console.log($("#" + item_id).text());
-              }
-
+              }console.log(tax);
+              subtotal+=item_list[i].price;
+              console.log(subtotal);
+              tax = subtotal * .0075;
+              console.log(tax);
+              total = subtotal + tax;
+              console.log(total);
         })
         /*
         var subtotal = $("#subtotal").text().toString();
