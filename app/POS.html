@@ -191,7 +191,7 @@
                   var item = "<tr class=\"animated bounceInUp\"> \
                     <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
                     <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
-                    <td class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
+                    <td id=\"qnt-item-" + i + "\"class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
                   </tr>";
                   $("#sale_list tbody").append(item);/*
                   var subtotal = $("#subtotal").text().toString();
@@ -201,7 +201,7 @@
                   subtotal+=price;
                   $("#subtotal").text("$" + subtotal.toString())*/
               }
-              else
+              
         })
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
