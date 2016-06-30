@@ -28,7 +28,6 @@
 <script src="../bower_components/jquery-ui/jquery-ui.min.js" rel="stylesheet"></script>
 
 
-
 <!-- keyboard widget css & script (required) -->
 <link href="../bower_components/keyboard/dist/css/keyboard-basic.min.css" rel="stylesheet">
 <script src="../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
@@ -62,7 +61,15 @@
   <main>
       <div class="row no-space z-depth-2">
 
-      <!--Builds the left side where the items are placed as well as the totla and subtotal-->
+      <!--START RIGHT SIDE-->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Are you sure you want to delete?</h4>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+      </div>
       <div class="col s4 m4 l4">
 
         <div class="row grey lighten-1 no-space">
@@ -104,7 +111,7 @@
       </div>
       <!--END LEFT SIDE-->
 
-      <!--Builds the right side where the search charm is and where the confirm and cancel buttons are-->
+      <!--START RIGHT  SIDE-->
         <div class="col s8 m8 l8">
 
 
@@ -131,7 +138,6 @@
             <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="confirm">Confirm</h4></div></a><!--BUT CAN YOU?!?!?-->
             <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel">Cancel</h4></div></a>
           </div>
-
         </div>
         <!--END RIGHT SIDE-->
         <script>
@@ -168,11 +174,11 @@
           var inv_result = inventory.find(function(e) {
             return e.bar == barcode;
           });
-          console.log(inv_result);
+          //console.log(inv_result);
           /*If it's in the inventory go here*/
           if(inv_result != undefined) {
             /*Check the customers current list to see if they already have it in their choices*/
-            console.log("In inventory");
+            //console.log("In inventory");
             var flag = 0;
             cus_result = item_list.find(function(e) {
               /*This i will keep track of where it is in the list*/
@@ -181,15 +187,15 @@
             });
             /*If the customer already has one then just increment the quantity counter*/
             if(cus_result != undefined) {
-              console.log("Customer already has: item " + i);
+              //console.log("Customer already has: item " + i);
               item_list[i].cust_quantity+=1;
-              console.log(item_list);
+              //console.log(item_list);
             }
             else {
-              console.log("Customer does not have");
+              //console.log("Customer does not have");
               inv_result.cust_quantity = 1;
               item_list.push(inv_result);
-              console.log(item_list);
+              //console.log(item_list);
               i = item_list.length - 1;
             }
             return i;
@@ -203,8 +209,9 @@
             function()  {
               var barcode = $("#barcode").val()
               var i = determine_item_status(item_list, inventory, barcode);
+              console.log(i);
               if(item_list[i].cust_quantity == 1) {
-                  var item = "<tr class=\"animated bounceInUp\"> \
+                  var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
                     <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
                     <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
                     <td id=\"qnt-item-" + i + "\"class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
@@ -214,7 +221,7 @@
               else {
                 var item_id = "qnt-item-" + i;
                 $("#" + item_id).text(item_list[i].cust_quantity);
-                console.log($("#" + item_id).text());
+                //console.log($("#" + item_id).text());
               }
               subtotal+=item_list[i].price;
               $("#subtotal").text("$" + subtotal.toString());
@@ -223,13 +230,24 @@
               total = subtotal + tax;
               $("#total").text("$"+total.toString());
         })
-        /*
-        var subtotal = $("#subtotal").text().toString();
-        console.log("Before: " + subtotal);
-        subtotal = Number(subtotal.substring(1, subtotal.length));
-        console.log(subtotal + "+" + price);
-        subtotal+=price;
-        $("#subtotal").text("$" + subtotal.toString())*/
+
+        var touchstart = 0;
+        var touchend = 0;
+        var delete_flag = 0;
+        $(document).on("touchstart", ".whole-item", function(e) {
+          var touchobj = e.changedTouches[0].clientX;
+          touchstart = touchobj;
+
+        })
+        $(document).on("touchend", ".whole-item", function(e) {
+          var touchobj = e.changedTouches[0].clientX;
+          touchend = touchobj;
+          var item_id = $(this).attr("id");
+          if(touchstart-touchend >= 100 && delete_flag == 0) {
+            console.log("left");
+            $('#modal1').openModal();
+          }
+        })
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
