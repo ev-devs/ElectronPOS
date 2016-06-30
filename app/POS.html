@@ -64,7 +64,7 @@
 
       <!--START LEFT SIDE-->
       <div id="modal1" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" id="delete_option">
           <h4>Delete <span id="item_type"></span>?</h4>
         </div>
         <div class="modal-footer">
@@ -262,28 +262,59 @@
           /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
           if(touchstart-touchend >= 100) {
             /*Populates the modal with the item name for seller confirmation*/
-            $('#item_type').text($("#" + item_id + " .name").text());
+            if($("#" + item_id + " .quantity").text() == "1") {
+              $('#item_type').text($("#" + item_id + " .name").text());
+            }
+            else {
+              $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
+              var quantity_form = "<div id=\"delete-form\" class=\"row\"> \
+              <div class=\"input-field col s6\"> \
+              <input value=\"1\" id=\"delete-quantity\" type=\"text\" class=\"validate\"> \
+              <label class=\"active\" for=\"first_name2\">Quantity (1 minimum, " + $("#" + item_id + " .quantity").text() + " maximum)</label>\
+              </div>\
+              </div>";
+              $("#delete_option").append(quantity_form);
+            }
             /*Open modal*/
             $('#modal1').openModal();
           }
         })
+        /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed.*/
         $("#y_delete").click(function() {
-          console.log(item_id)
           var i = -1;
+          /*Find the item by name in the list of customer items named "item_list"*/
           var item_name = $("#" + item_id + " .name").text();
           item_list.find(function(e) {
           /*This i will keep track of where it is in the list*/
             i++;
             return e.item_name == item_name;
           });
-          item_list.splice(i, 1);
-          $("#"+item_id).remove()
-          console.log("deleted");
-          console.log(item_list);
+          /*Handles deletions of items if the quantity is 1*/
+          if($("#" + item_id + " .quantity").text() == "1") {
+            /*Remove that item from the list*/
+            item_list.splice(i, 1);
+            /*Remove the item from the gui*/
+            $("#"+item_id).remove()
+          }
+          else {
+            var delete_amount = $("#delete-quantity").val();
+            if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text()))
+              item_list[i].cust_quantity-=delete_amount;
+            $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
+            console.log(delete_amount);
+            $("#delete-form").remove();
+          }
         })
 
+        $("#n_delete").click(function() {
+          console.log(item_id)
+          var i = -1;
+          var item_name = $("#" + item_id + " .name").text();
+        })
 
+        function slideDelete() {
 
+        }
 
 
         </script>
