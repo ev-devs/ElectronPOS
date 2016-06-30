@@ -208,7 +208,10 @@
           total = subtotal + tax;
           $("#total").text("$"+total.toString());
         });
-
+        /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
+        in the customers list. If so the increment the counter and if not then add to list.
+        @return: index of the item in the item_list
+        @param: item_list, inventory, and barcode*/
         function determine_item_status(item_list, inventory, barcode) {
           var i = -1;
           /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
@@ -227,17 +230,15 @@
             });
             /*If the customer already has one then just increment the quantity counter*/
             if(cus_result != undefined) {
-              //console.log("Customer already has: item " + i);
               item_list[i].cust_quantity+=1;
-              //console.log(item_list);
             }
+            /*If not then increment the counter to one and add to the customer's list called item_list*/
             else {
-              //console.log("Customer does not have");
               inv_result.cust_quantity = 1;
               item_list.push(inv_result);
-              //console.log(item_list);
               i = item_list.length - 1;
             }
+            /*return the place of the item in the list for future use*/
             return i;
           }
           else {
@@ -245,17 +246,24 @@
           }
         };
         /*BEGIN DELETE CODE*/
+        /*When a finger is on the screen and on an item record the start point.
+        This is how far away the finger is from the left border.*/
         $(document).on("touchstart", ".whole-item", function(e) {
           var touchobj = e.changedTouches[0].clientX;
           touchstart = touchobj;
 
         })
+        /*When the finger leaves the screen record it's end point in pixels.*/
         $(document).on("touchend", ".whole-item", function(e) {
           var touchobj = e.changedTouches[0].clientX;
           touchend = touchobj;
+          /*Before seeing if this is a valid swipe take note of the item_id for future use*/
           item_id = $(this).attr("id");
+          /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
           if(touchstart-touchend >= 100) {
+            /*Populates the modal with the item name for seller confirmation*/
             $('#item_type').text($("#" + item_id + " .name").text());
+            /*Open modal*/
             $('#modal1').openModal();
           }
         })
