@@ -174,24 +174,33 @@
         var total = 0.00;
         /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
         var item_id = "";
+        /*When the #scan_sim button is click carry out the following callback*/
         $("#scan_sim").click(
         function()  {
+          /*Grab the barcode from the text area about*/
           var barcode = $("#barcode").val()
+          /*Pass into  this function, which is defined below. See the function to know what it does.*/
           var i = determine_item_status(item_list, inventory, barcode);
-          console.log(i);
+          /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
+          with the code below.*/
           if(item_list[i].cust_quantity == 1) {
+            /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+            where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+            values as the text values of the td tags.*/
             var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
             <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
             <td class=\"eq-cells price\">$" + item_list[i].price + "<td> \
             <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "<td> \
             </tr>";
+            /*Append to the table that holds the items*/
             $("#sale_list tbody").append(item);
           }
+          /*If the item is in the list then just go to its place and increment its counter and update the gui*/
           else {
             var item_id = "qnt-item-" + i;
             $("#" + item_id).text(item_list[i].cust_quantity);
-            //console.log($("#" + item_id).text());
           }
+          /*Update the global quantities of subtotal, tax, and total*/
           subtotal+=item_list[i].price;
           $("#subtotal").text("$" + subtotal.toString());
           tax = subtotal * .075;
@@ -206,7 +215,6 @@
           var inv_result = inventory.find(function(e) {
             return e.bar == barcode;
           });
-          //console.log(inv_result);
           /*If it's in the inventory go here*/
           if(inv_result != undefined) {
             /*Check the customers current list to see if they already have it in their choices*/
