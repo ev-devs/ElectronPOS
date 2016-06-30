@@ -47,6 +47,7 @@
           <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
           <ul class="right hide-on-med-and-down">
             <li><a href="#!">End session</a></li>
+            <li><a href="#!">Help</a></li>
             <li><a href="#!" id="scan_sim">Scan sim</a></li>
           </ul>
           <ul class="side-nav" id="mobile-demo">
@@ -61,13 +62,14 @@
   <main>
       <div class="row no-space z-depth-2">
 
-      <!--START RIGHT SIDE-->
+      <!--START LEFT SIDE-->
       <div id="modal1" class="modal">
         <div class="modal-content">
-          <h4>Are you sure you want to delete?</h4>
+          <h4>Delete <span id="item_type"></span>?</h4>
         </div>
         <div class="modal-footer">
-          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="y_delete">Yes</a>
+          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="n_delete">No</a>
         </div>
       </div>
       <div class="col s4 m4 l4">
@@ -141,6 +143,7 @@
         </div>
         <!--END RIGHT SIDE-->
         <script>
+        /*BEGIN TEST HARNESS CODE*/
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         var inventory = [{
           "item_name" : "Item A",
@@ -163,11 +166,40 @@
           "price" : 8.99,
           "bar" : 3
         }];
-
+        /*Item_list is the list of items the cusotmer has*/
         var item_list = [];
+        /*Next 3 variables are self-explanatory. Just look at their name.*/
         var subtotal = 0.00;
         var tax = 0.00;
         var total = 0.00;
+        /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
+        var item_id = "";
+        $("#scan_sim").click(
+        function()  {
+          var barcode = $("#barcode").val()
+          var i = determine_item_status(item_list, inventory, barcode);
+          console.log(i);
+          if(item_list[i].cust_quantity == 1) {
+            var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
+            <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
+            <td class=\"eq-cells price\">$" + item_list[i].price + "<td> \
+            <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "<td> \
+            </tr>";
+            $("#sale_list tbody").append(item);
+          }
+          else {
+            var item_id = "qnt-item-" + i;
+            $("#" + item_id).text(item_list[i].cust_quantity);
+            //console.log($("#" + item_id).text());
+          }
+          subtotal+=item_list[i].price;
+          $("#subtotal").text("$" + subtotal.toString());
+          tax = subtotal * .075;
+          $("#tax").text("$"+tax.toString());
+          total = subtotal + tax;
+          $("#total").text("$"+total.toString());
+        });
+
         function determine_item_status(item_list, inventory, barcode) {
           var i = -1;
           /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
@@ -204,36 +236,7 @@
             return "Not in inventory";
           }
         };
-        /*END FUNCTION*/
-          $("#scan_sim").click(
-            function()  {
-              var barcode = $("#barcode").val()
-              var i = determine_item_status(item_list, inventory, barcode);
-              console.log(i);
-              if(item_list[i].cust_quantity == 1) {
-                  var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
-                    <td class=\"eq-cells\">" + item_list[i].item_name + "</td> \
-                    <td class=\"eq-cells\">$" + item_list[i].price + "<td> \
-                    <td id=\"qnt-item-" + i + "\"class=\"eq-cells\">" + item_list[i].cust_quantity + "<td> \
-                  </tr>";
-                  $("#sale_list tbody").append(item);
-              }
-              else {
-                var item_id = "qnt-item-" + i;
-                $("#" + item_id).text(item_list[i].cust_quantity);
-                //console.log($("#" + item_id).text());
-              }
-              subtotal+=item_list[i].price;
-              $("#subtotal").text("$" + subtotal.toString());
-              tax = subtotal * .075;
-              $("#tax").text("$"+tax.toString());
-              total = subtotal + tax;
-              $("#total").text("$"+total.toString());
-        })
-
-        var touchstart = 0;
-        var touchend = 0;
-        var delete_flag = 0;
+        /*BEGIN DELETE CODE*/
         $(document).on("touchstart", ".whole-item", function(e) {
           var touchobj = e.changedTouches[0].clientX;
           touchstart = touchobj;
@@ -242,12 +245,31 @@
         $(document).on("touchend", ".whole-item", function(e) {
           var touchobj = e.changedTouches[0].clientX;
           touchend = touchobj;
-          var item_id = $(this).attr("id");
-          if(touchstart-touchend >= 100 && delete_flag == 0) {
-            console.log("left");
+          item_id = $(this).attr("id");
+          if(touchstart-touchend >= 100) {
+            $('#item_type').text($("#" + item_id + " .name").text());
             $('#modal1').openModal();
           }
         })
+        $("#y_delete").click(function() {
+          console.log(item_id)
+          var i = -1;
+          var item_name = $("#" + item_id + " .name").text();
+          item_list.find(function(e) {
+          /*This i will keep track of where it is in the list*/
+            i++;
+            return e.item_name == item_name;
+          });
+          item_list.splice(i, 1);
+          $("#"+item_id).remove()
+          console.log("deleted");
+          console.log(item_list);
+        })
+
+
+
+
+
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
