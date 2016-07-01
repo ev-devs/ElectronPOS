@@ -8,7 +8,7 @@ const {BrowserWindow} = electron
 
 
 // Report crashes to our server.
-electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
+// electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -28,7 +28,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/pos/pos.html`);
+  window.loadURL('file://${__dirname}/app/views/pos/pos.html');
 
   // Open the DevTools.
   window.webContents.openDevTools();
