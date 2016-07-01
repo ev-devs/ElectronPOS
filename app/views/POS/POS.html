@@ -68,20 +68,30 @@
 
           </div>
       </div>
-  </main>
+ </main>
 
     <!--THIS IS OUR LOGIC!-->
     <script src="./pos.js" charset="utf-8"></script>
+
     <style media="screen">
+        nav {
+            height: 10vh;
+        }
+
         #pos-container {
-            min-height: calc(100vh);
+            height: 90vh;
             background-color: red;
         }
-    </style>
+        #left-side {
+            background-color: green;
+            height: 100%;
+        }
+        #right-side {
+            background-color: blue;
+            height: 100%
+        }
 
-    <script type="text/javascript">
-        $('#pos-container').height($('#pos-container').height() - $('nav').height())
-    </script>
+    </style>
 
   </body>
 </html>
