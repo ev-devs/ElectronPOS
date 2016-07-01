@@ -21,6 +21,8 @@ html {
 #right-side {
     background-color: blue;
     height: 100%;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 
@@ -74,11 +76,17 @@ html {
     background-color: #42a5f5;
     width: 100%;
     height: 60px;
+    justify-content: center;
+    margin-bottom: 0;
 
 }
 #barcode {
     background-color: white;
+    top: 50%;
+    transform: translateY(20%);
 }
 #search {
     background-color: white;
+    top: 50%;
+    transform: translateY(20%);
 }
