@@ -61,45 +61,95 @@
   <!--Where the magic happens-->
   <main>
       <div class="row" id="pos-container">
+          <!---BEGIN LEFT SIDE-->
+
           <div class="col s4" id="left-side">
-              <div class="container">
-                    test
+
+              <!--BEGIN LEFT HEADER--->
+              <div class="row" id="left-header">
+                    <div class="col s4 top-left-text" id="item">
+                        Item
+                    </div>
+                    <div class="col s4 top-left-text" id="price">
+                        Price
+                    </div>
+                    <div class="col s4 top-left-text" id="quantity">
+                        Quantity
+                    </div>
               </div>
-          </div>
-          <div class="col s8" id="right-side">
+              <!--END LEFT HEADER--->
+
+
+              <!---BEGIN LEFT BODY-->
+              <div id="sale-list-body">
+
+              </div>
+               <!---ENDLEFT BODY-->
+
+
+               <!--BEGIN LEFT FOOTER-->
+              <div class="row" id="bottom-left-text">
+
+                  <div class="col s12 row-field" id="subtotal">
+                     <div class="col s6">
+                         Subtotal
+                     </div>
+                     <div class="col s6">
+                         $0.00
+                     </div>
+                  </div>
+
+                  <div class="col s12 row-field" id="tax">
+                      <div class="col s6">
+                          Tax
+                      </div>
+                      <div class="col s6">
+                          $0.00
+                      </div>
+                  </div>
+
+
+                  <div class="col s12 row-field" id="total">
+                      <div class="col s6">
+                          Total
+                      </div>
+                      <div class="col s6">
+                          $0.00
+                      </div>
+                  </div>
+              </div>
+              <!--ENDLEFT FOOTER-->
 
           </div>
+          <!--END LEFT SIDE--->
+
+
+          <!--START RIGHT SIDE-->
+          <div class="col s8" id="right-side">
+
+
+              <!--START TOP RIGHT SIDE-->
+              <div class="row" id="right-header">
+                  <div class="col s6">
+                       <input placeholder="Barcode..." id="barcode" type="text">
+                  </div>
+                  <div class="col s6">
+                      <input placeholder="Search Inventory..." id="search" type="text">
+                  </div>
+              </div>
+              <!--STOP TOP RIGHT SIDE-->
+
+
+          </div>
+          <!--END RIGHT SIDE-->
       </div>
  </main>
 
+
+    <!--THIS IS OUR CUSTOM STYLESHEET!-->
+    <link rel="stylesheet" href="./pos.css" media="screen"  charset="utf-8">
     <!--THIS IS OUR LOGIC!-->
     <script src="./pos.js" charset="utf-8"></script>
-
-    <style media="screen">
-        nav {
-            height: 10vh;
-        }
-
-        html {
-            overflow-y: hidden;
-        }
-        
-        #pos-container {
-            height: 90vh;
-            background-color: red;
-        }
-        #left-side {
-            background-color: green;
-            height: 100%;
-            position: sticky;
-        }
-        #right-side {
-            background-color: blue;
-            height: 100%;
-        }
-
-
-    </style>
 
   </body>
 </html>

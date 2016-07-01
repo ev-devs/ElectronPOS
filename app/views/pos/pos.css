@@ -1,0 +1,84 @@
+/************************* GENERAL */
+nav {
+    height: 8vh;
+}
+
+html {
+    overflow-y: hidden;
+    margin:0;
+    padding:0;
+}
+
+#pos-container {
+    height: 92vh;
+    /* background-color: red; */
+}
+#left-side {
+    /* background-color: green; */
+    height: 100%;
+
+}
+#right-side {
+    background-color: blue;
+    height: 100%;
+}
+
+
+/************************* LEFT SIDE */
+#left-header {
+    background-color: #bdbdbd;
+    margin: 0 -5%;
+}
+.top-left-text {
+    text-align: center;
+    height: 40px;
+    margin-top: 20px;
+}
+
+
+/*middle*/
+#sale-list-body {
+    /* background: red; */
+    height: 71vh;
+    margin: 0 -5%;
+}
+
+/*BOTTOM*/
+#bottom-left-text {
+    height: 25vh;
+    margin: 0 -5%;
+}
+
+/*This is for all three*/
+.row-field {
+    text-align: center;
+    height: 40px;
+
+}
+
+#subtotal {
+
+    background-color: #bdbdbd;
+}
+#tax {
+
+    background-color: #bdbdbd;
+}
+#total {
+    background-color: #bdbdbd;
+}
+
+
+/************************* THIS IS THE RIGHT */
+#right-header {
+    background-color: #42a5f5;
+    width: 100%;
+    height: 60px;
+
+}
+#barcode {
+    background-color: white;
+}
+#search {
+    background-color: white;
+}
