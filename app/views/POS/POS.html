@@ -60,119 +60,28 @@
 
   <!--Where the magic happens-->
   <main>
-      <div class="row no-space z-depth-2">
-
-      <!--START LEFT SIDE-->
-      <div id="modal1" class="modal">
-        <div class="modal-content" id="delete_option">
-          <h4>Delete <span id="item_type"></span>?</h4>
-        </div>
-        <div class="modal-footer">
-          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="y_delete">Yes</a>
-          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="n_delete">No</a>
-        </div>
-      </div>
-      <div class="col s4 m4 l4">
-
-        <div class="row grey lighten-1 no-space">
-          <table class="centered responsive-table striped" style="table-layout: fixed;">
-             <thead>
-               <tr>
-                   <th data-field="name" style="width: 33%;">Item</th>
-                   <th data-field="price" style="width: 33%;">Price</th>
-                   <th data-field="quantity" style="width: 33%;">Quantity</th>
-               </tr>
-             </thead>
-          </table>
-        </div>
-
-        <div class="row grey no-space" style="height: 670px; overflow-y: auto;">
-          <table class="responsive-table striped centered" id="sale_list" style="table-layout: fixed;">
-             <tbody id="sale_list_body">
-             </tbody>
-           </table>
-        </div>
-        <div class="row grey lighten-1 no-space">
-          <table class="centered responsive-table bordered">
-             <tbody>
-               <tr>
-                   <td data-field="name">Subtotal</th>
-                   <td data-field="price" id="subtotal">$0.00</th>
-               </tr>
-               <tr>
-                   <td data-field="name">Tax</th>
-                   <td data-field="price" id="tax">$0.00</th>
-               </tr>
-               <tr>
-                   <td data-field="name"><h5>Total</h5></th>
-                   <td data-field="price"><h5 id="total">$0.00</h5></th>
-               </tr>
-             </tbody>
-          </table>
-        </div>
-      </div>
-      <!--END LEFT SIDE-->
-
-      <!--START RIGHT  SIDE-->
-        <div class="col s8 m8 l8">
-
-
-          <div class="row blue lighten-1 no-space">
-            <div class="col s6 m6 l6" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Barcode.." id="barcode" type="text">
-            </div>
-            <div class="col s5 m5 l5" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
-            </div>
-            <div class="col s1 m1 l1 center">
-              <span>FIX</span>
-            </div>
-          </div>
-
-
-          <div class="row blue lighten-4 no-space test">
+      <div class="row" id="pos-container">
+          <div class="col s4" id="left-side">
 
           </div>
+          <div class="col s8" id="right-side">
 
-          <div class="row no-space"></div>
-          <!--NEEDS TO BE STYLIZED-->
-          <div class="row blue lighten-1">
-            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="confirm">Confirm</h4></div></a><!--BUT CAN YOU?!?!?-->
-            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel">Cancel</h4></div></a>
           </div>
-        </div>
-        <!--END RIGHT SIDE-->
-
-
       </div>
-    </main>
+  </main>
 
     <!--THIS IS OUR LOGIC!-->
     <script src="./pos.js" charset="utf-8"></script>
-
-    <!--Style applied to divs so there is no space between the three divs on the left and right side-->
     <style media="screen">
-      .no-space {
-        margin: 0px;
-        border: 0px;
-        padding: 0px;
-      }
-      .center {
-        margin: auto;
-        width: 60%;
-        padding: 10px;
-      }
-      .eq-cells {
-        width: 33%;
-      }
-
-      .test {
-    min-height: 600px;
-    height: auto !important;
-}
-
+        #pos-container {
+            min-height: calc(100vh);
+            background-color: red;
+        }
     </style>
 
-    <!---" style="height: 900px; overflow-y: auto;">->
+    <script type="text/javascript">
+        $('#pos-container').height($('#pos-container').height() - $('nav').height())
+    </script>
+
   </body>
 </html>
