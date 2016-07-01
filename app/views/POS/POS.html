@@ -62,7 +62,9 @@
   <main>
       <div class="row" id="pos-container">
           <div class="col s4" id="left-side">
-
+              <div class="container">
+                    test
+              </div>
           </div>
           <div class="col s8" id="right-side">
 
@@ -78,6 +80,10 @@
             height: 10vh;
         }
 
+        html {
+            overflow-y: hidden;
+        }
+        
         #pos-container {
             height: 90vh;
             background-color: red;
@@ -85,11 +91,13 @@
         #left-side {
             background-color: green;
             height: 100%;
+            position: sticky;
         }
         #right-side {
             background-color: blue;
-            height: 100%
+            height: 100%;
         }
+
 
     </style>
 
