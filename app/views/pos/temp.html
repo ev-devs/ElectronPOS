@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<!--Will remove during refactoring so it's easier to read, but right now keep for help-->
+<head>
+  <meta charset="UTF-8">
+  <!--This makes device rendering scale--->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <!--We are includeing jquery for our everyday javascript needs-->
+  <script type="text/javascript">
+      window.hammer = require('../../../bower_components/hammerjs/hammer.js')
+      window.$ = window.jQuery = require('../../../bower_components/jquery/dist/jquery.js');
+  </script>
+
+  <!---This is for our icons that are hosted locally-->
+  <link rel='stylesheet' href='../../../bower_components/typicons.font/src/font/typicons.min.css' />
+  <!-- we are including our material design CSS for our everday GUI needs-->
+  <link rel="stylesheet" href="../../../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
+  <!--We are inlcuding our material design js for our everyday GUI needs-->
+  <script src="../../../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
+
+
+  <!--- THIS IS NEEDED FOR US TO GET A KEYBOARD ON THE SCREEN---->
+  <!-- jQuery (required) & jQuery UI + theme (optional) -->
+<script src="../../../bower_components/jquery-ui/jquery-ui.min.js" rel="stylesheet"></script>
+
+
+<!-- keyboard widget css & script (required) -->
+<link href="../../../bower_components/keyboard/dist/css/keyboard-basic.min.css" rel="stylesheet">
+<script src="../../../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
+
+<!-- keyboard extensions (optional) -->
+  <script src="../../../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.css" media="screen" title="no title" charset="utf-8">
+  <title>Hello World!</title>
+</head>
+
+  <body>
+    <!-- Navbar goes here -->
+    <nav style="background-color: #125CA0;">
+    <div class="container">
+        <div class="nav-wrapper">
+          <a href="#!" class="brand-logo">Equipo Vision</a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul class="right hide-on-med-and-down">
+            <li><a href="#!">End session</a></li>
+            <li><a href="#!">Help</a></li>
+            <li><a href="#!" id="scan_sim">Scan sim</a></li>
+          </ul>
+          <ul class="side-nav" id="mobile-demo">
+
+          </ul>
+        </div>
+    </div>
+  </nav>
+  <!--ABVOE IS ALL NAV ABR STUFFS-->
+
+  <!--Where the magic happens-->
+  <main>
+      <div class="row no-space z-depth-2 proper-height">
+
+      <!--START LEFT SIDE-->
+      <div id="modal1" class="modal">
+        <div class="modal-content" id="delete_option">
+          <h4>Delete <span id="item_type"></span>?</h4>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="y_delete">Yes</a>
+          <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="n_delete">No</a>
+        </div>
+      </div>
+
+
+      <div class="col s4 m4 l4" style="height: 100%">
+        <div class="row grey lighten-1 no-space">
+          <table class="centered responsive-table striped" style="table-layout: fixed;">
+             <thead>
+               <tr>
+                   <th data-field="name" style="width: 33%;">Item</th>
+                   <th data-field="price" style="width: 33%;">Price</th>
+                   <th data-field="quantity" style="width: 33%;">Quantity</th>
+               </tr>
+             </thead>
+          </table>
+        </div>
+
+        <div class="row grey no-space" style="height: 100%">
+          <table class="responsive-table striped centered" id="sale_list" style="table-layout: fixed;">
+             <tbody id="sale_list_body">
+             </tbody>
+           </table>
+        </div>
+        <div class="row grey lighten-1 no-space">
+          <table class="centered responsive-table bordered">
+             <tbody>
+               <tr>
+                   <td data-field="name">Subtotal</th>
+                   <td data-field="price" id="subtotal">$0.00</th>
+               </tr>
+               <tr>
+                   <td data-field="name">Tax</th>
+                   <td data-field="price" id="tax">$0.00</th>
+               </tr>
+               <tr>
+                   <td data-field="name"><h5>Total</h5></th>
+                   <td data-field="price"><h5 id="total">$0.00</h5></th>
+               </tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+      <!--END LEFT SIDE-->
+
+      <!--START RIGHT  SIDE-->
+        <div class="col s8 m8 l8">
+
+
+          <div class="row blue lighten-1 no-space">
+            <div class="col s6 m6 l6" style="margin-top: 13px;">
+              <input style="background-color: white; padding: 5px;" placeholder="Barcode.." id="barcode" type="text">
+            </div>
+            <div class="col s5 m5 l5" style="margin-top: 13px;">
+              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
+            </div>
+            <div class="col s1 m1 l1 center">
+              <span>FIX</span>
+            </div>
+          </div>
+
+
+          <div class="row blue lighten-4 no-space proper-height">
+
+          </div>
+
+          <div class="row no-space"></div>
+          <!--NEEDS TO BE STYLIZED-->
+          <div class="row blue lighten-1">
+            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="confirm">Confirm</h4></div></a><!--BUT CAN YOU?!?!?-->
+            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel">Cancel</h4></div></a>
+          </div>
+        </div>
+        <!--END RIGHT SIDE-->
+
+
+      </div>
+    </main>
+
+    <!--THIS IS OUR LOGIC!-->
+    <script src="./pos.js" charset="utf-8"></script>
+
+    <!--Style applied to divs so there is no space between the three divs on the left and right side-->
+    <style media="screen">
+      .no-space {
+        margin: 0px;
+        border: 0px;
+        padding: 0px;
+      }
+      .center {
+        margin: auto;
+        width: 60%;
+        padding: 10px;
+      }
+      .eq-cells {
+        width: 33%;
+      }
+
+      .proper-height {
+          height:70vh;
+      }
+
+    </style>
+
+    <!---" style="height: 900px; overflow-y: auto;">->
+  </body>
+</html>
