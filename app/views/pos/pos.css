@@ -16,13 +16,17 @@ html {
 #left-side {
     /* background-color: green; */
     height: 100%;
+    padding-left: 0;
+    padding-right: 0;
 
 }
 #right-side {
-    background-color: blue;
+    background-color: #42a5f5;
     height: 100%;
     padding-left: 0;
     padding-right: 0;
+    top: 0;
+    position: sticky;
 }
 
 
@@ -78,6 +82,7 @@ html {
     height: 60px;
     justify-content: center;
     margin-bottom: 0;
+    top: 0;
 
 }
 #barcode {
@@ -89,4 +94,16 @@ html {
     background-color: white;
     top: 50%;
     transform: translateY(20%);
+}
+
+
+#right-middle {
+    height: 71vh;
+    background-color: #e3f2fd;
+}
+
+#right-bottom {
+
+    height: 25vh;
+
 }
