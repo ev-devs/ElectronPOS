@@ -4,7 +4,7 @@ nav {
 }
 
 html {
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     margin:0;
     padding:0;
 }
@@ -102,7 +102,14 @@ html {
 }
 
 #right-bottom {
-
     height: 25vh;
-
+    text-align: center;
+    padding-bottom: 0px;
+}
+.right-bottom-button {
+    height: 10vh;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+    background-color: #42a5f5;
 }
