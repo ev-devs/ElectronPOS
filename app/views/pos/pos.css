@@ -107,9 +107,10 @@ html {
     padding-bottom: 0px;
 }
 .right-bottom-button {
-    height: 10vh;
+    height: 15vh;
     text-align: center;
     vertical-align: middle;
     width: 100%;
     background-color: #42a5f5;
+    margin-top: -2.2vh;
 }
