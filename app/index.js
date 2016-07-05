@@ -1,5 +1,6 @@
 var util = require('util')
 var execSync = require('child_process').execSync
+var spawnSync = require('child_process').spawnSync
 var internet = require('./lib/internet.js')
 
 var fs = require('fs');
@@ -34,14 +35,16 @@ $(document).on('click', '#accept', function() {
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   //var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh && sleep 2 && wpa_cli scan").toString();
-  var status = execSync("sleep 2 && wpa_cli scan").toString();
-  if(status.search("OK") != -1) {
-    console.log("CONNECTED");
-    $("#cur_connection").text(cur);
+  var status;
+  execSync("sleep 2");
+  var output_d = spawnSync('wpa_cli', ['scan']);
+  console.log(output_d.stderr.length);
+  if(output_d.stderr.length == 0) {
+	console.log("CONNECTED");
   }
   else {
-    console.log("DISCONNECTED");
-  }
+	console.log("disconnected");  
+   }
 });
 
 
