@@ -6,15 +6,16 @@
                 <div class="row">
                     <div class="col s12 left">
                         <!-- Helps show the current wifi connection. If there aren'y then it will appear as "none"-->
-                         <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 id="cur_connection" style="display: inline">Wi-Fi</h2 >
+                         <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 style="display: inline">Wi-Fi</h2 >
                     </div>
                 </div>
             </div>
 
-            <div class="container leftr">
-                <div class="chip">
+            <div class="container leftr" id="connection_holder">
+                <div class="chip" id="cur_con">
                     Wi-Fi: <%= output[output.length - 1] %>
                 </div>
+
             </div>
 
             <br>

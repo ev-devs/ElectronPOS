@@ -21,6 +21,26 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet
     anything: "goes here"
 }))
 
+
+
+
+/*Creates the custom event from the transition between the internet connection for view transition*/
+/*Grabs the string that displays the current connection which is generated from the script*/
+var status = document.getElementById("cur_con").innerText.toString();
+/*Creates the custom event and passes in the status of the internet*/
+var connected = new CustomEvent('connected', { 'detail': status  });
+/*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
+(from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
+You can think of this as the section of code which defines what our event DOES after it is created and called.*/
+document.getElementById("cur_con").addEventListener('connected', function(e) {
+  /*If the status is not "Wi-Fi: none" then render the button which allows the user to proceed*/
+  if(status != "Wi-Fi: none") {
+    var proceed = "<a class=\"waves-effect waves-light btn\"><i class=\"material-icons right\">done</i>Proceed</a>";
+    $("#connection_holder").append(proceed);
+  }
+}, false);
+
+
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
@@ -40,13 +60,14 @@ $(document).on('click', '#accept', function() {
   var output_d = spawnSync('wpa_cli', ['scan']);
   console.log(output_d.stderr.length);
   if(output_d.stderr.length == 0) {
-	console.log("CONNECTED");
+	   console.log("CONNECTED");
   }
   else {
-	console.log("disconnected");  
+	   console.log("DISCONNECTED");
    }
 });
-
+/*Here is where our element is dispatched*/
+document.getElementById("cur_con").dispatchEvent(connected);
 
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
