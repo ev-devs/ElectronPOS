@@ -35,10 +35,12 @@ You can think of this as the section of code which defines what our event DOES a
 document.getElementById("cur_con").addEventListener('connected', function(e) {
   /*If the status is not "Wi-Fi: none" then render the button which allows the user to proceed*/
   if(status != "Wi-Fi: none") {
-    var proceed = "<a class=\"waves-effect waves-light btn\"><i class=\"material-icons right\">done</i>Proceed</a>";
+    var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
     $("#connection_holder").append(proceed);
   }
 }, false);
+
+/*Creates the custom event from the transition between events page and login page*/
 
 
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
@@ -68,6 +70,11 @@ $(document).on('click', '#accept', function() {
 });
 /*Here is where our element is dispatched*/
 document.getElementById("cur_con").dispatchEvent(connected);
+/*When the proceed button is rendered if it is pressed render the next view
+NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
+$(document).on('click', '#proceed', function() {
+  $('main').html(ejs.render(fs.readFileSync( __dirname + '/events.html', 'utf-8') , {}));
+});
 
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
