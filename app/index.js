@@ -33,7 +33,9 @@ $(document).on('click', '#accept', function() {
   execSync( "sudo " + __dirname + "/../pw/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
-  var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ").toString();
+  //var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh && sleep 2 && wpa_cli scan").toString();
+  var cur = execSync("sleep 2 && wpa_cli scan").toString();
+  console.log(cur)
   /* **THIS LINE IS NOT YET TESTED ON THE RPI** */
   /**$("#cur_connection").text() = cur;**/
 });
