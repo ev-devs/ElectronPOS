@@ -47,7 +47,8 @@ var proper_event = new CustomEvent('proper_event');
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
 });
-
+/*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
+not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val()
   /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
@@ -63,9 +64,12 @@ $(document).on('click', '#accept', function() {
   console.log(output_d.stderr.length);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
+     var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ");
+     $("#cur_con").text("Wifi: " + cur);
   }
   else {
 	   console.log("DISCONNECTED");
+     $("#cur_con").text("Wi-Fi: none");
    }
 });
 /*Here is where our element is dispatched*/
