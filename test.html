@@ -1,23 +1,133 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<title>Custom event delegation in JavaScript</title>
+<style>
+body
+{
+	font-family: arial, helvetica, freesans, sans-serif;
+	font-size: 100%;
+	color: #333;
+	background-color: #ddd;
+}
 
+h1
+{
+	font-size: 1.5em;
+	font-weight: normal;
+	margin: 0;
+}
+
+pre
+{
+	height: 20em;
+	font-family: monospace;
+	font-size: 1em;
+	padding: 2px 5px;
+	color: #0f0;
+	background-color: #111;
+	border: 1px solid #030;
+	border-radius: 4px;
+	overflow: auto;
+}
+
+fieldset
+{
+	padding: 10px;
+	border-radius: 10px;
+}
+
+label, input, button
+{
+	display: block;
+	width: 80%;
+	font-size: 1em;
+	text-align: center;
+	margin: 2px auto;
+}
+
+button
+{
+	width: 10em;
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
-<p><label><input type="checkbox" id="checkbox"> Checked</label>
-  <p><button id="button">Click me</button>
-    <script type="text/javascript">
-    function simulateClick() {
-      var evt = new Event("clic", {
-        bubbles: true,
-        cancelable: true,
-        view: window
-      });
-      var cb = document.getElementById("checkbox"); //element to click on
-      cb.dispatchEvent(evt);
-      console.log("test");
+<h1>Custom Events in JavaScript</h1>
+
+<p>This demonstration creates a new event type named "newMessage" which is fired whenever a valid message is submitted. The event can be delegated to any number of subscribers.</p>
+
+<p>For more information, refer to <a href="http://www.sitepoint.com/javascript-custom-events/">How to Create Custom Events in JavaScript</a>.</p>
+
+<form id="msgbox" action="#" method="get">
+<fieldset>
+<label for="msg">your message</label>
+<input id="msg" value="" />
+<button>SEND</button>
+</fieldset>
+</form>
+
+<pre id="log">Event information log
+=====================
+</pre>
+
+<script>
+// elements
+var
+	body = document.body,
+	msgbox = document.getElementById("msgbox"),
+	log = document.getElementById("log");
+
+
+// form submit handler
+msgbox.addEventListener("submit", SendMessage, false);
+
+
+// newMessage event subscribers
+document.addEventListener("newMessage", newMessageHandler, false);
+body.addEventListener("newMessage", newMessageHandler, false);
+msgbox.addEventListener("newMessage", newMessageHandler, false);
+
+
+// newMessage event handler
+function newMessageHandler(e) {
+	LogEvent(
+		"Event subscriber on "+e.currentTarget.nodeName+", "
+		+e.detail.time.toLocaleString()+": "+e.detail.message
+	);
 }
-document.getElementById("button").addEventListener('clic', simulateClick);
-    </script>
+
+
+// new message: raise newMessage event
+function SendMessage(e) {
+
+	e.preventDefault();
+	var msg = document.getElementById("msg").value.trim();
+
+	if (msg && window.CustomEvent) {
+		var event = new CustomEvent("newMessage", {
+			detail: {
+				message: msg,
+				time: new Date(),
+			},
+			bubbles: true,
+			cancelable: true
+		});
+
+		e.currentTarget.dispatchEvent(event);
+	}
+
+}
+
+
+// log event in console
+function LogEvent(msg) {
+	log.textContent += msg + "\n";
+	var ot = log.scrollHeight - log.clientHeight;
+	if (ot > 0) log.scrollTop = ot;
+}
+</script>
 </body>
 </html>

@@ -23,12 +23,14 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet
 
 
 
-
 /*Creates the custom event from the transition between the internet connection for view transition*/
+
 /*Grabs the string that displays the current connection which is generated from the script*/
+
 var status = document.getElementById("cur_con").innerText.toString();
 /*Creates the custom event and passes in the status of the internet*/
 var connected = new CustomEvent('connected', { 'detail': status  });
+
 /*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
 (from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
 You can think of this as the section of code which defines what our event DOES after it is created and called.*/
@@ -41,14 +43,8 @@ document.getElementById("cur_con").addEventListener('connected', function(e) {
     $("#connection_holder").append(proceed);
   }
 }, false);
-
-/*Creates the custom event from the transition between events page and login page*/
-var proper_event = new CustomEvent('proper_event');
-
-/*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
-$(document).on('click', '.wifi_option', function() {
-  ap_name = $(this).attr('id');
-});
+/*Here is where our element is dispatched*/
+document.getElementById("cur_con").dispatchEvent(connected);
 
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
@@ -57,9 +53,9 @@ $(document).on('click', '#accept', function() {
   execSync( "sudo " + __dirname + "/../pw/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
-  //var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh && sleep 2 && wpa_cli scan").toString();
   var status;
   execSync("sleep 2");
+  /*NEEDS TO BE CHANGED AS THIS DOES NOT CHECK FOR CONNECTIONS PROPERLY*/
   var output_d = spawnSync('wpa_cli', ['scan']);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
@@ -71,16 +67,17 @@ $(document).on('click', '#accept', function() {
 	   console.log("DISCONNECTED");
      $("#cur_con").text("Wi-Fi: none");
    }
-   /*Here is where our element is dispatched*/
-   document.getElementById("cur_con").dispatchEvent(connected);
 });
-/*Here is where our element is dispatched*/
-document.getElementById("cur_con").dispatchEvent(connected);
 
 /*When the proceed button is rendered if it is pressed render the next view
 NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
 $(document).on('click', '#proceed', function() {
   $('main').html(ejs.render(fs.readFileSync( __dirname + '/events.html', 'utf-8') , {}));
+});
+
+/*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
+$(document).on('click', '.wifi_option', function() {
+  ap_name = $(this).attr('id');
 });
 
 /*When the remove connection button is pressed then remove the current connection*/
@@ -90,6 +87,7 @@ $(document).on('click', '#remove', function() {
   $("#remove").remove();
   $("#proceed").remove();
 });
+
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -99,9 +97,6 @@ $('.modal-trigger').leanModal({
    }
  );
 /*
-
-
-
 
 /*WE LAUNCH OUR SERVER TO START SESSIONS*/
 require('./lib/server.js')
