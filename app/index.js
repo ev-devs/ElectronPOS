@@ -67,7 +67,7 @@ $(document).on('click', '#accept', function() {
   console.log(output_d.stderr.length);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
-     var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ");
+     var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ").toString();
      $("#cur_con").text("Wifi: " + cur);
   }
   else {
@@ -88,6 +88,9 @@ $(document).on('click', '#proceed', function() {
 /*When the remove connection button is pressed then remove the current connection*/
 $(document).on('click', '#remove', function() {
   execSync("sudo " + __dirname + "/../pw/wifi_rem.sh ");
+  $("#cur_con").text("Wi-Fi: none");
+  $("#remove").remove();
+  $("#proceed").remove();
 });
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
