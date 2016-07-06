@@ -63,8 +63,7 @@ $(document).on('click', '#accept', function() {
   var output_d = spawnSync('wpa_cli', ['scan']);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
-     var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ").toString();
-     console.log(cur);
+     var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh con").toString();
      $("#cur_con").text("Wi-Fi: " + cur);
   }
   else {

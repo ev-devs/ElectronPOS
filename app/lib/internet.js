@@ -41,7 +41,7 @@ var internet = {
           connections[i] = wifi;
         }
         /*Runs the wifi_cur.sh script to get the output and store it as a string*/
-        var cur = execSync( __dirname + '/../../pw/wifi_cur.sh').toString();
+        var cur = execSync( __dirname + '/../../pw/wifi_cur.sh cur').toString();
         /*pushes it as the last element for easy access*/
         connections.push(cur);
         return connections;
