@@ -1,36 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>animate demo</title>
-  <style>
-  div {
-    background-color: #bca;
-    width: 100px;
-    border: 1px solid green;
-  }
-  </style>
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
 </head>
 <body>
-
-<button id="go">&raquo; Run</button>
-<div id="block">Hello!</div>
-
-<script>
-// Using multiple unit types within one animation.
-
-$( "#go" ).click(function() {
-  $( "#block" ).animate({
-    opacity: 0.4,
-    top: "0.6in",
-    right: "0.6in",
-    width: "1000px", 
-    fontSize: "3em",
-    borderWidth: "10px"
-  }, 1500 );
-});
-</script>
-
+<p><label><input type="checkbox" id="checkbox"> Checked</label>
+  <p><button id="button">Click me</button>
+    <script type="text/javascript">
+    function simulateClick() {
+      var evt = new Event("clic", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      });
+      var cb = document.getElementById("checkbox"); //element to click on
+      cb.dispatchEvent(evt);
+      console.log("test");
+}
+document.getElementById("button").addEventListener('clic', simulateClick);
+    </script>
 </body>
 </html>

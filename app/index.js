@@ -41,7 +41,7 @@ document.getElementById("cur_con").addEventListener('connected', function(e) {
 }, false);
 
 /*Creates the custom event from the transition between events page and login page*/
-
+var proper_event = new CustomEvent('proper_event');
 
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
