@@ -36,6 +36,8 @@ document.getElementById("cur_con").addEventListener('connected', function(e) {
   /*If the status is not "Wi-Fi: none" then render the button which allows the user to proceed*/
   if(status != "Wi-Fi: none") {
     var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
+    var remove = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
+    $("#connection_holder").append(remove);
     $("#connection_holder").append(proceed);
   }
 }, false);
@@ -47,6 +49,7 @@ var proper_event = new CustomEvent('proper_event');
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
 });
+
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
 $(document).on('click', '#accept', function() {
@@ -72,14 +75,20 @@ $(document).on('click', '#accept', function() {
      $("#cur_con").text("Wi-Fi: none");
    }
 });
+
 /*Here is where our element is dispatched*/
 document.getElementById("cur_con").dispatchEvent(connected);
+
 /*When the proceed button is rendered if it is pressed render the next view
 NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
 $(document).on('click', '#proceed', function() {
   $('main').html(ejs.render(fs.readFileSync( __dirname + '/events.html', 'utf-8') , {}));
 });
 
+/*When the remove connection button is pressed then remove the current connection*/
+$(document).on('click', '#remove', function() {
+  execSync("sudo " + __dirname + "/../pw/wifi_rem.sh ");
+});
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
