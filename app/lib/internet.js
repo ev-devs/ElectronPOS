@@ -56,3 +56,48 @@ var internet = {
 }
 
 module.exports = internet;
+
+/* JQUERY EVENTS FOR INTERNET CONFIGURATIONS*/
+var ap_name = "";
+var psk = "";
+/*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
+not happen*/
+$(document).on('click', '#accept', function() {
+  psk = $("#keyboard").val()
+  execSync( "sudo " + __dirname + "/../../pw/wifi_con.sh " + ap_name + " " + psk);
+
+  /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
+  var status;
+  execSync("sleep 2");
+  /*NEEDS TO BE CHANGED AS THIS DOES NOT CHECK FOR CONNECTIONS PROPERLY*/
+  var output_d = spawnSync('wpa_cli', ['scan']);
+  if(output_d.stderr.length == 0) {
+	   console.log("CONNECTED");
+     var cur = execSync("sudo " + __dirname + "/../../pw/wifi_cur.sh con").toString();
+     $("#cur_con").text("Wi-Fi: " + cur);
+     status = document.getElementById("cur_con").innerText.toString();
+  }
+  else {
+	   console.log("DISCONNECTED");
+     $("#cur_con").text("Wi-Fi: none");
+   }
+   document.getElementById("cur_con").dispatchEvent(connected);
+});
+
+/*When the proceed button is rendered if it is pressed render the next view. NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
+$(document).on('click', '#proceed', function() {
+  $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/eventStart/eventStart.html', 'utf-8') , {}));
+});
+
+/*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
+$(document).on('click', '.wifi_option', function() {
+  ap_name = $(this).attr('id');
+});
+
+/*When the remove connection button is pressed then remove the current connection*/
+$(document).on('click', '#remove', function() {
+  execSync("sudo " + __dirname + "/../../pw/wifi_rem.sh ");
+  $("#cur_con").text("Wi-Fi: none");
+  $("#remove").remove();
+  $("#proceed").remove();
+});

@@ -1,6 +1,4 @@
 <br>
-
-
 <% if (output) { %>
             <div class="container">
                 <div class="row">
@@ -64,3 +62,26 @@
         <a class="waves-effect waves-light btn">Continue with cash only/a>
     </div>
 <% } %>
+
+<script type="text/javascript">
+/*Creates the custom event from the transition between the internet connection for view transition*/
+/*Grabs the string that displays the current connection which is generated from the script*/
+var status = document.getElementById("cur_con").innerText.toString();
+/*Creates the custom event and passes in the status of the internet*/
+var connected = new CustomEvent('connected', { 'detail': status  });
+
+/*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
+(from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
+You can think of this as the section of code which defines what our event DOES after it is created and called.*/
+document.getElementById("cur_con").addEventListener('connected', function(e) {
+  /*If the status is not "Wi-Fi: none" then render the button which allows the user to proceed*/
+  if(status != "Wi-Fi: none") {
+    var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
+    var remove = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
+    $("#connection_holder").append(remove);
+    $("#connection_holder").append(proceed);
+  }
+}, false);
+/*Here is where one of our events is dispatched*/
+document.getElementById("cur_con").dispatchEvent(connected);
+</script>
