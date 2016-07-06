@@ -18,17 +18,6 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet
     anything: "goes here"
 }))
 
-
-
-
-
-
-
-
-
-
-
-
 /*Used to trigger the modal located in _index.ejs*/
 $('.modal-trigger').leanModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
