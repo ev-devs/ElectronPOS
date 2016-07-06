@@ -65,6 +65,7 @@ $(document).on('click', '#accept', function() {
 	   console.log("CONNECTED");
      var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh con").toString();
      $("#cur_con").text("Wi-Fi: " + cur);
+     status = document.getElementById("cur_con").innerText.toString();
   }
   else {
 	   console.log("DISCONNECTED");
