@@ -54,21 +54,18 @@ $(document).on('click', '.wifi_option', function() {
 not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val()
-  /*Connects to the specified and waits for two seconds. The 2 second wait is to ensure that a connection is made or not.*/
-  console.log(ap_name + psk);
-  /*execSync("sudo ../pw/wifi_con.sh " + ap_name + " " + psk + " && sleep 2");*/
   execSync( "sudo " + __dirname + "/../pw/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   //var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh && sleep 2 && wpa_cli scan").toString();
   var status;
-  execSync("sleep 2");
+  execSync("sleep 3");
   var output_d = spawnSync('wpa_cli', ['scan']);
-  console.log(output_d.stderr.length);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
      var cur = execSync("sudo " + __dirname + "/../pw/wifi_cur.sh ").toString();
-     $("#cur_con").text("Wifi: " + cur);
+     console.log(cur);
+     $("#cur_con").text("Wi-Fi: " + cur);
   }
   else {
 	   console.log("DISCONNECTED");
