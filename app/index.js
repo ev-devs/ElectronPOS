@@ -74,7 +74,8 @@ $(document).on('click', '#accept', function() {
    /*Here is where our element is dispatched*/
    document.getElementById("cur_con").dispatchEvent(connected);
 });
-
+/*Here is where our element is dispatched*/
+document.getElementById("cur_con").dispatchEvent(connected);
 
 /*When the proceed button is rendered if it is pressed render the next view
 NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
