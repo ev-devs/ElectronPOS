@@ -59,7 +59,7 @@ $(document).on('click', '#accept', function() {
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   //var cur = "Wi-Fi: " + execSync("sudo " + __dirname + "/../pw/wifi_cur.sh && sleep 2 && wpa_cli scan").toString();
   var status;
-  execSync("sleep 3");
+  execSync("sleep 2");
   var output_d = spawnSync('wpa_cli', ['scan']);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
