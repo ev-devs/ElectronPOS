@@ -390,14 +390,26 @@
 
         /*BEGIN CONFIRM ORDER CODE*/
         /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
-        /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look*/
+        /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
         $("#confirm").click(function() {
           $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
         });
 
         $(document).on("click", "#cash", function () {
+          console.log("Cash");
+        });
 
-        })
+        $(document).on("click", "#card", function () {
+          console.log("Card");
+        });
+
+        $(document).on("click", "#c_and_c", function () {
+          console.log("Cash and card");
+        });
+
+        $(document).on("click", "#m_card", function () {
+          console.log("Multi card");
+        });
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
