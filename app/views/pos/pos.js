@@ -11,6 +11,14 @@ present in  : pos.html
 */
 
 
+
+
+
+//TO be removed once connected to views
+var ejs = require('ejs');
+var fs = require('fs');
+
+$(".keyboard").keyboard();
 /*BEGIN TEST HARNESS CODE*/
 /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
 var inventory = [{
@@ -42,9 +50,10 @@ var tax = 0.00;
 var total = 0.00;
 /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
 var item_id = "";
+
+/*BEGIN SCAN CODE*/
 /*When the #scan_sim button is click carry out the following callback*/
-$("#scan_sim").click(
-function()  {
+$("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val()
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
@@ -113,6 +122,9 @@ function determine_item_status(item_list, inventory, barcode) {
     return "Not in inventory";
   }
 };
+
+
+
 /*BEGIN DELETE CODE*/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
@@ -120,7 +132,8 @@ $(document).on("touchstart", ".whole-item", function(e) {
   var touchobj = e.changedTouches[0].clientX;
   touchstart = touchobj;
 
-})
+});
+
 /*When the finger leaves the screen record it's end point in pixels.*/
 $(document).on("touchend", ".whole-item", function(e) {
   var touchobj = e.changedTouches[0].clientX;
@@ -134,6 +147,7 @@ $(document).on("touchend", ".whole-item", function(e) {
       $('#item_type').text($("#" + item_id + " .name").text());
     }
     else {
+      /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
       $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
       var quantity_form = "<div id=\"delete-form\" class=\"row\"> \
       <div class=\"input-field col s6\"> \
@@ -146,8 +160,9 @@ $(document).on("touchend", ".whole-item", function(e) {
     /*Open modal*/
     $('#modal1').openModal();
   }
-})
-/*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleteing is handled here.*/
+});
+
+/*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
   var i = -1;
   /*Find the item by name in the list of customer items named "item_list"*/
@@ -160,24 +175,34 @@ $("#y_delete").click(function() {
   /*Handles deletions of items if the quantity is 1*/
   if($("#" + item_id + " .quantity").text() == "1") {
     /*Do any pricing updates before deleting*/
-    subtotal-=item_list[i].price;
+    subtotal-= item_list[i].price;
     tax = subtotal * .075;
     total = subtotal + tax;
     /*Remove that item from the list*/
     item_list.splice(i, 1);
     /*Remove the item from the gui*/
     $("#"+item_id).remove()
-  }
+  }/*If not more than one then this branch handles deletions if more than one*/
   else {
+    /*Grabs the specified amount to be deleted*/
     var delete_amount = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
     subtotal-=(item_list[i].price * delete_amount);
     tax = subtotal * .075;
     total = subtotal + tax;
-    /*Do the deletions*/
-    if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text()))
+    /*Do the deletions as long as the specified amount is between 1-(max item #)*/
+    if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
       item_list[i].cust_quantity-=delete_amount;
-    $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
+    }
+    /*If the user deletes all items in then remove that item from the user list and the gui*/
+    if(item_list[i].cust_quantity == 0) {
+      /*Remove that item from the list*/
+      item_list.splice(i, 1);
+      /*Remove the item from the gui*/
+      $("#"+item_id).remove()
+    }
+    else
+      $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
     console.log(delete_amount);
     $("#delete-form").remove();
   }
@@ -189,7 +214,7 @@ $("#y_delete").click(function() {
   $("#subtotal").text("$" + subtotal.toString());
   $("#tax").text("$"+tax.toString());
   $("#total").text("$"+total.toString());
-})
+});
 
 $("#n_delete").click(function() {
   console.log(item_id)
@@ -199,9 +224,38 @@ $("#n_delete").click(function() {
     $("#delete-form").remove();
   }
 
+});
+/*BEGIN SEARCH INVENTORY CODE*/
+$("#search").change(function() {
+
+});
+
+/*BEGIN CANCEL ORDER CODE*/
+$("#cancel").click(function() {
+  /*Open modal*/
+  $('#modal2').openModal();
+});
+
+$("#y_cancel").click(function() {
+  if(item_list.length != 0) {
+    item_list.splice(0, item_list.length);
+    $("#sale_list tbody").empty();
+    subtotal = 0;
+    tax = 0;
+    total = 0;
+    $("#subtotal").text("$" + subtotal.toString());
+    $("#tax").text("$"+tax.toString());
+    $("#total").text("$"+total.toString());
+  }
+});
+
+/*BEGIN CONFIRM ORDER CODE*/
+/*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
+/*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look*/
+$("#confirm").click(function() {
+  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
+});
+
+$(document).on("click", "#cash", function () {
+
 })
-
-function slideDelete(id) {
-
-
-}

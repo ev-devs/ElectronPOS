@@ -127,19 +127,16 @@
 
       <div class="col s8 m8 l8">
           <div class="row blue lighten-1 no-space">
-            <div class="col s6 m6 l6" style="margin-top: 13px;">
+            <div class="col s6 m6 l6 " style="margin-top: 13px;">
               <input style="background-color: white; padding: 5px;" placeholder="Barcode.." id="barcode" type="text">
             </div>
             <div class="col s5 m5 l5" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." type="text">
-            </div>
-            <div class="col s1 m1 l1 center">
-              <span>FIX</span>
+              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." id="search" class="keyboard" type="text">
             </div>
           </div>
 
 
-          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: auto;">
+          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: auto;" id="pos_menu">
 
           </div>
 
@@ -156,8 +153,11 @@
 
         <script>
 
+        //TO be removed once connected to views
+        var ejs = require('ejs');
+        var fs = require('fs');
 
-
+        $(".keyboard").keyboard();
         /*BEGIN TEST HARNESS CODE*/
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         var inventory = [{
@@ -364,7 +364,10 @@
           }
 
         });
+        /*BEGIN SEARCH INVENTORY CODE*/
+        $("#search").change(function() {
 
+        });
 
         /*BEGIN CANCEL ORDER CODE*/
         $("#cancel").click(function() {
@@ -373,16 +376,28 @@
         });
 
         $("#y_cancel").click(function() {
-          item_list.splice(0, item_list.length);
-          $("#sale_list tbody").empty();
-          subtotal = 0;
-          tax = 0;
-          total = 0;
-          $("#subtotal").text("$" + subtotal.toString());
-          $("#tax").text("$"+tax.toString());
-          $("#total").text("$"+total.toString());
-        })
+          if(item_list.length != 0) {
+            item_list.splice(0, item_list.length);
+            $("#sale_list tbody").empty();
+            subtotal = 0;
+            tax = 0;
+            total = 0;
+            $("#subtotal").text("$" + subtotal.toString());
+            $("#tax").text("$"+tax.toString());
+            $("#total").text("$"+total.toString());
+          }
+        });
 
+        /*BEGIN CONFIRM ORDER CODE*/
+        /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
+        /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look*/
+        $("#confirm").click(function() {
+          $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
+        });
+
+        $(document).on("click", "#cash", function () {
+
+        })
         </script>
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
