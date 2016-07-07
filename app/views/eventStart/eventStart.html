@@ -67,11 +67,16 @@
       <a class="waves-effect waves-light btn" id="events_submit"><i class="material-icons right">cloud</i>button</a>
 		</form>
 	  </div>
-
+<!--jQuery for event listeners that are bonded to this html page-->
 	<script type="text/javascript">
 		/*This starts the sid-nav*/
 		$(".button-collapse").sideNav();
 		$(".keyboard").keyboard();
+    document.getElementById("events_submit").addEventListener("proper_event", confirm_event, false);
+    function confirm_event(e) {
+      $('main').html(ejs.render(fs.readFileSync( __dirname + '/views/beginSession/beginSession.html', 'utf-8') , {}));
+      console.log(__dirname);
+    }
 	</script>
 
 	</body>

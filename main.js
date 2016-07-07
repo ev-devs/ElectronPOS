@@ -28,7 +28,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/beginSession/beginSession.html`);
+  window.loadURL(`file://${__dirname}/app/POS.html`);
 
   // Open the DevTools.
   window.webContents.openDevTools();

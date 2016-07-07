@@ -282,7 +282,7 @@
             $('#modal1').openModal();
           }
         })
-        /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleteing is handled here.*/
+        /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
         $("#y_delete").click(function() {
           var i = -1;
           /*Find the item by name in the list of customer items named "item_list"*/
@@ -310,9 +310,17 @@
             tax = subtotal * .075;
             total = subtotal + tax;
             /*Do the deletions*/
-            if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text()))
+            if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
               item_list[i].cust_quantity-=delete_amount;
-            $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
+            }
+            if(item_list[i].cust_quantity == 0) {
+              /*Remove that item from the list*/
+              item_list.splice(i, 1);
+              /*Remove the item from the gui*/
+              $("#"+item_id).remove()
+            }
+            else
+              $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
             console.log(delete_amount);
             $("#delete-form").remove();
           }

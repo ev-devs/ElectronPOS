@@ -2,6 +2,7 @@ var util = require('util')
 var execSync = require('child_process').execSync
 var spawnSync = require('child_process').spawnSync
 var internet = require('./lib/internet.js')
+var events = require('./lib/eventStart.js')
 
 var fs = require('fs');
 var ejs = require('ejs');
