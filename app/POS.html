@@ -128,23 +128,28 @@
       <div class="col s8 m8 l8">
           <div class="row blue lighten-1 no-space">
             <div class="col s6 m6 l6 " style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Barcode.." id="barcode" type="text">
+              <input style="background-color: white;" placeholder="Barcode.." id="barcode" type="text">
             </div>
-            <div class="col s5 m5 l5" style="margin-top: 13px;">
-              <input style="background-color: white; padding: 5px;" placeholder="Search inventory.." id="search" class="keyboard" type="text">
+            <div class="col s6 m6 l6" style="margin-top: 13px;">
+              <input style="background-color: white;" placeholder="Search inventory.." id="search" class="keyboard" type="text">
             </div>
           </div>
 
 
-          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: auto;" id="pos_menu">
+          <div class="row blue lighten-4 no-space" style="height: 750px; overflow-y: auto; position: relative;" id="pos_menu">
 
           </div>
 
-          <div class="row no-space"></div>
           <!--NEEDS TO BE STYLIZED-->
           <div class="row blue lighten-1">
-            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="confirm">Confirm</h4></div></a><!--BUT CAN YOU?!?!?-->
-            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel">Cancel</h4></div></a>
+            <a href="#!" style="color: inherit;">
+              <div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;">
+                <h4 id="confirm" class="white-text">
+                  Confirm
+                </h4>
+              </div>
+            </a>
+            <a href="#!" style="color: inherit;"><div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;"><h4 id="cancel" class="white-text">Cancel</h4></div></a>
           </div>
         </div>
         <!--END RIGHT SIDE-->
@@ -397,7 +402,7 @@
         });
 
         $(document).on("click", "#cash", function () {
-          console.log("Cash");
+          $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/cash.html', 'utf-8') , {}));
         });
 
         $(document).on("click", "#card", function () {
