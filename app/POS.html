@@ -72,7 +72,7 @@
           <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="n_delete">No</a>
         </div>
       </div>
-      <div class="col s4 m4 l4">
+      <div class="col s4 m4 l4" style="padding-left: 0; padding-right: 0;">
 
         <div class="row grey lighten-1 no-space">
           <table class="centered responsive-table striped" style="table-layout: fixed;">
@@ -86,13 +86,13 @@
           </table>
         </div>
 
-        <div class="row grey no-space" style="height: 670px; overflow-y: auto;">
+        <div class="row grey no-space" style="height: 70vh; overflow-y: auto;">
           <table class="responsive-table striped centered" id="sale_list" style="table-layout: fixed;">
              <tbody id="sale_list_body">
              </tbody>
            </table>
         </div>
-        <div class="row grey lighten-1 no-space">
+        <div class="row grey lighten-1 no-space" style="margin-bottom: 0px;">
           <table class="centered responsive-table bordered">
              <tbody>
                <tr>
@@ -125,7 +125,7 @@
         </div>
       </div>
 
-      <div class="col s8 m8 l8">
+      <div class="col s8 m8 l8" style="padding-left: 0; padding-right: 0; padding-top: 0px;">
           <div class="row blue lighten-3 no-space">
             <div class="col s6 m6 l6 " style="margin-top: 13px;">
               <input class="grey lighten-4" placeholder="Barcode.." style="text-align: center;" id="barcode" type="text">
@@ -136,12 +136,11 @@
           </div>
 
 
-          <div class="row blue lighten-1 no-space" style="height: 750px; overflow-y: auto; position: relative;" id="pos_menu">
+          <div class="row blue lighten-1 no-space" style="height: 79vh; overflow-y: auto; position: relative; margin-bottom: 0px; padding-bottom: 0px;" id="pos_menu">
 
           </div>
-
           <!--NEEDS TO BE STYLIZED-->
-          <div class="row blue lighten-3">
+          <div class="row blue lighten-3" style="margin-bottom: 0px; line-height: 0px; padding-top: 0px;">
             <a href="#!" style="color: inherit;">
               <div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;">
                 <h4 id="confirm" class="white-text">
@@ -149,7 +148,7 @@
                 </h4>
               </div>
             </a>
-            <a href="#!" style="color: inherit;">
+            <a href="#!" style="color: inherit; height: inherit;">
               <div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;">
                 <h4 id="cancel" class="white-text">
                   Cancel
@@ -442,9 +441,9 @@
         <!--Style applied to divs so there is no space between the three divs on the left and right side-->
         <style media="screen">
           .no-space {
-            margin: 0px;
-            border: 0px;
-            padding: 0px;
+            margin: 0;
+            border: 0;
+            padding: 0;
           }
           .center {
             margin: auto;
