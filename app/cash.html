@@ -7,22 +7,34 @@ purpose     : contains the html that renders the cash screen in the POS.html rig
 appears in  : POS.html
 
 -->
-<div id="pay-options" class="col s12 m12 l12 animated fadeIn">
+<div id="cash_page" class="col s12 m12 l12 animated fadeIn">
   <br/>
   <div class="row center blue-text text-lighten-4">
     <h4>Amount Tendered</h4>
   </div>
   <div class="row">
-    <a href="#!" style="color: inherit;">
       <div class="col s12 m12 l12 center">
-        <span style="font-size:300%;">$&nbsp;</span><input style="width: 50vh; height: 10vh; text-align: center; font-size:300%;" placeholder="0.00" id="search" class="keyboard grey lighten-4" type="text">
+        <span style="font-size:300%; height: 10vh;">$&nbsp;</span>
+        <input style="width: 50vh; height: 10vh; text-align: center; font-size:300%;" placeholder="0.00" id="tendered" class="keyboard grey lighten-4" type="text">
+      </div>
+  </div>
+  <div class="row center blue-text text-lighten-4">
+    <h4>Change</h4>
+  </div>
+  <div class="row">
+    <div class="col s12 m12 l12 center">
+      <input disabled type="text" placeholder="$0.00" id="change" style="text-align: center; border-bottom: solid 2px #c9c9c9; font-size:300%; width: 50vh; height: 10vh;">
+    </div>
+  </div>
+  <br />
+  <div class="row center">
+    <a href="#!">
+      <div class="blue lighten-3 col s12 m12 l12 center blue lighten-4 white-text waves-effect waves-light z-depth-1" style="width: 50vh; height: 10vh;">
+        <h4 style="margin-top: 3vh;">Accept</h4>
       </div>
     </a>
   </div>
-  <div>
-   <input type="text" placeholder="Change:" value=""style="border-bottom: solid 2px #c9c9c9; font-size:300%;">
-  </div>
 </div>
 <script>
-  //$(".keyboard").keyboard();
+  $(".keyboard").keyboard();
 </script>
