@@ -251,11 +251,24 @@ $("#y_cancel").click(function() {
 
 /*BEGIN CONFIRM ORDER CODE*/
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
-/*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look*/
+/*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
 $("#confirm").click(function() {
-  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
+  if(item_list.length != 0)
+    $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
 });
 
 $(document).on("click", "#cash", function () {
+  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/cash.html', 'utf-8') , {}));
+});
 
-})
+$(document).on("click", "#card", function () {
+  console.log("Card");
+});
+
+$(document).on("click", "#c_and_c", function () {
+  console.log("Cash and card");
+});
+
+$(document).on("click", "#m_card", function () {
+  console.log("Multi card");
+});
