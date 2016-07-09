@@ -41,7 +41,7 @@
   <body>
     <!-- Navbar goes here -->
     <nav style="background-color: #125CA0;">
-    <div class="container; height: inherit;">
+    <div class="container;">
         <div class="nav-wrapper">
           <a href="#!" class="brand-logo">Equipo Vision</a>
           <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -86,7 +86,7 @@
           </table>
         </div>
 
-        <div class="row grey no-space" style="height: 65vh; overflow-y: auto;">
+        <div class="row grey no-space" style="height: 650px; overflow-y: auto;">
           <table class="responsive-table striped centered" id="sale_list" style="table-layout: fixed;">
              <tbody id="sale_list_body">
              </tbody>
@@ -136,21 +136,21 @@
           </div>
 
 
-          <div class="row blue lighten-1 no-space" style="height: 79vh; overflow-y: auto; position: relative; margin-bottom: 0px; padding-bottom: 0px;" id="pos_menu">
+          <div class="row blue lighten-1 no-space" style="height: 750px; overflow-y: auto; position: relative; margin-bottom: 0px; padding-bottom: 0px;" id="pos_menu">
 
           </div>
           <!--NEEDS TO BE STYLIZED-->
           <div class="row blue lighten-3" style="margin-bottom: 0px; line-height: 0px; padding-top: 0px;">
-            <a href="#!" style="color: inherit;">
+            <a href="#!" style="color: inherit;" id="confirm">
               <div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;">
-                <h4 id="confirm" class="white-text">
+                <h4 class="white-text">
                   Confirm
                 </h4>
               </div>
             </a>
-            <a href="#!" style="color: inherit; height: inherit;">
+            <a href="#!" style="color: inherit; height: inherit;" id="cancel">
               <div class="col s6 m6 l6 center waves-effect waves-light" style="border: 1px solid white;">
-                <h4 id="cancel" class="white-text">
+                <h4 class="white-text">
                   Cancel
                 </h4>
               </div>
@@ -461,3 +461,9 @@
 
   </body>
 </html>
+
+<!--
+-Custom event which auto focuses the barcode input
+-EM as the text size
+-Redesign POS.html to fit all screens
+-->
