@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^3.0.0",
+    "jquery": "~2.1.4",
     "Materialize": "materialize#^0.97.6",
     "hammerjs": "^2.0.8",
     "typicons.font": "typicons#^2.0.7",

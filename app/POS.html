@@ -29,7 +29,7 @@
 
 
 <!-- keyboard widget css & script (required) -->
-<link href="../bower_components/keyboard/dist/css/keyboard-basic.min.css" rel="stylesheet">
+<link href="../bower_components/keyboard/dist/css/keyboard.min.css" rel="stylesheet">
 <script src="../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
 
 <!-- keyboard extensions (optional) -->
@@ -131,9 +131,9 @@
               <input class="grey lighten-4" placeholder="Barcode.." style="text-align: center;" id="barcode" type="text">
             </div>
             <div class="col s6 m6 l6" style="margin-top: 13px;">
-              <input class="grey lighten-4 keyboard" placeholder="Search inventory.." style="text-align: center;" id="search" type="text">
+              <input class="grey lighten-4 keyboard" placeholder="Search inventory.." id="search" type="text">
             </div>
-          </div>
+         </div>
 
 
           <div class="row blue lighten-1 no-space" style="height: 750px; overflow-y: auto; position: relative; margin-bottom: 0px; padding-bottom: 0px;" id="pos_menu">
@@ -167,7 +167,12 @@
         var ejs = require('ejs');
         var fs = require('fs');
 
-        $(".keyboard").keyboard();
+        $(".keyboard").keyboard({
+		    restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
+		preventPaste : true,  // prevent ctrl-v and right click
+		                            autoAccept : true
+	   });
+
         /*BEGIN TEST HARNESS CODE*/
         /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
         var inventory = [{
