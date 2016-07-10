@@ -2,7 +2,7 @@
 
 const electron = require('electron');
 // Module to control application life
-const {app} = electron
+const {app, globalShortcut } = electron
 // Module to create native browser window.
 const {BrowserWindow} = electron
 
@@ -22,7 +22,8 @@ function createWindow(window) {
       //height : 600,
       //width : 1024,
       autoHideMenuBar : true,
-      scrollBounce : true
+      scrollBounce : true,
+      frame: false
   });
 
   window.setMenu(null);
@@ -46,6 +47,11 @@ function createWindow(window) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+
+    globalShortcut.register('CommandOrControl+C', () => {
+        app.quit()
+    });
+
     createWindow(win)
 });
 
@@ -57,6 +63,13 @@ app.on('window-all-closed', () => {
     app.quit();
 } */
   app.quit()
+});
+
+
+app.on('will-quit', () => {
+
+  // Unregister all shortcuts.
+  globalShortcut.unregisterAll();
 });
 
 app.on('activate', () => {
