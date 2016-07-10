@@ -47,6 +47,15 @@ html {
     height: 60vh;
     margin: 0 -5%;
 }
+.eq-cells {
+  width: 33%;
+}
+
+.center {
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+}
 
 /*BOTTOM*/
 #bottom-left-text {
