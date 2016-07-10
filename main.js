@@ -19,8 +19,8 @@ function createWindow(window) {
   // Create the browser window.
   window = new BrowserWindow({
       //fullscreen : true,
-      height : 1600,
-      width : 1600,
+      height : 600,
+      width : 1024,
       autoHideMenuBar : true,
       scrollBounce : true
   });
@@ -28,7 +28,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/POS.html`);
+  window.loadURL(`file://${__dirname}/app/views/pos/pos.html`);
 
   // Open the DevTools.
   window.webContents.openDevTools();

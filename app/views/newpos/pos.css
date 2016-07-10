@@ -1,0 +1,45 @@
+.no-space {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.center {
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+}
+.eq-cells {
+  width: 33%;
+}
+
+.brand-logo {
+    height: inherit;
+}
+
+
+ul {
+    height: inherit;
+}
+
+nav {
+    height: 8vh
+}
+
+#button-container {
+    max-height: 8vh;
+}
+
+.pos-container {
+    height: 92vh
+}
+
+
+#left-side {
+    height: inherit;
+    background-color: red
+}
+
+#right-side {
+    height: inherit;
+    background-color: blue
+}
