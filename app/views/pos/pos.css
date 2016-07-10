@@ -123,4 +123,9 @@ html {
     background-color: #42a5f5;
     margin-top: -2.3vh;
     padding-bottom: 10px;
+
+    /*this is to veritcally allign the text to the center*/
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10vh;       /* the same as your div height */
 }
