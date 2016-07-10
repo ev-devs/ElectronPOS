@@ -64,7 +64,7 @@ $("#scan_sim").click(function()  {
     /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
     where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
     values as the text values of the td tags.*/
-    var item = "<tr style=\"width:90%;\" class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
+    var item = "<tr style=\"\" class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
     <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
     <td class=\"eq-cells price\">$" + item_list[i].price + "</td> \
     <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "</td> \

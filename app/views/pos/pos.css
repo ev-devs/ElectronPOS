@@ -107,17 +107,18 @@ html {
 
 
 #right-middle {
-    height: 72vh;
+    height: 74vh;
     background-color: #e3f2fd;
+    margin: 0 0;
 }
 
 #right-bottom {
-    height: 25vh;
+    height: 10vh;
     text-align: center;
     padding-bottom: 0px;
 }
 .right-bottom-button {
-    height: 14vh;
+    height: 10vh;
     text-align: center;
     background-color: #42a5f5;
     margin-top: -2.3vh;
