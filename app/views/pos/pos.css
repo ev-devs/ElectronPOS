@@ -62,11 +62,11 @@ html {
 }
 
 #subtotal {
-
+    margin-top: 9px;
     background-color: #bdbdbd;
 }
 #tax {
-
+    margin-top: 9px;
     background-color: #bdbdbd;
 }
 #total {
