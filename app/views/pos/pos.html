@@ -88,35 +88,23 @@
 
 
                <!--BEGIN LEFT FOOTER-->
-              <div class="row" id="bottom-left-text">
-
-                  <div class="col s12 row-field" id="subtotal">
-                     <div class="col s6">
-                         Subtotal
-                     </div>
-                     <div class="col s6">
-                         $0.00
-                     </div>
-                  </div>
-
-                  <div class="col s12 row-field" id="tax">
-                      <div class="col s6">
-                          Tax
-                      </div>
-                      <div class="col s6">
-                          $0.00
-                      </div>
-                  </div>
-
-
-                  <div class="col s12 row-field" id="total">
-                      <div class="col s6">
-                          <b>Total</b>
-                      </div>
-                      <div class="col s6">
-                          <b>$0.00</b>
-                      </div>
-                  </div>
+              <div class="row grey lighten-1" id="bottom-left-text">
+                  <table class="centered responsive-table bordered col s12">
+                     <tbody>
+                       <tr class="row-field">
+                           <td data-field="name" class="col s6">Subtotal</th>
+                           <td data-field="price" id="subtotal" class="col s6">$0.00</th>
+                       </tr>
+                       <tr class="row-field">
+                           <td data-field="name" class="col s6">Tax</th>
+                           <td data-field="price" id="tax" class="col s6">$0.00</th>
+                       </tr>
+                       <tr class="row-field">
+                           <td data-field="name" class="col s6"><h5>Total</h5></th>
+                           <td data-field="price" class="col s6"><h5 id="total">$0.00</h5></th>
+                       </tr>
+                     </tbody>
+                  </table>
               </div>
               <!--ENDLEFT FOOTER-->
 

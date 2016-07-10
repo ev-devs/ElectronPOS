@@ -18,9 +18,9 @@ let win;
 function createWindow(window) {
   // Create the browser window.
   window = new BrowserWindow({
-      fullscreen : true,
-      //height : 600,
-      //width : 1024,
+      //fullscreen : true,
+      height : 600,
+      width : 1024,
       autoHideMenuBar : true,
       scrollBounce : true
   });
