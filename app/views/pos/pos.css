@@ -41,6 +41,9 @@ html {
     margin-top: 20px;
 }
 
+.txt-size {
+  font-size: 1em;
+}
 
 /*middle*/
 #sale-list-body {
@@ -71,11 +74,11 @@ html {
     height: 40px;
 }
 
-#subtotal {
+.subtotal {
     margin-top: 9px;
     background-color: #bdbdbd;
 }
-#tax {
+.tax {
     margin-top: 9px;
     background-color: #bdbdbd;
 }
