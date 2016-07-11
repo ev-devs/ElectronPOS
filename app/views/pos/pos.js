@@ -155,14 +155,24 @@ $(document).on("touchend", ".whole-item", function(e) {
     }
     else {
       /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
+      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/delete_form.html', 'utf-8') , {}));
       $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
+
+
+
+
+
+
+
+
+      /*$('#item_type').text("how many of " + $("#" + item_id + " .name").text());
       var quantity_form = "<div id=\"delete-form\" class=\"row\"> \
       <div class=\"input-field col s6\"> \
       <input value=\"1\" id=\"delete-quantity\" type=\"text\" class=\"validate\"> \
       <label class=\"active\" for=\"first_name2\">Quantity (1 minimum, " + $("#" + item_id + " .quantity").text() + " maximum)</label>\
       </div>\
       </div>";
-      $("#delete_option").append(quantity_form);
+      $("#delete_option").append(quantity_form);*/
     }
     /*Open modal*/
     $('#modal1').openModal({
@@ -309,8 +319,6 @@ $(document).on("click", "#swipe_sim", function() {
   if(card_flag)
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/process.html', 'utf-8') , {}));
 });
-
-
 
 /*BEGIN COMPLETE ORDER CODE*/
 $(document).on("click", "#complete",function() {
