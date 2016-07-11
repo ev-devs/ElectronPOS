@@ -254,7 +254,7 @@ $("#y_cancel").click(function() {
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
 $("#confirm").click(function() {
   if(item_list.length != 0)
-    $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_choice.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
 });
 
 $(document).on("click", "#cash", function () {
