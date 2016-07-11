@@ -55,7 +55,7 @@ var tax = 0.00;
 var total = 0.00;
 /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
 var item_id = "";
-
+var item_num = 0;
 /*BEGIN SCAN CODE*/
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
@@ -69,7 +69,7 @@ $("#scan_sim").click(function()  {
     /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
     where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
     values as the text values of the td tags.*/
-    var item = "<tr style=\"\" class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
+    var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
     <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
     <td class=\"eq-cells price\">$" + item_list[i].price + "</td> \
     <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "</td> \
@@ -134,20 +134,22 @@ function determine_item_status(item_list, inventory, barcode) {
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
 $(document).on("touchstart", ".whole-item", function(e) {
-  var touchobj = e.changedTouches[0].clientX;
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
   touchstart = touchobj;
-
 });
 
 /*When the finger leaves the screen record it's end point in pixels.*/
 $(document).on("touchend", ".whole-item", function(e) {
-  var touchobj = e.changedTouches[0].clientX;
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
   touchend = touchobj;
   /*Before seeing if this is a valid swipe take note of the item_id for future use*/
-  item_id = $(this).attr("id");
+  item_id = $(this).attr("id").toString();
+  $("#" + item_id).append("")
+  item_num = Number(item_id.substring(4, item_id.length));
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
+    $("#item" + item_num).css("background-color", "red");
     if($("#" + item_id + " .quantity").text() == "1") {
       $('#item_type').text($("#" + item_id + " .name").text());
     }
@@ -163,7 +165,12 @@ $(document).on("touchend", ".whole-item", function(e) {
       $("#delete_option").append(quantity_form);
     }
     /*Open modal*/
-    $('#modal1').openModal();
+    $('#modal1').openModal({
+      dismissible: false, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
   }
 });
 
@@ -172,42 +179,43 @@ $("#y_delete").click(function() {
   var i = -1;
   /*Find the item by name in the list of customer items named "item_list"*/
   var item_name = $("#" + item_id + " .name").text();
-  item_list.find(function(e) {
   /*This i will keep track of where it is in the list*/
+  /*item_list.find(function(e) {
+
     i++;
     return e.item_name == item_name;
-  });
+  });*/
   /*Handles deletions of items if the quantity is 1*/
   if($("#" + item_id + " .quantity").text() == "1") {
     /*Do any pricing updates before deleting*/
-    subtotal-= item_list[i].price;
+    subtotal-= item_list[item_num].price;
     tax = subtotal * .075;
     total = subtotal + tax;
     /*Remove that item from the list*/
-    item_list.splice(i, 1);
+    item_list.splice(item_num, 1);
     /*Remove the item from the gui*/
-    $("#"+item_id).remove()
+    $("#" + item_id).remove()
   }/*If not more than one then this branch handles deletions if more than one*/
   else {
     /*Grabs the specified amount to be deleted*/
     var delete_amount = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-    subtotal-=(item_list[i].price * delete_amount);
+    subtotal-=(item_list[item_num].price * delete_amount);
     tax = subtotal * .075;
     total = subtotal + tax;
     /*Do the deletions as long as the specified amount is between 1-(max item #)*/
     if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
-      item_list[i].cust_quantity-=delete_amount;
+      item_list[item_num].cust_quantity-=delete_amount;
     }
     /*If the user deletes all items in then remove that item from the user list and the gui*/
-    if(item_list[i].cust_quantity == 0) {
+    if(item_list[item_num].cust_quantity == 0) {
       /*Remove that item from the list*/
-      item_list.splice(i, 1);
+      item_list.splice(item_num, 1);
       /*Remove the item from the gui*/
-      $("#"+item_id).remove()
+      $("#" + item_id).remove()
     }
     else
-      $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
+      $("#item" + item_num + " .quantity").text(item_list[item_num].cust_quantity.toString());
     console.log(delete_amount);
     $("#delete-form").remove();
   }
@@ -223,12 +231,11 @@ $("#y_delete").click(function() {
 
 $("#n_delete").click(function() {
   console.log(item_id)
-  var i = -1;
   var item_name = $("#" + item_id + " .name").text();
   if($("#" + item_id + " .quantity").text() >= "1") {
     $("#delete-form").remove();
+    $("#item" + item_num).removeAttr("style");
   }
-
 });
 /*BEGIN SEARCH INVENTORY CODE*/
 $("#search").change(function() {
@@ -238,7 +245,8 @@ $("#search").change(function() {
 /*BEGIN CANCEL ORDER CODE*/
 $("#cancel").click(function() {
   /*Open modal*/
-  $('#modal2').openModal();
+  if(item_list.length > 0)
+    $('#modal2').openModal();
 });
 
 $("#y_cancel").click(function() {
@@ -251,6 +259,8 @@ $("#y_cancel").click(function() {
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
+    confirm_flag = 1;
   }
 });
 
@@ -260,6 +270,7 @@ $("#y_cancel").click(function() {
 var confirm_flag = 0;
 $("#confirm").click(function() {
   if(confirm_flag == 0) {
+    console.log("confirmed");
     if(item_list.length != 0)
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
     confirm_flag = 1;
