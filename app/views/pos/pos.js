@@ -258,7 +258,7 @@ $("#confirm").click(function() {
 });
 
 $(document).on("click", "#cash", function () {
-  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/cash.html', 'utf-8') , {}));
+  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/cash.html', 'utf-8') , {}));
 });
 
 $(document).on("click", "#card", function () {
