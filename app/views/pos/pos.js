@@ -296,16 +296,29 @@ $(document).on("click", "#m_card", function () {
 /*BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
 $(document).on("change", "#tendered", function() {
   console.log($(this).val());
-  $("#change").val("$" + (Number($(this).val()) - total))
+  $("#change").text("$" + (Number($(this).val()) - total))
 });
 
 /*BEGIN COMPLETE ORDER CODE*/
 $(document).on("click", "#complete",function() {
-  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/completed.html', 'utf-8') , {}));
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
   setTimeout(fade_out, 1500);
   void_order();
   confirm_flag = 0;
 });
 function fade_out() {
   $("#thanks").addClass("fadeOut");
+}
+
+function void_order() {
+  if(item_list.length != 0) {
+    item_list.splice(0, item_list.length);
+    $("#sale_list tbody").empty();
+    subtotal = 0;
+    tax = 0;
+    total = 0;
+    $("#subtotal").text("$" + subtotal.toString());
+    $("#tax").text("$"+tax.toString());
+    $("#total").text("$"+total.toString());
+  }
 }
