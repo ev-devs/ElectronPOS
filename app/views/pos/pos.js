@@ -333,6 +333,8 @@ $("#confirm").click(function() {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
     void_order();
+    $("#cancel").removeAttr("style");
+    $("#confirm").removeAttr("style");
     confirm_flag = 0;
     cash_flag = 0;
   }
@@ -340,6 +342,8 @@ $("#confirm").click(function() {
 
 $(document).on("click", "#cash", function () {
   cash_flag = 1;
+  $("#cancel").css("background-color", "red");
+  $("#confirm").css("background-color", "green");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/cash.html', 'utf-8') , {}));
 });
 
