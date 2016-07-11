@@ -253,14 +253,13 @@ $("#y_cancel").click(function() {
   if(item_list.length != 0) {
     item_list.splice(0, item_list.length);
     $("#sale_list tbody").empty();
-    subtotal = 0;
-    tax = 0;
-    total = 0;
+    void_order();
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
-    confirm_flag = 1;
+    setTimeout(fade_out, 1500);
+    confirm_flag = 0;
   }
 });
 
@@ -282,7 +281,7 @@ $(document).on("click", "#cash", function () {
 });
 
 $(document).on("click", "#card", function () {
-  console.log("Card");
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/card.html', 'utf-8') , {}));
 });
 
 $(document).on("click", "#c_and_c", function () {
@@ -296,7 +295,8 @@ $(document).on("click", "#m_card", function () {
 /*BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
 $(document).on("change", "#tendered", function() {
   console.log($(this).val());
-  $("#change").text("$" + (Number($(this).val()) - total))
+  if($(this).val() >= total)
+    $("#change").text("$" + (Number($(this).val()) - total))
 });
 
 /*BEGIN COMPLETE ORDER CODE*/
