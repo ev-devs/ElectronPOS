@@ -191,7 +191,7 @@ $(document).on("touchend", ".whole-item", function(e) {
     }
     else {
       /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
-      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/delete_form.html', 'utf-8') , {}));
+      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/delete_form.html', 'utf-8') , {'max' : $("#" + item_id + " .quantity").text()}));
       $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
 
 
