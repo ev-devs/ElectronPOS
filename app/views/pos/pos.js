@@ -182,6 +182,7 @@ $(document).on("touchend", ".whole-item", function(e) {
   item_id = $(this).attr("id").toString();
   $("#" + item_id).append("")
   item_num = Number(item_id.substring(4, item_id.length));
+  console.log("ITEM NUMBER: " + item_num);
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
@@ -226,19 +227,19 @@ $("#y_delete").click(function() {
   /*Find the item by name in the list of customer items named "item_list"*/
   var item_name = $("#" + item_id + " .name").text();
   /*This i will keep track of where it is in the list*/
-  /*item_list.find(function(e) {
-
+  item_list.find(function(e) {
     i++;
     return e.item_name == item_name;
-  });*/
+  });
+  item_num = i;
   /*Handles deletions of items if the quantity is 1*/
   if($("#" + item_id + " .quantity").text() == "1") {
     /*Do any pricing updates before deleting*/
-    subtotal-= item_list[item_num].price;
+    subtotal-= item_list[i].price;
     tax = subtotal * .075;
     total = subtotal + tax;
     /*Remove that item from the list*/
-    item_list.splice(item_num, 1);
+    item_list.splice(i, 1);
     /*Remove the item from the gui*/
     $("#" + item_id).remove()
   }/*If not more than one then this branch handles deletions if more than one*/
@@ -246,22 +247,22 @@ $("#y_delete").click(function() {
     /*Grabs the specified amount to be deleted*/
     var delete_amount = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-    subtotal-=(item_list[item_num].price * delete_amount);
+    subtotal-=(item_list[i].price * delete_amount);
     tax = subtotal * .075;
     total = subtotal + tax;
     /*Do the deletions as long as the specified amount is between 1-(max item #)*/
     if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
-      item_list[item_num].cust_quantity-=delete_amount;
+      item_list[i].cust_quantity-=delete_amount;
     }
     /*If the user deletes all items in then remove that item from the user list and the gui*/
-    if(item_list[item_num].cust_quantity == 0) {
+    if(item_list[i].cust_quantity == 0) {
       /*Remove that item from the list*/
-      item_list.splice(item_num, 1);
+      item_list.splice(i, 1);
       /*Remove the item from the gui*/
       $("#" + item_id).remove()
     }
     else
-      $("#item" + item_num + " .quantity").text(item_list[item_num].cust_quantity.toString());
+      $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
     console.log(delete_amount);
     $("#delete-form").remove();
   }
