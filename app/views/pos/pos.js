@@ -18,7 +18,12 @@ present in  : pos.html
 var ejs = require('ejs');
 var fs = require('fs');
 
-$(".keyboard").keyboard();
+$(".keyboard").keyboard({
+  restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
+  preventPaste : true,  // prevent ctrl-v and right click
+  autoAccept : true,
+  layout: "num"
+});
 /*BEGIN TEST HARNESS CODE*/
 /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
 var inventory = [{
@@ -252,9 +257,13 @@ $("#y_cancel").click(function() {
 /*BEGIN CONFIRM ORDER CODE*/
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
+var confirm_flag = 0;
 $("#confirm").click(function() {
-  if(item_list.length != 0)
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
+  if(confirm_flag == 0) {
+    if(item_list.length != 0)
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
+    confirm_flag = 1;
+  }
 });
 
 $(document).on("click", "#cash", function () {
@@ -272,3 +281,20 @@ $(document).on("click", "#c_and_c", function () {
 $(document).on("click", "#m_card", function () {
   console.log("Multi card");
 });
+
+/*BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
+$(document).on("change", "#tendered", function() {
+  console.log($(this).val());
+  $("#change").val("$" + (Number($(this).val()) - total))
+});
+
+/*BEGIN COMPLETE ORDER CODE*/
+$(document).on("click", "#complete",function() {
+  $('#pos_menu').html(ejs.render(fs.readFileSync( __dirname + '/completed.html', 'utf-8') , {}));
+  setTimeout(fade_out, 1500);
+  void_order();
+  confirm_flag = 0;
+});
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+}
