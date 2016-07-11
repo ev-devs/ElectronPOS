@@ -132,3 +132,9 @@ html {
     vertical-align: middle;
     line-height: 10vh;       /* the same as your div height */
 }
+.no-space {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
