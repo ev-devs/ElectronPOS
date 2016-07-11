@@ -46,7 +46,43 @@ var inventory = [{
   "cust_quantity" : 0,
   "price" : 8.99,
   "bar" : 3
-}];
+},
+{
+  "item_name" : "Item D",
+  "inv_quantity" : 12,
+  "cust_quantity" : 0,
+  "price" : 8.99,
+  "bar" : 4
+},
+{
+  "item_name" : "Item E",
+  "inv_quantity" : 12,
+  "cust_quantity" : 0,
+  "price" : 8.99,
+  "bar" : 5
+},{
+  "item_name" : "Item F",
+  "inv_quantity" : 12,
+  "cust_quantity" : 0,
+  "price" : 8.99,
+  "bar" : 6
+},
+{
+  "item_name" : "Item G",
+  "inv_quantity" : 12,
+  "cust_quantity" : 0,
+  "price" : 8.99,
+  "bar" : 7
+},
+{
+  "item_name" : "Item H",
+  "inv_quantity" : 12,
+  "cust_quantity" : 0,
+  "price" : 8.99,
+  "bar" : 8
+}
+
+];
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
 /*Next 3 variables are self-explanatory. Just look at their name.*/
