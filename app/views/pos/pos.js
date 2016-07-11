@@ -307,6 +307,8 @@ $("#y_cancel").click(function() {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
     confirm_flag = 0;
+    cash_flag = 0;
+    card_flag = 0;
   }
 });
 
@@ -315,10 +317,10 @@ $("#y_cancel").click(function() {
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
 var confirm_flag = 0;
 var card_flag = 0;
+var cash_flag = 0;
 var swiped = 0;
 $("#confirm").click(function() {
   if(confirm_flag == 0) {
-    console.log("confirmed");
     if(item_list.length != 0) {
       if(confirm_flag == 0) {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
@@ -326,9 +328,18 @@ $("#confirm").click(function() {
       }
     }
   }
+  /*BEGIN  INTERNAL COMPLETE ORDER CODE*/
+  if(cash_flag == 1) {
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
+    setTimeout(fade_out, 1500);
+    void_order();
+    confirm_flag = 0;
+    cash_flag = 0;
+  }
 });
 
 $(document).on("click", "#cash", function () {
+  cash_flag = 1;
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/cash.html', 'utf-8') , {}));
 });
 
@@ -357,13 +368,6 @@ $(document).on("click", "#swipe_sim", function() {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/process.html', 'utf-8') , {}));
 });
 
-/*BEGIN COMPLETE ORDER CODE*/
-$(document).on("click", "#complete",function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
-  setTimeout(fade_out, 1500);
-  void_order();
-  confirm_flag = 0;
-});
 function fade_out() {
   $("#thanks").addClass("fadeOut");
 }
