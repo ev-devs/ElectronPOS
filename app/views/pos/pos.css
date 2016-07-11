@@ -138,3 +138,39 @@ html {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+.brand-logo {
+    height: 8vh;
+
+    /*this is to veritcally allign the text to the center*/
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8vh;       /* the same as your div height */
+}
+
+
+.button-container {
+    height: 8vh;
+    /*this is to veritcally allign the text to the center*/
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10vh;       /* the same as your div height */
+}
+
+.li-nav {
+    height: 8vh;
+
+    /*this is to veritcally allign the text to the center*/
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8vh;       /* the same as your div height */
+}
+
+.nav-link {
+    height: 8vh;
+
+    /*this is to veritcally allign the text to the center*/
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8vh;       /* the same as your div height */
+}
