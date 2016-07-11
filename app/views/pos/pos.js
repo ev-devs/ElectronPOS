@@ -267,12 +267,17 @@ $("#y_cancel").click(function() {
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
 var confirm_flag = 0;
+var card_flag = 0;
+var swiped = 0;
 $("#confirm").click(function() {
   if(confirm_flag == 0) {
     console.log("confirmed");
-    if(item_list.length != 0)
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
-    confirm_flag = 1;
+    if(item_list.length != 0) {
+      if(confirm_flag == 0) {
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
+        confirm_flag = 1;
+      }
+    }
   }
 });
 
@@ -281,6 +286,7 @@ $(document).on("click", "#cash", function () {
 });
 
 $(document).on("click", "#card", function () {
+  card_flag = 1;
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/card.html', 'utf-8') , {}));
 });
 
@@ -298,6 +304,13 @@ $(document).on("change", "#tendered", function() {
   if($(this).val() >= total)
     $("#change").text("$" + (Number($(this).val()) - total))
 });
+/*BEGIN CARD TRANSACTION CODE*/
+$(document).on("click", "#swipe_sim", function() {
+  if(card_flag)
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/process.html', 'utf-8') , {}));
+});
+
+
 
 /*BEGIN COMPLETE ORDER CODE*/
 $(document).on("click", "#complete",function() {
