@@ -27,7 +27,7 @@ $(".keyboard").keyboard({
 /*BEGIN TEST HARNESS CODE*/
 /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
 var inventory = [{
-  "item_name" : "Item A",
+  "item_name" : "Points of success-Audio",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
   "price" : 6.99,
@@ -183,6 +183,7 @@ $(document).on("touchend", ".whole-item", function(e) {
   $("#" + item_id).append("")
   item_num = Number(item_id.substring(4, item_id.length));
   console.log("ITEM NUMBER: " + item_num);
+  console.log(item_list);
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
@@ -274,6 +275,7 @@ $("#y_delete").click(function() {
   $("#subtotal").text("$" + subtotal.toString());
   $("#tax").text("$"+tax.toString());
   $("#total").text("$"+total.toString());
+  $("#item" + item_num).removeAttr("style");
 });
 
 $("#n_delete").click(function() {
@@ -350,6 +352,7 @@ $(document).on("click", "#cash", function () {
 $(document).on("click", "#card", function () {
   card_flag = 1;
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/card.html', 'utf-8') , {}));
+  setTimeout(fade_out, 1500);
 });
 
 $(document).on("click", "#c_and_c", function () {
@@ -388,3 +391,10 @@ function void_order() {
     $("#total").text("$"+total.toString());
   }
 }
+/*
+Text size, scroll bottom. Touch screen acting like a mouse must make itthink like touch screen
+BUG: Item is negative with multiple items. weird stuff going on. Bug with the red color, probably with item_num, will needto get rid
+Quantity right side of item, icon on left
+Right side is for platinum view as well before any transactions
+Switch between platinums
+*/
