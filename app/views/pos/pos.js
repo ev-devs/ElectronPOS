@@ -189,16 +189,12 @@ $(document).on("touchend", ".whole-item", function(e) {
   console.log("***BEGIN DELETE***")
   /*Before seeing if this is a valid swipe take note of the item_id for future use*/
   item_id = $(this).attr("id").toString();
-  $("#" + item_id).append("")
   item_num = Number(item_id.substring(4, item_id.length));
-  console.log("Item number: " + item_num);
+  console.log("Item id: " + item_id);
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
     $(this).css("background-color", "red");
-    console.log('Delete started \nItem list: ');
-    console.log(item_list);
-    console.log('Item Id: ' + item_id);
     if($("#" + item_id + " .quantity").text() == "1") {
       $('#item_type').text($("#" + item_id + " .name").text());
     }
@@ -223,7 +219,7 @@ $(document).on("touchend", ".whole-item", function(e) {
       </div>";
       $("#delete_option").append(quantity_form);*/
     }
-    /*Open modal*/
+    /*Open modconsole.log("item location: " + i);console.log("item location: " + i);*/
     $('#modal1').openModal({
       dismissible: false, // Modal can be dismissed by clicking outside of the modal
       opacity: .5, // Opacity of modal background
@@ -235,8 +231,7 @@ $(document).on("touchend", ".whole-item", function(e) {
 
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
-  console.log("Yes");
-  var i = -1;
+  var i = -1;console.log("item location: " + i);
   /*Find the item by name in the list of customer items named "item_list"*/
   var item_name = $("#" + item_id + " .name").text();
   console.log("Item name: " + item_name);
@@ -245,6 +240,7 @@ $("#y_delete").click(function() {
     i++;
     return e.item_name == item_name;
   });
+  console.log("Item location: " + i);
   /*Handles deletions of items if the quantity is 1*/
   if($("#" + item_id + " .quantity").text() == "1") {
     /*Do any pricing updates before deleting*/
@@ -255,20 +251,21 @@ $("#y_delete").click(function() {
     item_list.splice(i, 1);
     /*Remove the item from the gui*/
     $("#" + item_id).remove()
-  }/*If not more than one then this branch handles deletions if more than one*/
+  }/*If more than one then this branch handles deletions if more than one*/
   else {
     /*Grabs the specified amount to be deleted*/
-    var delete_amount = $("#delete-quantity").val();
-    /*Do any pricing updates before deleting (can write into a function honestly)*/
-    subtotal-=(item_list[i].price * delete_amount);
-    tax = subtotal * .075;
-    total = subtotal + tax;
+    var delete_amount = Number($("#delete-quantity").val());
     /*Do the deletions as long as the specified amount is between 1-(max item #)*/
     if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
+      /*Do any pricing updates before deleting (can write into a function honestly)*/
+      subtotal-=(item_list[i].price * delete_amount);
+      tax = subtotal * .075;
+      total = subtotal + tax;
+      /*Delete amount specified*/
       item_list[i].cust_quantity-=delete_amount;
     }
     /*If the user deletes all items in then remove that item from the user list and the gui*/
-    if(item_list[i].cust_quantity == 0) {
+    if(item_list[i].cust_quantity <= 0) {
       /*Remove that item from the list*/
       item_list.splice(i, 1);
       /*Remove the item from the gui*/
@@ -276,8 +273,6 @@ $("#y_delete").click(function() {
     }
     else
       $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
-    console.log("Amount deleted: " + delete_amount);
-    console.log('Item list after deletion: ');
     console.log(item_list);
     $("#delete-form").remove();
   }
@@ -294,6 +289,7 @@ $("#y_delete").click(function() {
 });
 
 $("#n_delete").click(function() {
+  console.log("No");
   var item_name = $("#" + item_id + " .name").text();
   if($("#" + item_id + " .quantity").text() >= "1") {
     $("#delete-form").remove();
