@@ -115,6 +115,18 @@ html {
     margin: 0 0;
 }
 
+#enter-platinum {
+    background-color: white;
+    top: 50%;
+    transform: translateY(20%);
+}
+
+#platinums-list-body {
+    height: 55vh;
+    margin: 0 -5%;
+}
+
+
 #right-bottom {
     height: 10vh;
     text-align: center;

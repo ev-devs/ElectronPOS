@@ -391,6 +391,8 @@ function void_order() {
     $("#total").text("$"+total.toString());
   }
 }
+
+
 /*
 Text size, scroll bottom. Touch screen acting like a mouse must make itthink like touch screen
 BUG: Item is negative with multiple items. weird stuff going on. Bug with the red color, probably with item_num, will needto get rid
@@ -398,3 +400,59 @@ Quantity right side of item, icon on left
 Right side is for platinum view as well before any transactions
 Switch between platinums
 */
+
+/*BEGIN PLATINUMS CODE*/
+var Platinums_list=[{  //temporary list used for testing 
+	"first_name" : "Kevin", 
+	"last_name" : "Ortega"
+},
+{
+	"first_name": "Harold and Hannah", 
+	"last_name": "Yates"
+},
+{
+	"first_name": "Jay and Jasmine", 
+	"last_name":" Witiker"
+},
+{
+	"first_name": "Stephen and Tiana", 
+	"last_name":" Castro"
+},
+{
+	"first_name": "Bob and Bertha", 
+	"last_name":" Vallero"
+},
+{
+	"first_name": "Martin and Luz", 
+	"last_name":" Ameral"
+},
+{
+	"first_name": "Marcos and Maria", 
+	"last_name":" Ruiz"
+},
+{
+	"first_name": "Miguel and Paula", 
+	"last_name":" Rubio"
+},
+{
+	"first_name": "Juan and Juanita", 
+	"last_name":" Lopez"
+},
+{
+	"first_name": "Jacob", 
+	"last_name":" Jicklesmith"
+},
+{
+	"first_name": "John and Mary", 
+	"last_name":" Doe"
+},
+];
+
+
+ /*Append to container holds the names of platinums*/
+ function selectPlatinum(){
+	 for(var i = 0; i < Platinums_list.length; i++){
+		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
+		 $("#platinums-list").append(name);
+	}
+}
