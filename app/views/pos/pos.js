@@ -17,7 +17,14 @@ present in  : pos.html
 //TO be removed once connected to views
 var ejs = require('ejs');
 var fs = require('fs');
-
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+refocus();
 $(".keyboard").keyboard({
   restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
   preventPaste : true,  // prevent ctrl-v and right click
@@ -51,34 +58,34 @@ var inventory = [{
   "item_name" : "Item D",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 9.99,
   "bar" : 4
 },
 {
   "item_name" : "Item E",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 10.99,
   "bar" : 5
 },{
   "item_name" : "Item F",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 11.99,
   "bar" : 6
 },
 {
   "item_name" : "Item G",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 12.99,
   "bar" : 7
 },
 {
   "item_name" : "Item H",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 13.99,
   "bar" : 8
 }
 
@@ -125,6 +132,7 @@ $("#scan_sim").click(function()  {
   $("#tax").text("$"+tax.toString());
   total = subtotal + tax;
   $("#total").text("$"+total.toString());
+  $("#barcode").focus();
 });
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -276,6 +284,7 @@ $("#y_delete").click(function() {
   $("#tax").text("$"+tax.toString());
   $("#total").text("$"+total.toString());
   $("#item" + item_num).removeAttr("style");
+  refocus();
 });
 
 $("#n_delete").click(function() {
@@ -285,6 +294,7 @@ $("#n_delete").click(function() {
     $("#delete-form").remove();
     $("#item" + item_num).removeAttr("style");
   }
+  refocus();
 });
 /*BEGIN SEARCH INVENTORY CODE*/
 $("#search").change(function() {
@@ -311,9 +321,13 @@ $("#y_cancel").click(function() {
     confirm_flag = 0;
     cash_flag = 0;
     card_flag = 0;
+    refocus();
   }
 });
 
+$("#n_cancel").click(function() {
+  refocus()
+});
 /*BEGIN CONFIRM ORDER CODE*/
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
@@ -334,6 +348,7 @@ $("#confirm").click(function() {
   if(cash_flag == 1) {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
+    console.log("here is there");
     void_order();
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
@@ -377,6 +392,7 @@ $(document).on("click", "#swipe_sim", function() {
 
 function fade_out() {
   $("#thanks").addClass("fadeOut");
+  refocus();
 }
 
 function void_order() {
