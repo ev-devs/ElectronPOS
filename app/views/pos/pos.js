@@ -17,7 +17,14 @@ present in  : pos.html
 //TO be removed once connected to views
 var ejs = require('ejs');
 var fs = require('fs');
-
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+refocus();
 $(".keyboard").keyboard({
   restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
   preventPaste : true,  // prevent ctrl-v and right click
@@ -51,34 +58,34 @@ var inventory = [{
   "item_name" : "Item D",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 9.99,
   "bar" : 4
 },
 {
   "item_name" : "Item E",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 10.99,
   "bar" : 5
 },{
   "item_name" : "Item F",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 11.99,
   "bar" : 6
 },
 {
   "item_name" : "Item G",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 12.99,
   "bar" : 7
 },
 {
   "item_name" : "Item H",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
-  "price" : 8.99,
+  "price" : 13.99,
   "bar" : 8
 }
 
@@ -125,6 +132,7 @@ $("#scan_sim").click(function()  {
   $("#tax").text("$"+tax.toString());
   total = subtotal + tax;
   $("#total").text("$"+total.toString());
+  $("#barcode").focus();
 });
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -178,16 +186,19 @@ $(document).on("touchstart", ".whole-item", function(e) {
 $(document).on("touchend", ".whole-item", function(e) {
   var touchobj = e.originalEvent.changedTouches[0].clientX;
   touchend = touchobj;
+  console.log("***BEGIN DELETE***")
   /*Before seeing if this is a valid swipe take note of the item_id for future use*/
   item_id = $(this).attr("id").toString();
   $("#" + item_id).append("")
   item_num = Number(item_id.substring(4, item_id.length));
-  console.log("ITEM NUMBER: " + item_num);
-  console.log(item_list);
+  console.log("Item number: " + item_num);
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
-    $("#item" + item_num).css("background-color", "red");
+    $(this).css("background-color", "red");
+    console.log('Delete started \nItem list: ');
+    console.log(item_list);
+    console.log('Item Id: ' + item_id);
     if($("#" + item_id + " .quantity").text() == "1") {
       $('#item_type').text($("#" + item_id + " .name").text());
     }
@@ -224,15 +235,16 @@ $(document).on("touchend", ".whole-item", function(e) {
 
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
+  console.log("Yes");
   var i = -1;
   /*Find the item by name in the list of customer items named "item_list"*/
   var item_name = $("#" + item_id + " .name").text();
+  console.log("Item name: " + item_name);
   /*This i will keep track of where it is in the list*/
   item_list.find(function(e) {
     i++;
     return e.item_name == item_name;
   });
-  item_num = i;
   /*Handles deletions of items if the quantity is 1*/
   if($("#" + item_id + " .quantity").text() == "1") {
     /*Do any pricing updates before deleting*/
@@ -264,7 +276,9 @@ $("#y_delete").click(function() {
     }
     else
       $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
-    console.log(delete_amount);
+    console.log("Amount deleted: " + delete_amount);
+    console.log('Item list after deletion: ');
+    console.log(item_list);
     $("#delete-form").remove();
   }
   if(item_list.length == 0) {
@@ -275,16 +289,18 @@ $("#y_delete").click(function() {
   $("#subtotal").text("$" + subtotal.toString());
   $("#tax").text("$"+tax.toString());
   $("#total").text("$"+total.toString());
-  $("#item" + item_num).removeAttr("style");
+  $("#item" + i).removeAttr("style");
+  refocus();
 });
 
 $("#n_delete").click(function() {
-  console.log(item_id)
   var item_name = $("#" + item_id + " .name").text();
   if($("#" + item_id + " .quantity").text() >= "1") {
     $("#delete-form").remove();
     $("#item" + item_num).removeAttr("style");
   }
+  //$("#item" + item_num).removeAttr("style");
+  refocus();
 });
 /*BEGIN SEARCH INVENTORY CODE*/
 $("#search").change(function() {
@@ -311,9 +327,13 @@ $("#y_cancel").click(function() {
     confirm_flag = 0;
     cash_flag = 0;
     card_flag = 0;
+    refocus();
   }
 });
 
+$("#n_cancel").click(function() {
+  refocus()
+});
 /*BEGIN CONFIRM ORDER CODE*/
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
@@ -334,6 +354,7 @@ $("#confirm").click(function() {
   if(cash_flag == 1) {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
+    console.log("here is there");
     void_order();
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
@@ -377,10 +398,11 @@ $(document).on("click", "#swipe_sim", function() {
 
 function fade_out() {
   $("#thanks").addClass("fadeOut");
+  refocus();
 }
 
 function void_order() {
-  if(item_list.length != 0) {
+  ///if(item_list.length != 0) {
     item_list.splice(0, item_list.length);
     $("#sale_list tbody").empty();
     subtotal = 0;
@@ -389,7 +411,7 @@ function void_order() {
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
-  }
+  //}
 }
 
 
