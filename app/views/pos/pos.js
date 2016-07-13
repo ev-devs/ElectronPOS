@@ -128,14 +128,10 @@ $("#scan_sim").click(function()  {
   }
   /*If the item is in the list then just go to its place and increment its counter and update the gui*/
   else {
-    console.log(i);
-    var item_id = "qnt-item-" + i;
-    var item = $("#" + item_id).text().trim().toString();
-    console.log("Before: " + item);
+    var item = $("#qnt-item-" + i).text().trim().toString();
     var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-    console.log(qnt.length);
     item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
-    $("#" + item_id).text(item);
+    $("#qnt-item-" + i).text(item);
   }
   /*Update the global quantities of subtotal, tax, and total*/
   subtotal+=item_list[i].price;
@@ -198,7 +194,6 @@ $(document).on("touchstart", ".whole-item", function(e) {
 $(document).on("touchend", ".whole-item", function(e) {
   var touchobj = e.originalEvent.changedTouches[0].clientX;
   touchend = touchobj;
-  console.log("***BEGIN DELETE***")
   /*Before seeing if this is a valid swipe take note of the item_id for future use*/
   item_id = $(this).attr("id").toString();
   item_num = Number(item_id.substring(4, item_id.length));
@@ -207,12 +202,23 @@ $(document).on("touchend", ".whole-item", function(e) {
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
     $(this).css("background-color", "red");
-    if($("#" + item_id + " .quantity").text() == "1") {
-      $('#item_type').text($("#" + item_id + " .name").text());
+    var item = $("#qnt-item-"+ item_num).text().trim().toString();
+    var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+    var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+    console.log(item_qnt);
+    console.log(item_name);
+
+
+
+
+
+
+    if(item_qnt == "1") {
+      $('#item_type').text(item_name);
     }
     else {
       /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
-      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/delete_form.html', 'utf-8') , {'max' : $("#" + item_id + " .quantity").text()}));
+      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : $("#" + item_id + " .quantity").text()}));
       $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
     }
     /*Open modal*/
