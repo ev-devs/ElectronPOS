@@ -119,7 +119,8 @@ $("#scan_sim").click(function()  {
     <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "</td> \
     </tr>"; */
     var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-     <td class=\"eq-cells name \" style=\"width: 76%;\">x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</td> \
+     <td class=\"eq-cells name \" style=\"width: 76%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
+     x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</span></td> \
      <td class=\"eq-cells price\" style=\"width: 24%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
     </tr>"
     /*Append to the table that holds the items*/
@@ -127,8 +128,14 @@ $("#scan_sim").click(function()  {
   }
   /*If the item is in the list then just go to its place and increment its counter and update the gui*/
   else {
+    console.log(i);
     var item_id = "qnt-item-" + i;
-    $("#" + item_id).text(item_list[i].cust_quantity);
+    var item = $("#" + item_id).text().trim().toString();
+    console.log("Before: " + item);
+    var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+    console.log(qnt.length);
+    item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
+    $("#" + item_id).text(item);
   }
   /*Update the global quantities of subtotal, tax, and total*/
   subtotal+=item_list[i].price;
