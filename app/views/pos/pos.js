@@ -113,11 +113,6 @@ $("#scan_sim").click(function()  {
     /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
     where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
     values as the text values of the td tags.*/
-    /*var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
-    <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
-    <td class=\"eq-cells price\">$" + item_list[i].price + "</td> \
-    <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "</td> \
-    </tr>"; */
     var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
      <td class=\"eq-cells name \" style=\"width: 76%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
      x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</span></td> \
@@ -202,24 +197,21 @@ $(document).on("touchend", ".whole-item", function(e) {
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
     $(this).css("background-color", "red");
+    /*Whole item taken from the html doc*/
     var item = $("#qnt-item-"+ item_num).text().trim().toString();
     var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
     var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-    console.log(item_qnt);
-    console.log(item_name);
-
-
-
-
-
-
     if(item_qnt == "1") {
       $('#item_type').text(item_name);
     }
     else {
       /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
-      $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : $("#" + item_id + " .quantity").text()}));
-      $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
+      $('#delete_option').html(
+        ejs.render(
+          fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : item_qnt}
+        )
+      );
+      $('#item_type').text(" how many of " + item_name);
     }
     /*Open modal*/
     $('#modal1').openModal({
@@ -233,10 +225,13 @@ $(document).on("touchend", ".whole-item", function(e) {
 
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
-  var i = -1;console.log("item location: " + i);
+  var i = -1;
   /*Find the item by name in the list of customer items named "item_list"*/
-  var item_name = $("#" + item_id + " .name").text();
-  console.log("Item name: " + item_name);
+  var item = $("#qnt-item-"+ item_num).text().trim().toString();
+  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+  var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+
+  console.log("Item name: " + item_name + " end");
   /*This i will keep track of where it is in the list*/
   item_list.find(function(e) {
     i++;
@@ -244,7 +239,7 @@ $("#y_delete").click(function() {
   });
   console.log("Item location: " + i);
   /*Handles deletions of items if the quantity is 1*/
-  if($("#" + item_id + " .quantity").text() == "1") {
+  if(item_qnt == "1") {
     /*Do any pricing updates before deleting*/
     subtotal-= item_list[i].price;
     tax = subtotal * .075;
@@ -253,12 +248,17 @@ $("#y_delete").click(function() {
     item_list.splice(i, 1);
     /*Remove the item from the gui*/
     $("#" + item_id).remove()
-  }/*If more than one then this branch handles deletions if more than one*/
+  }
+
+
+
+
+  /*If more than one then this branch handles deletions if more than one*/
   else {
     /*Grabs the specified amount to be deleted*/
     var delete_amount = Number($("#delete-quantity").val());
     /*Do the deletions as long as the specified amount is between 1-(max item #)*/
-    if(delete_amount >= 1 && delete_amount <= Number($("#" + item_id + " .quantity").text())) {
+    if(delete_amount >= 1 && delete_amount <= item_qnt) {
       /*Do any pricing updates before deleting (can write into a function honestly)*/
       subtotal-=(item_list[i].price * delete_amount);
       tax = subtotal * .075;
@@ -273,9 +273,11 @@ $("#y_delete").click(function() {
       /*Remove the item from the gui*/
       $("#" + item_id).remove()
     }
-    else
-      $("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
-    console.log(item_list);
+    else {
+      item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
+      $("#qnt-item-" + i).text(item);
+      //$("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
+    }
     $("#delete-form").remove();
   }
   if(item_list.length == 0) {
@@ -292,8 +294,9 @@ $("#y_delete").click(function() {
 
 $("#n_delete").click(function() {
   console.log("No");
-  var item_name = $("#" + item_id + " .name").text();
-  if($("#" + item_id + " .quantity").text() >= "1") {
+  var item = $("#qnt-item-"+ item_num).text().trim().toString();
+  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+  if(item_qnt >= "1") {
     $("#delete-form").remove();
     $("#item" + item_num).removeAttr("style");
   }
