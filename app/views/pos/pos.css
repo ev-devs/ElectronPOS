@@ -40,6 +40,9 @@ html {
     height: 40px;
     margin-top: 20px;
 }
+.top-left-text-price {
+    height: 60px;
+}
 
 .txt-size {
   font-size: 1em;

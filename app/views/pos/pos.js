@@ -34,7 +34,7 @@ $(".keyboard").keyboard({
 /*BEGIN TEST HARNESS CODE*/
 /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
 var inventory = [{
-  "item_name" : "Points of success-Audio",
+  "item_name" : "7 steps to success by Alexander Hamitlton",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
   "price" : 6.99,
@@ -99,6 +99,7 @@ var total = 0.00;
 /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
 var item_id = "";
 var item_num = 0;
+
 /*BEGIN SCAN CODE*/
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
@@ -112,11 +113,15 @@ $("#scan_sim").click(function()  {
     /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
     where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
     values as the text values of the td tags.*/
-    var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
+    /*var item = "<tr class=\"whole-item animated bounceInUp\" id=\"item" + i.toString() + "\"> \
     <td class=\"eq-cells name\">" + item_list[i].item_name + "</td> \
     <td class=\"eq-cells price\">$" + item_list[i].price + "</td> \
     <td id=\"qnt-item-" + i + "\"class=\"eq-cells quantity\">" + item_list[i].cust_quantity + "</td> \
-    </tr>";
+    </tr>"; */
+    var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
+     <td class=\"eq-cells name \" style=\"width: 76%;\">x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</td> \
+     <td class=\"eq-cells price\" style=\"width: 24%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
+    </tr>"
     /*Append to the table that holds the items*/
     $("#sale_list tbody").append(item);
   }
@@ -202,24 +207,8 @@ $(document).on("touchend", ".whole-item", function(e) {
       /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
       $('#delete_option').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/delete_form.html', 'utf-8') , {'max' : $("#" + item_id + " .quantity").text()}));
       $('#item_type').text("how many of " + $("#" + item_id + " .name").text());
-
-
-
-
-
-
-
-
-      /*$('#item_type').text("how many of " + $("#" + item_id + " .name").text());
-      var quantity_form = "<div id=\"delete-form\" class=\"row\"> \
-      <div class=\"input-field col s6\"> \
-      <input value=\"1\" id=\"delete-quantity\" type=\"text\" class=\"validate\"> \
-      <label class=\"active\" for=\"first_name2\">Quantity (1 minimum, " + $("#" + item_id + " .quantity").text() + " maximum)</label>\
-      </div>\
-      </div>";
-      $("#delete_option").append(quantity_form);*/
     }
-    /*Open modconsole.log("item location: " + i);console.log("item location: " + i);*/
+    /*Open modal*/
     $('#modal1').openModal({
       dismissible: false, // Modal can be dismissed by clicking outside of the modal
       opacity: .5, // Opacity of modal background
@@ -330,6 +319,7 @@ $("#y_cancel").click(function() {
 $("#n_cancel").click(function() {
   refocus()
 });
+
 /*BEGIN CONFIRM ORDER CODE*/
 /*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
 /*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/

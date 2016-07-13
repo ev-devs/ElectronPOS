@@ -29,7 +29,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/index.html`);
+  window.loadURL(`file://${__dirname}/app/views/pos/pos.html`);
 
   // Open the DevTools.
   window.webContents.openDevTools();
