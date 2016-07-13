@@ -468,9 +468,9 @@ var Platinums_list=[{  //temporary list used for testing
 
 
  /*Append to container holds the names of platinums*/
- function selectPlatinum(){
+(function selectPlatinum(){
 	 for(var i = 0; i < Platinums_list.length; i++){
 		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
 		 $("#platinums-list").append(name);
 	}
-}
+})()
