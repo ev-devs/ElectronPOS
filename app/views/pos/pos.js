@@ -300,7 +300,7 @@ $("#n_delete").click(function() {
 });
 /*BEGIN SEARCH INVENTORY CODE*/
 $("#search").change(function() {
-
+  console.log("Changed");
 });
 
 /*BEGIN CANCEL ORDER CODE*/
@@ -420,48 +420,48 @@ Switch between platinums
 */
 
 /*BEGIN PLATINUMS CODE*/
-var Platinums_list=[{  //temporary list used for testing 
-	"first_name" : "Kevin", 
+var Platinums_list=[{  //temporary list used for testing
+	"first_name" : "Kevin",
 	"last_name" : "Ortega"
 },
 {
-	"first_name": "Harold and Hannah", 
+	"first_name": "Harold and Hannah",
 	"last_name": "Yates"
 },
 {
-	"first_name": "Jay and Jasmine", 
+	"first_name": "Jay and Jasmine",
 	"last_name":" Witiker"
 },
 {
-	"first_name": "Stephen and Tiana", 
+	"first_name": "Stephen and Tiana",
 	"last_name":" Castro"
 },
 {
-	"first_name": "Bob and Bertha", 
+	"first_name": "Bob and Bertha",
 	"last_name":" Vallero"
 },
 {
-	"first_name": "Martin and Luz", 
+	"first_name": "Martin and Luz",
 	"last_name":" Ameral"
 },
 {
-	"first_name": "Marcos and Maria", 
+	"first_name": "Marcos and Maria",
 	"last_name":" Ruiz"
 },
 {
-	"first_name": "Miguel and Paula", 
+	"first_name": "Miguel and Paula",
 	"last_name":" Rubio"
 },
 {
-	"first_name": "Juan and Juanita", 
+	"first_name": "Juan and Juanita",
 	"last_name":" Lopez"
 },
 {
-	"first_name": "Jacob", 
+	"first_name": "Jacob",
 	"last_name":" Jicklesmith"
 },
 {
-	"first_name": "John and Mary", 
+	"first_name": "John and Mary",
 	"last_name":" Doe"
 },
 ];
