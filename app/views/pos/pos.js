@@ -11,6 +11,7 @@ present in  : pos.html
 */
 var request = require('request');
 var _ = require("underscore");
+var inv = [];
 var URL = process.env.EQ_URL.toString();
 /*Leaders*/
 request({
@@ -24,11 +25,8 @@ request({
 		if (!error && response.statusCode == 200) {
 			var resp = JSON.parse(body);
 
-			/*var ordItems = _.sortBy(resp.items, function (item) {
-				return item.title;
-			})*/
 
-			console.log(resp);
+			console.log(resp.evleaders);
 		} else if (error) {
 			console.log(error);
 		} else {
@@ -50,15 +48,14 @@ request({
   			var ordItems = _.sortBy(resp.items, function (item) {
   				return item.title;
   			})
-
+        inv = ordItems;
   			console.log(ordItems);
   		} else if (error) {
   			console.log(error);
   		} else {
-  			console.log(body);
+  			//console.log(body);
   		}
   	});
-
 //TO be removed once connected to views
 var ejs = require('ejs');
 var fs = require('fs');
@@ -137,6 +134,7 @@ var inventory = [{
 }
 
 ];
+/*"H0187", */
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
 /*Next 3 variables are self-explanatory. Just look at their name.*/
@@ -195,6 +193,9 @@ function determine_item_status(item_list, inventory, barcode) {
   var inv_result = inventory.find(function(e) {
     return e.bar == barcode;
   });
+  console.log(inv.find(function(e) {
+    return e.barcode == "H01";
+  }));
   /*If it's in the inventory go here*/
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
@@ -523,3 +524,29 @@ var Platinums_list=[{  //temporary list used for testing
 		 $("#platinums-list").append(name);
 	}
 })()
+/*Uses a binary search to return the index of an element but faster*/
+function binaryIndexOf(key, searchElement) {
+    'use strict';
+
+    var minIndex = 0;
+    var maxIndex = this.length - 1;
+    var currentIndex;
+    var currentElement;
+
+    while (minIndex <= maxIndex) {
+        currentIndex = (minIndex + maxIndex) / 2 | 0;
+        currentElement = this[currentIndex][key];
+        if (currentElement < searchElement) {
+            minIndex = currentIndex + 1;
+        }
+        else if (currentElement > searchElement) {
+            maxIndex = currentIndex - 1;
+        }
+        else {
+            return currentIndex;
+        }
+    }
+
+    return -1;
+}
+Array.prototype.binaryIndexOf = binaryIndexOf;
