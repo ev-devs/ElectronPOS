@@ -175,8 +175,6 @@ function determine_item_status(item_list, inventory, barcode) {
   }
 };
 
-
-
 /*BEGIN DELETE CODE*/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
@@ -235,15 +233,35 @@ $("#y_delete").click(function() {
     i++;
     return e.item_name == item_name;
   });
+
   if(item_list[i].cust_quantity == 1) {
+    subtotal-= item_list[i].price;
+    tax = subtotal * .075;
+    total = subtotal + tax;
     item_list[i].cust_quantity = 0;
     $("#" + item_id).remove();
     item_list.splice(i, 1);
   }
   else if(item_list[i].cust_quantity > 1) {
-    $("delete-quantity").val();
-    item_list[i].cust_quantity 
+    var delete_quantity = $("#delete-quantity").val();
+    /*Do any pricing updates before deleting (can write into a function honestly)*/
+    subtotal-=(item_list[i].price * delete_quantity);
+    tax = subtotal * .075;
+    total = subtotal + tax;
+    if(delete_quantity != item_qnt) {
+      item_list[i].cust_quantity-=delete_quantity;
+      item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
+      $("#qnt-item-" + i).text(item);
+    }
+    else if(delete_quantity == item_qnt) {
+      item_list[i].cust_quantity = 0;
+      $("#" + item_id).remove();
+      item_list.splice(i, 1);
+    }
   }
+  $("#subtotal").text("$" + subtotal.toString());
+  $("#tax").text("$"+tax.toString());
+  $("#total").text("$"+total.toString());
   console.log("ITEM --> |" +  item + "|");
   console.log("ITEM_ID --> |" + item_id + "|");
   console.log("ITEM_NUM --> |" + item_num + "|");
