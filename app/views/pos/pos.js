@@ -114,9 +114,9 @@ $("#scan_sim").click(function()  {
     where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
     values as the text values of the td tags.*/
     var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-     <td class=\"eq-cells name \" style=\"width: 76%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
+     <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
      x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</span></td> \
-     <td class=\"eq-cells price\" style=\"width: 24%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
+     <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
     </tr>"
     /*Append to the table that holds the items*/
     $("#sale_list tbody").append(item);
@@ -192,11 +192,10 @@ $(document).on("touchend", ".whole-item", function(e) {
   /*Before seeing if this is a valid swipe take note of the item_id for future use*/
   item_id = $(this).attr("id").toString();
   item_num = Number(item_id.substring(4, item_id.length));
-  console.log("Item id: " + item_id);
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
-    $(this).css("background-color", "red");
+    //$(this).css("background-color", "red");
     /*Whole item taken from the html doc*/
     var item = $("#qnt-item-"+ item_num).text().trim().toString();
     var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
@@ -222,7 +221,7 @@ $(document).on("touchend", ".whole-item", function(e) {
     });
   }
 });
-
+/*FRONT END NUMBERING OF ELEMENTS NEEDS TO BE CHANGED or DO NOT RELY ON FRONT END NUMBERING*/
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
   var i = -1;
@@ -230,65 +229,30 @@ $("#y_delete").click(function() {
   var item = $("#qnt-item-"+ item_num).text().trim().toString();
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
   var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-
-  console.log("Item name: " + item_name + " end");
-  /*This i will keep track of where it is in the list*/
+  console.log("\n");
   item_list.find(function(e) {
+    /*This i will keep track of where it is in the list*/
     i++;
     return e.item_name == item_name;
   });
-  console.log("Item location: " + i);
-  /*Handles deletions of items if the quantity is 1*/
-  if(item_qnt == "1") {
-    /*Do any pricing updates before deleting*/
-    subtotal-= item_list[i].price;
-    tax = subtotal * .075;
-    total = subtotal + tax;
-    /*Remove that item from the list*/
+  if(item_list[i].cust_quantity == 1) {
+    item_list[i].cust_quantity = 0;
+    $("#" + item_id).remove();
     item_list.splice(i, 1);
-    /*Remove the item from the gui*/
-    $("#" + item_id).remove()
   }
-
-
-
-
-  /*If more than one then this branch handles deletions if more than one*/
-  else {
-    /*Grabs the specified amount to be deleted*/
-    var delete_amount = Number($("#delete-quantity").val());
-    /*Do the deletions as long as the specified amount is between 1-(max item #)*/
-    if(delete_amount >= 1 && delete_amount <= item_qnt) {
-      /*Do any pricing updates before deleting (can write into a function honestly)*/
-      subtotal-=(item_list[i].price * delete_amount);
-      tax = subtotal * .075;
-      total = subtotal + tax;
-      /*Delete amount specified*/
-      item_list[i].cust_quantity-=delete_amount;
-    }
-    /*If the user deletes all items in then remove that item from the user list and the gui*/
-    if(item_list[i].cust_quantity <= 0) {
-      /*Remove that item from the list*/
-      item_list.splice(i, 1);
-      /*Remove the item from the gui*/
-      $("#" + item_id).remove()
-    }
-    else {
-      item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
-      $("#qnt-item-" + i).text(item);
-      //$("#item" + i + " .quantity").text(item_list[i].cust_quantity.toString());
-    }
-    $("#delete-form").remove();
+  else if(item_list[i].cust_quantity > 1) {
+    $("delete-quantity").val();
+    item_list[i].cust_quantity 
   }
-  if(item_list.length == 0) {
-    subtotal = 0;
-    tax = 0;
-    total = 0;
-  }
-  $("#subtotal").text("$" + subtotal.toString());
-  $("#tax").text("$"+tax.toString());
-  $("#total").text("$"+total.toString());
-  $("#item" + i).removeAttr("style");
+  console.log("ITEM --> |" +  item + "|");
+  console.log("ITEM_ID --> |" + item_id + "|");
+  console.log("ITEM_NUM --> |" + item_num + "|");
+  console.log("ITEM_NUM(in list)--> |" + i + "|");
+  console.log("ITEM_QTY --> |" + item_qnt + "|");
+  console.log("ITEM_NAME --> |" + item_name + "|");
+  console.log("ITEM_LIST --> ");
+  console.log(item_list);
+  console.log("\n");
   refocus();
 });
 
