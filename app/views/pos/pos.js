@@ -17,6 +17,8 @@ present in  : pos.html
 //TO be removed once connected to views
 var ejs = require('ejs');
 var fs = require('fs');
+var accounting = require('accounting-js');
+
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
@@ -99,6 +101,7 @@ var total = 0.00;
 /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
 var item_id = "";
 var item_num = 0;
+var item_index = 0;
 
 /*BEGIN SCAN CODE*/
 /*When the #scan_sim button is click carry out the following callback*/
@@ -130,11 +133,11 @@ $("#scan_sim").click(function()  {
   }
   /*Update the global quantities of subtotal, tax, and total*/
   subtotal+=item_list[i].price;
-  $("#subtotal").text("$" + subtotal.toString());
+  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
   tax = subtotal * .075;
-  $("#tax").text("$"+tax.toString());
+  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
   total = subtotal + tax;
-  $("#total").text("$"+total.toString());
+  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
   $("#barcode").focus();
 });
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
@@ -198,6 +201,12 @@ $(document).on("touchend", ".whole-item", function(e) {
     var item = $("#qnt-item-"+ item_num).text().trim().toString();
     var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
     var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+    item_index = -1;
+    item_list.find(function(e) {
+      /*This i will keep track of where it is in the list*/
+      item_index++;
+      return e.item_name == item_name;
+    });
     if(item_qnt == "1") {
       $('#item_type').text(item_name);
     }
@@ -227,7 +236,6 @@ $("#y_delete").click(function() {
   var item = $("#qnt-item-"+ item_num).text().trim().toString();
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
   var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-  console.log("\n");
   item_list.find(function(e) {
     /*This i will keep track of where it is in the list*/
     i++;
@@ -248,10 +256,12 @@ $("#y_delete").click(function() {
     subtotal-=(item_list[i].price * delete_quantity);
     tax = subtotal * .075;
     total = subtotal + tax;
-    if(delete_quantity != item_qnt) {
+    if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
       item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
-      $("#qnt-item-" + i).text(item);
+      console.log("Item: " + item);
+      $("#qnt-item-" + item_num).text(item);
+      console.log("Went in: " + item_list[i].cust_quantity.toString());
     }
     else if(delete_quantity == item_qnt) {
       item_list[i].cust_quantity = 0;
@@ -259,9 +269,9 @@ $("#y_delete").click(function() {
       item_list.splice(i, 1);
     }
   }
-  $("#subtotal").text("$" + subtotal.toString());
-  $("#tax").text("$"+tax.toString());
-  $("#total").text("$"+total.toString());
+  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
   console.log("ITEM --> |" +  item + "|");
   console.log("ITEM_ID --> |" + item_id + "|");
   console.log("ITEM_NUM --> |" + item_num + "|");
@@ -305,7 +315,7 @@ $("#y_cancel").click(function() {
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
     confirm_flag = 0;
     cash_flag = 0;
