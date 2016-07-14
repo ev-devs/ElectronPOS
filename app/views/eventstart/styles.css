@@ -1,0 +1,29 @@
+#event-label {
+    font-size: 2em;
+}
+
+.seminar {
+    display: inline-block;
+    height: 100px;
+    width: 300px;
+    font-size: 2em;
+
+}
+.convention {
+    display: inline-block;
+    height: 100px;
+    width: 300px;
+    font-size: 2em;
+}
+
+.btn {
+    height: inherit;
+    width: inherit;
+
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px;       /* the same as your div height */
+}
+#events_submit {
+    font-size: 2em;
+}
