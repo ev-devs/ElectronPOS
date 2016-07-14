@@ -26,7 +26,7 @@ function refocus() {
   var event = new CustomEvent('refocus');
   document.dispatchEvent(event);
 }
-refocus();
+
 $(".keyboard").keyboard({
   restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
   preventPaste : true,  // prevent ctrl-v and right click
@@ -303,7 +303,7 @@ $("#search").change(function() {
 /*BEGIN CANCEL ORDER CODE*/
 $("#cancel").click(function() {
   /*Open modal*/
-  if(item_list.length > 0)
+  if(item_list.length > 0 && cancel_flag != 1)
     $('#modal2').openModal();
 });
 
@@ -334,19 +334,20 @@ $("#n_cancel").click(function() {
 var confirm_flag = 0;
 var card_flag = 0;
 var cash_flag = 0;
+var cancel_flag = 1;
 var swiped = 0;
 $("#confirm").click(function() {
   if(confirm_flag == 0) {
     if(item_list.length != 0) {
       if(confirm_flag == 0) {
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/pay_choice.html', 'utf-8') , {}));
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
         confirm_flag = 1;
       }
     }
   }
   /*BEGIN  INTERNAL COMPLETE ORDER CODE*/
   if(cash_flag == 1) {
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/completed.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
     setTimeout(fade_out, 1500);
     console.log("here is there");
     void_order();
@@ -361,12 +362,12 @@ $(document).on("click", "#cash", function () {
   cash_flag = 1;
   $("#cancel").css("background-color", "red");
   $("#confirm").css("background-color", "green");
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/cash.html', 'utf-8') , {}));
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
 
 $(document).on("click", "#card", function () {
   card_flag = 1;
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/card.html', 'utf-8') , {}));
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
   setTimeout(fade_out, 1500);
 });
 
@@ -382,12 +383,13 @@ $(document).on("click", "#m_card", function () {
 $(document).on("change", "#tendered", function() {
   console.log($(this).val());
   if($(this).val() >= total)
-    $("#change").text("$" + (Number($(this).val()) - total))
+    $("#change").text("$" + accounting.formatNumber(Number($(this).val()) - total, 2, ",").toString())
 });
 /*BEGIN CARD TRANSACTION CODE*/
 $(document).on("click", "#swipe_sim", function() {
+  cancel_flag = 0;
   if(card_flag)
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/pay_options/process.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 });
 
 function fade_out() {
@@ -464,11 +466,11 @@ var Platinums_list=[{  //temporary list used for testing
 },
 ];
 
-
  /*Append to container holds the names of platinums*/
+ /*
 (function selectPlatinum(){
 	 for(var i = 0; i < Platinums_list.length; i++){
 		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
 		 $("#platinums-list").append(name);
 	}
-})()
+})()*/
