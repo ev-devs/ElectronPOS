@@ -85,9 +85,9 @@ $(document).on('click', '#accept', function() {
 });
 
 /*When the proceed button is rendered if it is pressed render the next view. NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
-$(document).on('click', '#proceed', function() {
+/*$(document).on('click', '#proceed', function() {
   $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/eventstart/index.html', 'utf-8') , {}));
-});
+}); */
 
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
