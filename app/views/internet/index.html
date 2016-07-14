@@ -2,19 +2,27 @@
 <% if (output) { %>
             <div class="container">
                 <div class="row">
-                    <div class="col s12 left">
+                    <div class="col s6 left">
                         <!-- Helps show the current wifi connection. If there aren'y then it will appear as "none"-->
-                         <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 style="display: inline">Wi-Fi</h2 >
+                         <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h4 style="display: inline">Wi-Fi</h4 >
+                    </div>
+                    <div class="col s6 left">
+                      <div class="container leftr" id="connection_holder">
+                          <div class="chip" id="cur_con">
+                              Wi-Fi: <%= output[output.length - 1] %>
+                          </div>
+
+                      </div>
                     </div>
                 </div>
             </div>
 
-            <div class="container leftr" id="connection_holder">
+            !<!--div class="container leftr" id="connection_holder">
                 <div class="chip" id="cur_con">
                     Wi-Fi: <%= output[output.length - 1] %>
                 </div>
 
-            </div>
+            </div> -->
 
             <br>
 

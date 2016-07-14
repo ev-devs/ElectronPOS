@@ -14,7 +14,7 @@ $('nav').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/_beginnin
 }));
 
 /*THIS RENDERS THE MAIN*/
-$('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/internet.html', 'utf-8') , {
+$('main').html(ejs.render(fs.readFileSync( __dirname + '/views/internet/index.html', 'utf-8') , {
     output : internet.list_connections(),
     anything: "goes here"
 }))
