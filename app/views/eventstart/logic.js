@@ -65,7 +65,7 @@ $('#events_submit').click(function(event){
 
         }
 
-    }
+    }m f 
 });
 
 
