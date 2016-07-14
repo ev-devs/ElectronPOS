@@ -56,43 +56,48 @@
 		</script>
 	</nav>
 	<main>
-		<div class="row">
-			<form class="col s12">
-		   <label>Event Type</label>
-			<select class="browser-default">
-				<option value="" disabled selected>Choose your option</option>
-				<option value="1">Seminar</option>
-				<option value="2">Convention</option>
-			</select>
-			</form>
+
+		<div class="row center">
+                <h2>Choose Event Type</h2>
+		          <div class="seminar">
+                      <a class="waves-effect waves-light btn" style="background-color: grey">Seminar</a>
+                  </div>
+                  <div class="convention">
+                      <a class="waves-effect waves-light btn"  style="background-color: grey">Convention</a>
+                  </div>
 		</div>
 
 		<div class="row">
 		<form class="col s12">
 		  <div class="row">
-			<div class="input-field col s12">
-			  <input id="event_id" type="text" class="validate keyboard">
-			  <label for="event_id">Event Id</label>
-			</div>
-		  </div>
 
-		  <div class="row">
-			<div class="input-field col s12">
-			  <input id="event_code" type="text" class="validate keyboard">
-			  <label for="Event_code">Event Code</label>
-			</div>
-		  </div>
-      <a class="waves-effect waves-light btn" id="events_submit"><i class="material-icons right">cloud</i>button</a>
-		</form>
+    			<div class="input-field col s12">
+    			  <input id="event_id" type="text" class="validate keyboard">
+    			  <label for="event_id">Event Id</label>
+    			</div>
+    		  </div>
+
+    		  <div class="row">
+    			<div class="input-field col s12">
+    			  <input id="event_code" type="text" class="validate keyboard">
+    			  <label for="Event_code">Event Code</label>
+    			</div>
+    		  </div>
+          <a class="waves-effect waves-light btn" id="events_submit" style="background-color: #00c853"> Validate Event </a>
+	   </form>
 	  </div>
+
+<link rel="stylesheet" href="styles.css" media="screen" title="no title" charset="utf-8">
+<script src="logic.js" charset="utf-8"></script>
+
 <!--jQuery for event listeners that are bonded to this html page-->
 	<script type="text/javascript">
 		/*This starts the sid-nav*/
 		$(".button-collapse").sideNav();
 		$(".keyboard").keyboard();
-		setTimeout(function() {
-      window.location.assign("../beginSession/beginSession.html");
-    }, 3000)
+		//setTimeout(function() {
+        //  window.location.assign("../beginSession/beginSession.html");
+        //}, 3000)
 	</script>
 </main>
 </body>

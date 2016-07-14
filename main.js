@@ -29,7 +29,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/pos/pos.html`);
+  window.loadURL(`file://${__dirname}/app/views/eventstart/index.html`);
 
   // Open the DevTools.
   window.webContents.openDevTools();
@@ -48,9 +48,9 @@ function createWindow(window) {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
 
-    globalShortcut.register('CommandOrControl+C', () => {
+    /* globalShortcut.register('CommandOrControl+C', () => {
         app.quit()
-    });
+    });*/
 
     createWindow(win)
 });
