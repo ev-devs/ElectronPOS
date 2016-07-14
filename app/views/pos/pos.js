@@ -12,6 +12,7 @@ present in  : pos.html
 var request = require('request');
 var _ = require("underscore");
 var URL = process.env.EQ_URL.toString();
+var leaders = [];
 /*Leaders*/
 request({
 		method: 'POST',
@@ -22,13 +23,9 @@ request({
 	}, function (error, response, body) {
 		// console.log(body);
 		if (!error && response.statusCode == 200) {
-			var resp = JSON.parse(body);
-
-			/*var ordItems = _.sortBy(resp.items, function (item) {
-				return item.title;
-			})*/
-
-			console.log(resp);
+			leaders = JSON.parse(body).evleaders;
+			console.log(leaders[0].lastname);
+		
 		} else if (error) {
 			console.log(error);
 		} else {
@@ -51,7 +48,7 @@ request({
   				return item.title;
   			})
 
-  			console.log(ordItems);
+  			//console.log(ordItems);
   		} else if (error) {
   			console.log(error);
   		} else {
@@ -518,8 +515,8 @@ var Platinums_list=[{  //temporary list used for testing
 // if searched word is not found, displays no results notification
 // if search is empty, containers
 (function selectPlatinum(){
-	 for(var i = 0; i < Platinums_list.length; i++){
-		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
+	 for(var i = 0; i < 900; i++){
+		 var name = "<a href=\"#!\" class=\"collection-item\">" + leaders[i].firstname.toString()  + " " + leaders[i].lastname.toString() + "</a>";
 		 $("#platinums-list").append(name);
 	}
 })()
