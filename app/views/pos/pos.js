@@ -24,16 +24,10 @@ request({
 	}, function (error, response, body) {
 		// console.log(body);
 		if (!error && response.statusCode == 200) {
-<<<<<<< HEAD
+
 			leaders = JSON.parse(body).evleaders;
 			console.log(leaders[0].lastname);
-		
-=======
-			var resp = JSON.parse(body);
 
-
-			console.log(resp.evleaders);
->>>>>>> 028d2a595573ad283093829a17c8566cff4a9f98
 		} else if (error) {
 			console.log(error);
 		} else {
@@ -55,13 +49,8 @@ request({
   			var ordItems = _.sortBy(resp.items, function (item) {
   				return item.title;
   			})
-<<<<<<< HEAD
-
   			//console.log(ordItems);
-=======
-        inv = ordItems;
-  			console.log(ordItems);
->>>>>>> 028d2a595573ad283093829a17c8566cff4a9f98
+
   		} else if (error) {
   			console.log(error);
   		} else {
