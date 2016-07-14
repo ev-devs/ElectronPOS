@@ -467,10 +467,18 @@ var Platinums_list=[{  //temporary list used for testing
 ];
 
  /*Append to container holds the names of platinums*/
- 
+// appends html element to display all the names
+// if search is changed, takes search input and reduces html elements to display elements with
+// the searched word. 
+// if searched word is not found, displays no results notification
+// if search is empty, containers   
 (function selectPlatinum(){
 	 for(var i = 0; i < Platinums_list.length; i++){
 		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
 		 $("#platinums-list").append(name);
 	}
 })()
+
+
+
+

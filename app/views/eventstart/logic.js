@@ -1,5 +1,6 @@
+var request = require('request');
 
-var http = require('http');
+var URL = 'https://support.equipovision.com/ServiceForMobile.asmx';
 
 $('.seminar').click(function(event){
     $($('.convention').children()[0]).css('background-color', 'grey')
@@ -33,24 +34,29 @@ $('#events_submit').click(function(event){
     else {
 
         // seminar is chosen
+        // backend connected
         if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
-
-            var post_options = {
-                  host: 'support.equipovision.com',
-                  port: '3000',
-                  path: '/ServiceForMobile.asmx/eventaccess',
-                  method: 'GET',
-                  headers: {
-                      'Content-Type':'application/json',
-                  }
-              };
-
-              http.request(post_options, function(res) {
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    console.log('Response: ' + chunk);
-                });
-            });
+				request({
+					method: 'POST',
+					uri: URL + '/eventaccess',
+					form: {
+						token: 'f1e07a27313561086b71d221cd348efc',
+						type: 'c',
+						event: '109',
+						code: 'RI77',
+					}
+				}, function (error, response, body) {
+					console.log(body);
+					if (!error && response.statusCode == 200) {
+						var msg = JSON.parse(body);
+						console.log(msg);
+						
+					} else if (error) {
+						console.log(error);
+					} else {
+						console.log(body);
+					}
+				});
 
         }
         if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
@@ -75,7 +81,7 @@ function rgb2hex(rgb) {
 function hex(x) {
   return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 }
-
+/*
 // seminar is chosen
 var post_options = {
       host: 'support.equipovision.com',
@@ -94,3 +100,5 @@ var post_options = {
         console.log('Response: ' + chunk);
     });
 });
+
+*/
