@@ -40,7 +40,7 @@ $('#events_submit').click(function(event){
 					method: 'POST',
 					uri: URL + '/eventaccess',
 					form: {
-						token: 'f1e07a27313561086b71d221cd348efc',
+						token: 'INSERT TOKEN HERE',
 						type: 'c',
 						event: '109',
 						code: 'RI77',
@@ -50,7 +50,7 @@ $('#events_submit').click(function(event){
 					if (!error && response.statusCode == 200) {
 						var msg = JSON.parse(body);
 						console.log(msg);
-						
+
 					} else if (error) {
 						console.log(error);
 					} else {
@@ -81,24 +81,3 @@ function rgb2hex(rgb) {
 function hex(x) {
   return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 }
-/*
-// seminar is chosen
-var post_options = {
-      host: 'support.equipovision.com',
-      port: '3000',
-      path: '/ServiceForMobile.asmx/eventaccess',
-      method: 'GET',
-      headers: {
-          'Content-Type':'application/json',
-      }
-  };
-
-  http.request(post_options, function(res) {
-    console.log(res)
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        console.log('Response: ' + chunk);
-    });
-});
-
-*/

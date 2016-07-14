@@ -9,10 +9,55 @@ purpose     : manipulate the POS GUI when scanning items
 present in  : pos.html
 
 */
+var request = require('request');
+var _ = require("underscore");
+var URL = 'https://support.equipovision.com/ServiceForMobile.asmx';
+/*Leaders*/
+request({
+		method: 'POST',
+		uri: URL + '/evleaders',
+		form: {
+			token: 'INSERT TOKEN'
+		}
+	}, function (error, response, body) {
+		// console.log(body);
+		if (!error && response.statusCode == 200) {
+			var resp = JSON.parse(body);
 
+			/*var ordItems = _.sortBy(resp.items, function (item) {
+				return item.title;
+			})*/
 
+			console.log(resp);
+		} else if (error) {
+			console.log(error);
+		} else {
+			console.log(body);
+		}
+	});
+/*Inventory*/
+  request({
+  		method: 'POST',
+  		uri: URL + '/evleaders',
+  		form: {
+  			token: 'INSERT TOKEN'
+  		}
+  	}, function (error, response, body) {
+  		// console.log(body);
+  		if (!error && response.statusCode == 200) {
+  			var resp = JSON.parse(body);
 
+  			/*var ordItems = _.sortBy(resp.items, function (item) {
+  				return item.title;
+  			})*/
 
+  			console.log(resp);
+  		} else if (error) {
+  			console.log(error);
+  		} else {
+  			console.log(body);
+  		}
+  	});
 
 //TO be removed once connected to views
 var ejs = require('ejs');
@@ -469,16 +514,12 @@ var Platinums_list=[{  //temporary list used for testing
  /*Append to container holds the names of platinums*/
 // appends html element to display all the names
 // if search is changed, takes search input and reduces html elements to display elements with
-// the searched word. 
+// the searched word.
 // if searched word is not found, displays no results notification
-// if search is empty, containers   
+// if search is empty, containers
 (function selectPlatinum(){
 	 for(var i = 0; i < Platinums_list.length; i++){
 		 var name = "<a href=\"#!\" class=\"collection-item\">" + Platinums_list[i].first_name.toString()  + " " + Platinums_list[i].last_name.toString()+ "</a>";
 		 $("#platinums-list").append(name);
 	}
 })()
-
-
-
-
