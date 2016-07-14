@@ -11,13 +11,13 @@ present in  : pos.html
 */
 var request = require('request');
 var _ = require("underscore");
-var URL = 'https://support.equipovision.com/ServiceForMobile.asmx';
+var URL = process.env.EQ_URL.toString();
 /*Leaders*/
 request({
 		method: 'POST',
 		uri: URL + '/evleaders',
 		form: {
-			token: 'INSERT TOKEN'
+			token: process.env.EQ_TOKEN.toString()
 		}
 	}, function (error, response, body) {
 		// console.log(body);
@@ -38,20 +38,20 @@ request({
 /*Inventory*/
   request({
   		method: 'POST',
-  		uri: URL + '/evleaders',
+  		uri: URL + '/inventory',
   		form: {
-  			token: 'INSERT TOKEN'
+  			token: process.env.EQ_TOKEN.toString()
   		}
   	}, function (error, response, body) {
   		// console.log(body);
   		if (!error && response.statusCode == 200) {
   			var resp = JSON.parse(body);
 
-  			/*var ordItems = _.sortBy(resp.items, function (item) {
+  			var ordItems = _.sortBy(resp.items, function (item) {
   				return item.title;
-  			})*/
+  			})
 
-  			console.log(resp);
+  			console.log(ordItems);
   		} else if (error) {
   			console.log(error);
   		} else {

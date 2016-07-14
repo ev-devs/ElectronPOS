@@ -1,6 +1,6 @@
 var request = require('request');
 
-var URL = 'https://support.equipovision.com/ServiceForMobile.asmx';
+var URL = process.env.EQ_URL.toString();;
 
 $('.seminar').click(function(event){
     $($('.convention').children()[0]).css('background-color', 'grey')
@@ -40,7 +40,7 @@ $('#events_submit').click(function(event){
 					method: 'POST',
 					uri: URL + '/eventaccess',
 					form: {
-						token: 'INSERT TOKEN HERE',
+						token: process.env.EQ_TOKEN.toString();,
 						type: 'c',
 						event: '109',
 						code: 'RI77',
@@ -65,7 +65,7 @@ $('#events_submit').click(function(event){
 
         }
 
-    }m f 
+    }
 });
 
 
