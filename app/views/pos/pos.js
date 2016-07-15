@@ -17,7 +17,7 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 
 
-var inv = [];
+var inventory = [];
 var URL = process.env.EQ_URL.toString();
 var leaders = [];
 /*Leaders*/
@@ -66,7 +66,7 @@ request({
   				return item.title;
   			})
   			//console.log(ordItems);
-
+				inventory = ordItems;
   		} else if (error) {
   			console.log(error);
   		} else {
@@ -91,7 +91,7 @@ $(".keyboard").keyboard({
 });
 /*BEGIN TEST HARNESS CODE*/
 /*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
-var inventory = [{
+/*var inventory = [{
   "item_name" : "7 steps to success by Alexander Hamitlton",
   "inv_quantity" : 12,
   "cust_quantity" : 0,
@@ -147,7 +147,7 @@ var inventory = [{
   "bar" : 8
 }
 
-];
+];*/
 /*"H0187", */
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
