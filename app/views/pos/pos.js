@@ -117,7 +117,7 @@ $(".keyboard").keyboard({
   autoAccept : true,
   layout: "num"
 });
-/*"H0187", */
+/*1, H0187, H0192*/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
 /*Next 3 variables are self-explanatory. Just look at their name.*/
@@ -225,15 +225,11 @@ $(document).on("touchend", ".whole-item", function(e) {
   /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
   if(touchstart-touchend >= 100) {
     /*Populates the modal with the item name for seller confirmation*/
-    //$(this).css("background-color", "red");
+    $(this).css("background-color", "red");
     /*Whole item taken from the html doc*/
     var item = $(this).find("span").text().trim();
     var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
     var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-    item_list.find(function(e) {
-      /*This i will keep track of where it is in the list*/
-      return e.title == item_name;
-    });
     if(item_qnt == "1") {
       $('#item_type').text(item_name);
     }
@@ -269,7 +265,6 @@ $("#y_delete").click(function() {
     i++;
     return e.title == item_name;
   });
-	console.log("I:" + i);
   if(item_list[i].cust_quantity == 1) {
     subtotal-= item_list[i].price;
     tax = subtotal * .075;
@@ -281,26 +276,26 @@ $("#y_delete").click(function() {
   else if(item_list[i].cust_quantity > 1) {
     var delete_quantity = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-
     subtotal-=(item_list[i].price * delete_quantity);
     tax = subtotal * .075;
     total = subtotal + tax;
+		/**/
     if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
       item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
-			console.log("ITEM:" + item);
       $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
     }
     else if(delete_quantity == item_qnt) {
       item_list[i].cust_quantity = 0;
       $("#" + item_id).remove();
-			console.log("ITEM:" + item);
       item_list.splice(i, 1);
     }
+		$("#delete-form").remove();
   }
   $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
   $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
   $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+	$("#" + item_id).removeAttr("style");
   refocus();
 });
 
@@ -310,9 +305,8 @@ $("#n_delete").click(function() {
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
   if(item_qnt >= "1") {
     $("#delete-form").remove();
-    $("#item" + item_num).removeAttr("style");
+    $("#" + item_num).removeAttr("style");
   }
-  //$("#item" + item_num).removeAttr("style");
   refocus();
 });
 /*BEGIN SEARCH INVENTORY CODE*/
