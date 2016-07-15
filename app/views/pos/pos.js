@@ -342,53 +342,65 @@ $("#n_cancel").click(function() {
   refocus()
 });
 
-/*BEGIN CONFIRM ORDER CODE*/
-/*MAY NEED TO BE IN ITS ONW FILE AND DIRECToRY*/
-/*Instead of just appending elements to another element I used ejs to render elements from a different file for a nicer look. We can change this though*/
-var confirm_flag = 0;
+/*NOTE: BEGIN CONFIRM ORDER CODE*/
+var confirm_flag = 1;
 var card_flag = 0;
 var cash_flag = 0;
 var cancel_flag = 1;
 var swiped = 0;
+
 $("#confirm").click(function() {
-  if(confirm_flag == 0) {
+	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
+  if(confirm_flag == 1) {
     if(item_list.length != 0) {
-      if(confirm_flag == 0) {
+      if(confirm_flag == 1) {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-        confirm_flag = 1;
+        confirm_flag = 0;
       }
     }
   }
-  /*BEGIN  INTERNAL COMPLETE ORDER CODE*/
+	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
+	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   if(cash_flag == 1) {
+		/*Renders the html file necessary to denote the transaction is complete*/
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-    setTimeout(fade_out, 1500);
-    console.log("here is there");
+    /*Voids the order to reset the variables in anticipation for a new  transaction*/
     void_order();
+		/*Removes the red and green colors form the cancel and confirm button*/
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
-    confirm_flag = 0;
+		/*Sets the confirm flag back to one to  denote that a normal completion can happen*/
+    confirm_flag = 1;
+		/*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
   }
 });
 
+/*Renders the necessary partial for completing orders with cash.*/
 $(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
   cash_flag = 1;
+	/*Sets the cancel and confirm buttons to red and green respectively*/
   $("#cancel").css("background-color", "red");
   $("#confirm").css("background-color", "green");
+	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
 
+/*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
+	/*Sets the card flag to true to denote a card transaction is in process*/
   card_flag = 1;
+	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-  setTimeout(fade_out, 1500);
 });
 
+/*Renders the necessary partial for completing orders with cash and cards*/
 $(document).on("click", "#c_and_c", function () {
   console.log("Cash and card");
 });
 
+/*Renders the necessary partial for completing orders with multiple cards.*/
 $(document).on("click", "#m_card", function () {
   console.log("Multi card");
 });
@@ -407,6 +419,9 @@ $(document).on("click", "#swipe_sim", function() {
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag)
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+	setTimeout(function() {
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	}, 3000);
 });
 
 /*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
