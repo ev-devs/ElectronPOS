@@ -40,9 +40,9 @@ function alphabetize(list){
 
 //take user input .change(function(){})   DONE
 //convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");    
+//convert string into regex    var re = new RegExp("a|b", "i");
 //search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index  
+//if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 function selectPlatinum(list){
 	var user_input = "";
@@ -67,7 +67,7 @@ request({
 				if (!error && response.statusCode == 200) {
 					var leaders = [];  // container for the leaders object
 					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
-					alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list 
+					alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
 					selectPlatinum(leaders_list);
 					$('#platinums-list').show()
 					$('.loading').hide()
@@ -117,65 +117,6 @@ $(".keyboard").keyboard({
   autoAccept : true,
   layout: "num"
 });
-/*BEGIN TEST HARNESS CODE*/
-/*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
-/*var inventory = [{
-  "item_name" : "7 steps to success by Alexander Hamitlton",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 6.99,
-  "bar" : 1
-},klkljlj
-{
-  "item_name" : "Item B",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 7.99,
-  "bar" : 2
-},
-{
-  "item_name" : "Item C",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 8.99,
-  "bar" : 3
-},
-{
-  "item_name" : "Item D",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 9.99,
-  "bar" : 4
-},
-{
-  "item_name" : "Item E",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 10.99,
-  "bar" : 5
-},{
-  "item_name" : "Item F",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 11.99,
-  "bar" : 6
-},
-{
-  "item_name" : "Item G",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 12.99,
-  "bar" : 7
-},
-{
-  "item_name" : "Item H",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 13.99,
-  "bar" : 8
-}
-
-];*/
 /*"H0187", */
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
@@ -328,7 +269,7 @@ $("#y_delete").click(function() {
     i++;
     return e.title == item_name;
   });
-
+	console.log("I:" + i);
   if(item_list[i].cust_quantity == 1) {
     subtotal-= item_list[i].price;
     tax = subtotal * .075;
@@ -340,20 +281,22 @@ $("#y_delete").click(function() {
   else if(item_list[i].cust_quantity > 1) {
     var delete_quantity = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-		/*
+
     subtotal-=(item_list[i].price * delete_quantity);
     tax = subtotal * .075;
     total = subtotal + tax;
     if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
       item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
-      $(item).text(item);
+			console.log("ITEM:" + item);
+      $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
     }
     else if(delete_quantity == item_qnt) {
       item_list[i].cust_quantity = 0;
       $("#" + item_id).remove();
+			console.log("ITEM:" + item);
       item_list.splice(i, 1);
-    }*/
+    }
   }
   $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
   $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
