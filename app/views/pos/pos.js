@@ -36,7 +36,6 @@ request({
 
 			(function selectPlatinum(){
 				 for(var i = 0; i < 900; i++){
-					 console.log(leaders)
 					 var name = "<a href=\"#!\" class=\"collection-item\">" + leaders[i].firstname.toString()  + " " + leaders[i].lastname.toString() + "</a>";
 					 $("#platinums-list").append(name);
 				}

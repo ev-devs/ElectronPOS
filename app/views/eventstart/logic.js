@@ -81,4 +81,4 @@ function rgb2hex(rgb) {
 function hex(x) {
   return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 }
-	console.log(invent);
+	console.log(inventory);

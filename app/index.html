@@ -70,33 +70,20 @@
     }
   </style>
   <script>
-  var request = require('request');
-  var _ = require("underscore");
     $(document).on('click', '#proceed', function() {
       /*Inventory*/
-        request({
-        		method: 'POST',
-        		uri: URL + '/inventory',
-        		form: {
-        			token: process.env.EQ_TOKEN.toString()
-        		}
-        	}, function (error, response, body) {
-        		// console.log(body);
-        		if (!error && response.statusCode == 200) {
-        			var resp = JSON.parse(body);
-
-        			var ordItems = _.sortBy(resp.items, function (item) {
-        				return item.title;
-        			})
-        			//console.log(ordItems);
-      				inventory = ordItems;
-        		} else if (error) {
-        			console.log(error);
-        		} else {
-        			//console.log(body);
-        		}
-        	});
-      window.location.assign("./views/eventstart/index.html");
+      //inventory = inherit_inventory();
+      test()
+      .then(function(result) {
+        if(result != 0)
+          window.location.assign("./views/eventstart/index.html");
+        inventory = result;
+        console.log(inventory);
+      })
+      .catch(function(result) {
+          console.log(result);
+        }
+      );
     });
   </script>
 </html>
