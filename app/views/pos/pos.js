@@ -10,7 +10,13 @@ present in  : pos.html
 
 */
 var request = require('request');
+//TO be removed once connected to views
+var ejs = require('ejs');
+var fs = require('fs');
+var accounting = require('accounting-js');
 var _ = require("underscore");
+
+
 var inv = [];
 var URL = process.env.EQ_URL.toString();
 var leaders = [];
@@ -27,6 +33,16 @@ request({
 
 			leaders = JSON.parse(body).evleaders;
 			console.log(leaders[0].lastname);
+
+			(function selectPlatinum(){
+				 for(var i = 0; i < 900; i++){
+					 console.log(leaders)
+					 var name = "<a href=\"#!\" class=\"collection-item\">" + leaders[i].firstname.toString()  + " " + leaders[i].lastname.toString() + "</a>";
+					 $("#platinums-list").append(name);
+				}
+			})()
+			$('#platinums-list').show()
+			$('.loading').hide()
 
 		} else if (error) {
 			console.log(error);
@@ -57,10 +73,7 @@ request({
   			//console.log(body);
   		}
   	});
-//TO be removed once connected to views
-var ejs = require('ejs');
-var fs = require('fs');
-var accounting = require('accounting-js');
+
 
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
@@ -519,12 +532,7 @@ var Platinums_list=[{  //temporary list used for testing
 // the searched word.
 // if searched word is not found, displays no results notification
 // if search is empty, containers
-(function selectPlatinum(){
-	 for(var i = 0; i < 900; i++){
-		 var name = "<a href=\"#!\" class=\"collection-item\">" + leaders[i].firstname.toString()  + " " + leaders[i].lastname.toString() + "</a>";
-		 $("#platinums-list").append(name);
-	}
-})()
+
 /*Uses a binary search to return the index of an element but faster*/
 function binaryIndexOf(key, searchElement) {
     'use strict';
