@@ -159,6 +159,7 @@ $("#scan_sim").click(function()  {
       item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
       $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
     }
+		cancel_flag = 1;
   }
   /*Update the global quantities of subtotal, tax, and total*/
   subtotal+=item_list[i].price;
@@ -216,7 +217,7 @@ $(document).on("touchstart", ".whole-item", function(e) {
   touchstart = touchobj;
 });
 
-/*When the finger leaves the screen record it's end point in pixels.*/
+/*When the finger leaves the screen, record it's end point in pixels.*/
 $(document).on("touchend", ".whole-item", function(e) {
   var touchobj = e.originalEvent.changedTouches[0].clientX;
   touchend = touchobj;
@@ -292,21 +293,34 @@ $("#y_delete").click(function() {
     }
 		$("#delete-form").remove();
   }
+	/*If the there aren't any items after deletion then there is nothing to cancel so lower the flag*/
+	if(item_list.length == 0)
+		cancel_flag = 0;
+	/*Updates the subtotal in the gui with the accounting package*/
   $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+	/*Updates the tax in the gui with the accounting package*/
   $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+	/*Updates the total in the gui with the accounting package*/
   $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+	/*Removes the red from the item*/
 	$("#" + item_id).removeAttr("style");
+	/*Refocuses the page on the barcode input*/
   refocus();
 });
 
 $("#n_delete").click(function() {
-  console.log("No");
+  /*Grab the item name*/
   var item = $("#qnt-item-"+ item_num).text().trim().toString();
+	/*Grab the number of items*/
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+	/*If there are more than one items do this*/
   if(item_qnt >= "1") {
+		/*Remove the form from the modal*/
     $("#delete-form").remove();
-    $("#" + item_num).removeAttr("style");
   }
+	/*Removes the red from the item*/
+	$("#" + item_num).removeAttr("style");
+	/*Refocuses the page on the barcode input*/
   refocus();
 });
 /*BEGIN SEARCH INVENTORY CODE*/
@@ -316,45 +330,55 @@ $("#search").change(function() {
 
 /*BEGIN CANCEL ORDER CODE*/
 $("#cancel").click(function() {
-  /*Open modal*/
-  if(item_list.length > 0 && cancel_flag != 1)
+  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
+  if(item_list.length > 0 && cancel_flag == 1)
     $('#modal2').openModal();
 });
 
 $("#y_cancel").click(function() {
+	/*As long as the length of the list is > 0 then cancellations can happen*/
   if(item_list.length != 0) {
-    item_list.splice(0, item_list.length);
-    $("#sale_list tbody").empty();
+		/*Voids the order*/
     void_order();
-    $("#subtotal").text("$" + subtotal.toString());
-    $("#tax").text("$"+tax.toString());
-    $("#total").text("$"+total.toString());
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		/*Fades out the "thanks" element from the compelte.html file*/
     setTimeout(fade_out, 1500);
-    confirm_flag = 0;
+		/*Sets the confirm flag to 1 denoting an order CAN be confirmed*/
+    confirm_flag = 1;
+		/*Sets the card flag to 0 denoting a cancelled transaction*/
     cash_flag = 0;
+		/*Sets the card flag to 0 denoting a cancelled transaction*/
     card_flag = 0;
+		/*Refocus the page on the barcode input*/
     refocus();
   }
 });
 
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
   refocus()
 });
 
 /*NOTE: BEGIN CONFIRM ORDER CODE*/
+/*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
 var confirm_flag = 1;
+/*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
 var card_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
 var cash_flag = 0;
-var cancel_flag = 1;
-var swiped = 0;
+/*Flag which denotes that the user can cancel at any time assuming the flag is raised. By default it is raised.*/
+var cancel_flag = 0;
+
 
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1) {
+		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
     if(item_list.length != 0) {
+			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
       if(confirm_flag == 1) {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
         confirm_flag = 0;
       }
     }
@@ -364,12 +388,10 @@ $("#confirm").click(function() {
   if(cash_flag == 1) {
 		/*Renders the html file necessary to denote the transaction is complete*/
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-    /*Voids the order to reset the variables in anticipation for a new  transaction*/
-    void_order();
 		/*Removes the red and green colors form the cancel and confirm button*/
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
-		/*Sets the confirm flag back to one to  denote that a normal completion can happen*/
+		/*Sets the confirm flag back to one to denote that a normal completion can happen*/
     confirm_flag = 1;
 		/*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
@@ -428,12 +450,14 @@ $(document).on("click", "#swipe_sim", function() {
 function fade_out() {
   $("#thanks").addClass("fadeOut");
   refocus();
+	/*Voids the order to reset the variables in anticipation for a new  transaction*/
+	void_order();
+	/*Render platinums list FIX*/
 }
 
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order() {
-		/*Empties the item list*/
-    item_list.splice(0, item_list.length);
+    item_list.splice(0, item_list.length);/*Empties the item list*/
 		/*Empties the left side*/
     $("#sale_list tbody").empty();
 		/*Empties the subtotal and total*/
