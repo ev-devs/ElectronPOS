@@ -17,7 +17,7 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 
 
-var inventory = [];
+//var inventory = [];
 var URL = process.env.EQ_URL.toString();
 var leaders = [];
 /*Leaders*/
@@ -47,34 +47,9 @@ request({
 		} else if (error) {
 			console.log(error);
 		} else {
-			console.log(body);
+			//console.log(body);
 		}
 	});
-/*Inventory*/
-  request({
-  		method: 'POST',
-  		uri: URL + '/inventory',
-  		form: {
-  			token: process.env.EQ_TOKEN.toString()
-  		}
-  	}, function (error, response, body) {
-  		// console.log(body);
-  		if (!error && response.statusCode == 200) {
-  			var resp = JSON.parse(body);
-
-  			var ordItems = _.sortBy(resp.items, function (item) {
-  				return item.title;
-  			})
-  			//console.log(ordItems);
-				inventory = ordItems;
-  		} else if (error) {
-  			console.log(error);
-  		} else {
-  			//console.log(body);
-  		}
-  	});
-
-
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })

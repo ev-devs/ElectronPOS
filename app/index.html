@@ -20,7 +20,8 @@
     <link rel="stylesheet" href="../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
     <!--We are inlcuding our material design js for our everyday GUI needs-->
     <script src="../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
-
+    <!--Used before the DATABASE is up-->
+    <script src="./lib/globals.js" charset="utf-8"></script>
 
     <!--- THIS IS NEEDED FOR US TO GET A KEYBOARD ON THE SCREEN---->
     <!-- jQuery (required) & jQuery UI + theme (optional) -->
@@ -69,11 +70,33 @@
     }
   </style>
   <script>
+  var request = require('request');
+  var _ = require("underscore");
     $(document).on('click', '#proceed', function() {
+      /*Inventory*/
+        request({
+        		method: 'POST',
+        		uri: URL + '/inventory',
+        		form: {
+        			token: process.env.EQ_TOKEN.toString()
+        		}
+        	}, function (error, response, body) {
+        		// console.log(body);
+        		if (!error && response.statusCode == 200) {
+        			var resp = JSON.parse(body);
+
+        			var ordItems = _.sortBy(resp.items, function (item) {
+        				return item.title;
+        			})
+        			//console.log(ordItems);
+      				inventory = ordItems;
+        		} else if (error) {
+        			console.log(error);
+        		} else {
+        			//console.log(body);
+        		}
+        	});
       window.location.assign("./views/eventstart/index.html");
     });
-    /*setTimeout(function() {
-      window.location.assign("./views/eventStart/eventStart.html");
-    }, 3000)*/
   </script>
 </html>
