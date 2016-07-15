@@ -73,7 +73,7 @@
     $(document).on('click', '#proceed', function() {
       /*Inventory*/
       //inventory = inherit_inventory();
-      test()
+      inherit_inventory()
       .then(function(result) {
         if(result != 0)
           window.location.assign("./views/eventstart/index.html");

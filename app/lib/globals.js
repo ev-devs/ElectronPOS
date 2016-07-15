@@ -3,32 +3,6 @@ var request = require('request');
 var _ = require("underscore");
 
 var inventory = [];
-function inherit_inventory() {
-  var x = []
-  request({
-      method: 'POST',
-      uri: URL + '/inventory',
-      form: {
-        token: process.env.EQ_TOKEN.toString()
-      }
-    }, function (error, response, body) {
-      // console.log(body);
-      if (!error && response.statusCode == 200) {
-        var resp = JSON.parse(body);
-
-        var ordItems = _.sortBy(resp.items, function (item) {
-          return item.title;
-        })
-        x = ordItems;
-      } else if (error) {
-        console.log(error);
-      } else {
-        //console.log(body);
-      }
-    });
-    return x;
-};
-
 function inherit_platinums() {
   var x = [];
 request({
@@ -53,7 +27,7 @@ request({
   return x;
 }
 
-function test() {
+function inherit_inventory() {
   // Return a new promise.
   return new Promise(function(resolve, reject) {
     var x = [];

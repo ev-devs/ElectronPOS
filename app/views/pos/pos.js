@@ -15,7 +15,7 @@ var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
-// Global variables 
+// Global variables
 var inventory = [];
 var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
@@ -26,7 +26,7 @@ var leaders_list = [];
 // if search is changed, takes search input and reduces html elements to display elements with
 // the searched word.
 // if searched word is not found, displays no results notification
-// if search is empty,  
+// if search is empty,
 
 function alphabetize(list){
 	var name = "";
@@ -54,7 +54,7 @@ function selectPlatinum(list){
 	for(var i = 0; i < list.length; i++){
 		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
 		 $("#platinums-list").append(name);
-	}	
+	}
 }
 
 request({
@@ -102,7 +102,7 @@ request({
   			//console.log(body);
   		}
   	});
-  	
+
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
@@ -507,30 +507,3 @@ Quantity right side of item, icon on left
 Right side is for platinum view as well before any transactions
 Switch between platinums
 */
-
-/*Uses a binary search to return the index of an element but faster*/
-function binaryIndexOf(key, searchElement) {
-    'use strict';
-
-    var minIndex = 0;
-    var maxIndex = this.length - 1;
-    var currentIndex;
-    var currentElement;
-
-    while (minIndex <= maxIndex) {
-        currentIndex = (minIndex + maxIndex) / 2 | 0;
-        currentElement = this[currentIndex][key];
-        if (currentElement < searchElement) {
-            minIndex = currentIndex + 1;
-        }
-        else if (currentElement > searchElement) {
-            maxIndex = currentIndex - 1;
-        }
-        else {
-            return currentIndex;
-        }
-    }
-
-    return -1;
-}
-Array.prototype.binaryIndexOf = binaryIndexOf;
