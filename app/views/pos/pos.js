@@ -16,40 +16,57 @@ var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
 
-
+// Global variables 
 var inventory = [];
 var URL = process.env.EQ_URL.toString();
-var leaders = [];
+var list = [];
 /*Leaders*/
+//Lists leaders in alphabetical order
+// appends html element to display all the names
+// if search is changed, takes search input and reduces html elements to display elements with
+// the searched word.
+// if searched word is not found, displays no results notification
+// if search is empty,  
+
+function alphabetize(leaders_list){
+	var name = "";
+	for(var i = 0; i < leaders_list.length; i++){
+		name = leaders_list[i].lastname.toString()  + ", " + leaders_list[i].firstname.toString();
+		list.push(name);
+	}
+	list.sort();
+}
+
+function selectPlatinum(leaders_list){
+	var name = "";
+	for(var i = 0; i < leaders_list.length; i++){
+		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
+		 $("#platinums-list").append(name);
+	}	
+}
+
 request({
 		method: 'POST',
 		uri: URL + '/evleaders',
 		form: {
 			token: process.env.EQ_TOKEN.toString()
 		}
-	}, function (error, response, body) {
-		// console.log(body);
-		if (!error && response.statusCode == 200) {
+		}, function (error, response, body) {
+				if (!error && response.statusCode == 200) {
+					var leaders = [];  // container for the leaders object
+					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in containers
+					alphabetize(leaders); // lists platinums in alphabetic order by 
+					selectPlatinum(leaders);
+					$('#platinums-list').show()
+					$('.loading').hide()
 
-			leaders = JSON.parse(body).evleaders;
-			console.log(leaders[0].lastname);
-
-			(function selectPlatinum(){
-				 for(var i = 0; i < 900; i++){
-					 console.log(leaders)
-					 var name = "<a href=\"#!\" class=\"collection-item\">" + leaders[i].firstname.toString()  + " " + leaders[i].lastname.toString() + "</a>";
-					 $("#platinums-list").append(name);
+				} else if (error) {
+					console.log(error);
+				} else {
+					console.log(body);
 				}
-			})()
-			$('#platinums-list').show()
-			$('.loading').hide()
+});
 
-		} else if (error) {
-			console.log(error);
-		} else {
-			console.log(body);
-		}
-	});
 /*Inventory*/
   request({
   		method: 'POST',
@@ -479,60 +496,6 @@ Quantity right side of item, icon on left
 Right side is for platinum view as well before any transactions
 Switch between platinums
 */
-
-/*BEGIN PLATINUMS CODE*/
-var Platinums_list=[{  //temporary list used for testing
-	"first_name" : "Kevin",
-	"last_name" : "Ortega"
-},
-{
-	"first_name": "Harold and Hannah",
-	"last_name": "Yates"
-},
-{
-	"first_name": "Jay and Jasmine",
-	"last_name":" Witiker"
-},
-{
-	"first_name": "Stephen and Tiana",
-	"last_name":" Castro"
-},
-{
-	"first_name": "Bob and Bertha",
-	"last_name":" Vallero"
-},
-{
-	"first_name": "Martin and Luz",
-	"last_name":" Ameral"
-},
-{
-	"first_name": "Marcos and Maria",
-	"last_name":" Ruiz"
-},
-{
-	"first_name": "Miguel and Paula",
-	"last_name":" Rubio"
-},
-{
-	"first_name": "Juan and Juanita",
-	"last_name":" Lopez"
-},
-{
-	"first_name": "Jacob",
-	"last_name":" Jicklesmith"
-},
-{
-	"first_name": "John and Mary",
-	"last_name":" Doe"
-},
-];
-
- /*Append to container holds the names of platinums*/
-// appends html element to display all the names
-// if search is changed, takes search input and reduces html elements to display elements with
-// the searched word.
-// if searched word is not found, displays no results notification
-// if search is empty, containers
 
 /*Uses a binary search to return the index of an element but faster*/
 function binaryIndexOf(key, searchElement) {
