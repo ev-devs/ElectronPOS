@@ -393,42 +393,40 @@ $(document).on("click", "#m_card", function () {
   console.log("Multi card");
 });
 
-/*BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
+/*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
 $(document).on("change", "#tendered", function() {
   console.log($(this).val());
   if($(this).val() >= total)
     $("#change").text("$" + accounting.formatNumber(Number($(this).val()) - total, 2, ",").toString())
 });
-/*BEGIN CARD TRANSACTION CODE*/
+
+/*NOTE: BEGIN CARD TRANSACTION CODE*/
 $(document).on("click", "#swipe_sim", function() {
+	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
+	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag)
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 });
 
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
 function fade_out() {
   $("#thanks").addClass("fadeOut");
   refocus();
 }
 
+/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order() {
-  ///if(item_list.length != 0) {
+		/*Empties the item list*/
     item_list.splice(0, item_list.length);
+		/*Empties the left side*/
     $("#sale_list tbody").empty();
+		/*Empties the subtotal and total*/
     subtotal = 0;
     tax = 0;
     total = 0;
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
-  //}
+
 }
-
-
-/*
-Text size, scroll bottom. Touch screen acting like a mouse must make itthink like touch screen
-BUG: Item is negative with multiple items. weird stuff going on. Bug with the red color, probably with item_num, will needto get rid
-Quantity right side of item, icon on left
-Right side is for platinum view as well before any transactions
-Switch between platinums
-*/
