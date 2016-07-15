@@ -3,7 +3,7 @@ var request = require('request');
 var _ = require("underscore");
 
 var inventory = [];
-function inherit_inventory() {
+/*function inherit_inventory() {
   var x = []
   request({
       method: 'POST',
@@ -28,7 +28,7 @@ function inherit_inventory() {
     });
     return x;
 };
-
+*/
 function inherit_platinums() {
   var x = [];
 request({
@@ -53,7 +53,7 @@ request({
   return x;
 }
 
-function test() {
+function inherit_inventory() {
   // Return a new promise.
   return new Promise(function(resolve, reject) {
     var x = [];
