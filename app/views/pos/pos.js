@@ -15,9 +15,9 @@ var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
-
 // Global variables 
 var inventory = [];
+
 var URL = process.env.EQ_URL.toString();
 var list = [];
 /*Leaders*/
@@ -90,8 +90,7 @@ request({
   			//console.log(body);
   		}
   	});
-
-
+  	
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })

@@ -40,7 +40,7 @@ $('#events_submit').click(function(event){
 					method: 'POST',
 					uri: URL + '/eventaccess',
 					form: {
-						token: process.env.EQ_TOKEN.toString();,
+						token: process.env.EQ_TOKEN.toString(),
 						type: 'c',
 						event: '109',
 						code: 'RI77',
@@ -81,3 +81,4 @@ function rgb2hex(rgb) {
 function hex(x) {
   return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 }
+	console.log(inventory);
