@@ -17,9 +17,9 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 // Global variables 
 var inventory = [];
-
 var URL = process.env.EQ_URL.toString();
-var list = [];
+var leaders_list = [];
+
 /*Leaders*/
 //Lists leaders in alphabetical order
 // appends html element to display all the names
@@ -28,18 +28,30 @@ var list = [];
 // if searched word is not found, displays no results notification
 // if search is empty,  
 
-function alphabetize(leaders_list){
+function alphabetize(list){
 	var name = "";
-	for(var i = 0; i < leaders_list.length; i++){
-		name = leaders_list[i].lastname.toString()  + ", " + leaders_list[i].firstname.toString();
-		list.push(name);
+	for(var i = 0; i < list.length; i++){
+		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
+		leaders_list.push(name);
 	}
-	list.sort();
+	leaders_list.sort();
 }
 
-function selectPlatinum(leaders_list){
+
+//take user input .change(function(){})   DONE
+//convert to string .val()     DONE
+//convert string into regex    var re = new RegExp("a|b", "i");    
+//search for regex in each element of the array array[i].search(regex)
+//if regex is found, NOT -1, then get the index  
+// change to list to show in the browser
+function selectPlatinum(list){
+	var user_input = "";
 	var name = "";
-	for(var i = 0; i < leaders_list.length; i++){
+	$("#enter-platinum").change(function(){
+			user_input = $("#enter-platinum").val();
+			var re = new RegExp(user_input.toString(), "i");
+		});
+	for(var i = 0; i < list.length; i++){
 		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
 		 $("#platinums-list").append(name);
 	}	
@@ -54,9 +66,9 @@ request({
 		}, function (error, response, body) {
 				if (!error && response.statusCode == 200) {
 					var leaders = [];  // container for the leaders object
-					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in containers
-					alphabetize(leaders); // lists platinums in alphabetic order by 
-					selectPlatinum(leaders);
+					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
+					alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list 
+					selectPlatinum(leaders_list);
 					$('#platinums-list').show()
 					$('.loading').hide()
 
@@ -113,7 +125,7 @@ $(".keyboard").keyboard({
   "cust_quantity" : 0,
   "price" : 6.99,
   "bar" : 1
-},
+},klkljlj
 {
   "item_name" : "Item B",
   "inv_quantity" : 12,
