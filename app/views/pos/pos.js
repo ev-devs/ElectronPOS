@@ -15,7 +15,7 @@ var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
-// Global variables 
+// Global variables
 var inventory = [];
 
 var URL = process.env.EQ_URL.toString();
@@ -26,7 +26,7 @@ var list = [];
 // if search is changed, takes search input and reduces html elements to display elements with
 // the searched word.
 // if searched word is not found, displays no results notification
-// if search is empty,  
+// if search is empty,
 
 function alphabetize(leaders_list){
 	var name = "";
@@ -42,7 +42,7 @@ function selectPlatinum(leaders_list){
 	for(var i = 0; i < leaders_list.length; i++){
 		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
 		 $("#platinums-list").append(name);
-	}	
+	}
 }
 
 request({
@@ -55,7 +55,7 @@ request({
 				if (!error && response.statusCode == 200) {
 					var leaders = [];  // container for the leaders object
 					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in containers
-					alphabetize(leaders); // lists platinums in alphabetic order by 
+					alphabetize(leaders); // lists platinums in alphabetic order by
 					selectPlatinum(leaders);
 					$('#platinums-list').show()
 					$('.loading').hide()
@@ -90,7 +90,7 @@ request({
   			//console.log(body);
   		}
   	});
-  	
+
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
@@ -105,66 +105,7 @@ $(".keyboard").keyboard({
   autoAccept : true,
   layout: "num"
 });
-/*BEGIN TEST HARNESS CODE*/
-/*Simple test harness to test out the POS main page before integratign the scanner and the EMV reader*/
-/*var inventory = [{
-  "item_name" : "7 steps to success by Alexander Hamitlton",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 6.99,
-  "bar" : 1
-},
-{
-  "item_name" : "Item B",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 7.99,
-  "bar" : 2
-},
-{
-  "item_name" : "Item C",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 8.99,
-  "bar" : 3
-},
-{
-  "item_name" : "Item D",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 9.99,
-  "bar" : 4
-},
-{
-  "item_name" : "Item E",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 10.99,
-  "bar" : 5
-},{
-  "item_name" : "Item F",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 11.99,
-  "bar" : 6
-},
-{
-  "item_name" : "Item G",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 12.99,
-  "bar" : 7
-},
-{
-  "item_name" : "Item H",
-  "inv_quantity" : 12,
-  "cust_quantity" : 0,
-  "price" : 13.99,
-  "bar" : 8
-}
-
-];*/
-/*"H0187", */
+/*Reference barcodes: "H0187", "1", "H0192" */
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
 /*Next 3 variables are self-explanatory. Just look at their name.*/
@@ -495,30 +436,3 @@ Quantity right side of item, icon on left
 Right side is for platinum view as well before any transactions
 Switch between platinums
 */
-
-/*Uses a binary search to return the index of an element but faster*/
-function binaryIndexOf(key, searchElement) {
-    'use strict';
-
-    var minIndex = 0;
-    var maxIndex = this.length - 1;
-    var currentIndex;
-    var currentElement;
-
-    while (minIndex <= maxIndex) {
-        currentIndex = (minIndex + maxIndex) / 2 | 0;
-        currentElement = this[currentIndex][key];
-        if (currentElement < searchElement) {
-            minIndex = currentIndex + 1;
-        }
-        else if (currentElement > searchElement) {
-            maxIndex = currentIndex - 1;
-        }
-        else {
-            return currentIndex;
-        }
-    }
-
-    return -1;
-}
-Array.prototype.binaryIndexOf = binaryIndexOf;
