@@ -164,29 +164,31 @@ var item_index = 0;
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
-  var barcode = $("#barcode").val()
+  var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   var i = determine_item_status(item_list, inventory, barcode);
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
-  if(item_list[i].cust_quantity == 1) {
-    /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
-    where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
-    values as the text values of the td tags.*/
-    var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-     <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
-     x" + item_list[i].cust_quantity.toString() + ": " + item_list[i].item_name + "</span></td> \
-     <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
-    </tr>"
-    /*Append to the table that holds the items*/
-    $("#sale_list tbody").append(item);
-  }
-  /*If the item is in the list then just go to its place and increment its counter and update the gui*/
-  else {
-    var item = $("#qnt-item-" + i).text().trim().toString();
-    var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-    item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
-    $("#qnt-item-" + i).text(item);
+  if(i != -1) {
+    if(item_list[i].cust_quantity == 1) {
+      /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+      where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+      values as the text values of the td tags.*/
+      var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
+       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"qnt-item-" + i + "\">\
+       x" + item_list[i].cust_quantity + ": " + item_list[i].title + "</span></td> \
+       <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
+      </tr>"
+      /*Append to the table that holds the items*/
+      $("#sale_list tbody").append(item);
+    }
+    /*If the item is in the list then just go to its place and increment its counter and update the gui*/
+    else {
+      var item = $("#qnt-item-" + i).text().trim().toString();
+      var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+      item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
+      $("#qnt-item-" + i).text(item);
+    }
   }
   /*Update the global quantities of subtotal, tax, and total*/
   subtotal+=item_list[i].price;
@@ -205,11 +207,9 @@ function determine_item_status(item_list, inventory, barcode) {
   var i = -1;
   /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
   var inv_result = inventory.find(function(e) {
-    return e.bar == barcode;
+    return e.barcode == barcode;
   });
-  console.log(inv.find(function(e) {
-    return e.barcode == "H01";
-  }));
+
   /*If it's in the inventory go here*/
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
@@ -218,7 +218,7 @@ function determine_item_status(item_list, inventory, barcode) {
     cus_result = item_list.find(function(e) {
       /*This i will keep track of where it is in the list*/
       i++;
-      return e.bar == barcode;
+      return e.barcode == barcode;
     });
     /*If the customer already has one then just increment the quantity counter*/
     if(cus_result != undefined) {
@@ -226,7 +226,8 @@ function determine_item_status(item_list, inventory, barcode) {
     }
     /*If not then increment the counter to one and add to the customer's list called item_list*/
     else {
-      inv_result.cust_quantity = 1;
+      inv_result['cust_quantity'] = 1;
+      console.log(inv_result);
       item_list.push(inv_result);
       i = item_list.length - 1;
     }
@@ -234,7 +235,7 @@ function determine_item_status(item_list, inventory, barcode) {
     return i;
   }
   else {
-    return "Not in inventory";
+    return -1;
   }
 };
 
@@ -299,7 +300,7 @@ $("#y_delete").click(function() {
   item_list.find(function(e) {
     /*This i will keep track of where it is in the list*/
     i++;
-    return e.item_name == item_name;
+    return e.title == item_name;
   });
 
   if(item_list[i].cust_quantity == 1) {
