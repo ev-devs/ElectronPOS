@@ -62,7 +62,6 @@ $('#events_submit').click(function(event){
         if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
             // convention is chosen
 
-
         }
 
     }
