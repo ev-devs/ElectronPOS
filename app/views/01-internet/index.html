@@ -1,87 +1,89 @@
-<br>
-<% if (output) { %>
-            <div class="container">
-                <div class="row">
-                    <div class="col s12 left">
-                        <!-- Helps show the current wifi connection. If there aren'y then it will appear as "none"-->
-                         <span class="typcn typcn-wi-fi" style="font-size: 5em"></span> <h2 style="display: inline">Wi-Fi</h2 >
-                    </div>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!--This makes device rendering scale--->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <div class="container leftr" id="connection_holder">
-                <div class="chip" id="cur_con">
-                    Wi-Fi: <%= output[output.length - 1] %>
-                </div>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-            </div>
+    <!--We are includeing jquery for our everyday javascript needs-->
+    <script type="text/javascript">
+        window.hammer = require('../bower_components/hammerjs/hammer.js')
+        window.$ = window.jQuery = require('../bower_components/jquery/dist/jquery.js');
+    </script>
 
-            <br>
+    <!---This is for our icons that are hosted locally-->
+    <link rel='stylesheet' href='../bower_components/typicons.font/src/font/typicons.min.css' />
+    <!-- we are including our material design CSS for our everday GUI needs-->
+    <link rel="stylesheet" href="../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
+    <!--We are inlcuding our material design js for our everyday GUI needs-->
+    <script src="../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
+    <!--Used before the DATABASE is up-->
+    <script src="./lib/globals.js" charset="utf-8"></script>
 
-
-            <!-- Modal Structure for the password input. Will need to either scrap OR interface with the digital keyboard.-->
-            <div id="modal1" class="modal">
-              <div class="modal-content">
-              <!--Text area to enter the password-->
-                <h4>Enter password</h4>
-                <input id="keyboard" type="text">
-                <script type="text/javascript">
-                  $("#keyboard").keyboard();
-                </script>
-              </div>
+    <!--- THIS IS NEEDED FOR US TO GET A KEYBOARD ON THE SCREEN---->
+    <!-- jQuery (required) & jQuery UI + theme (optional) -->
+	<script src="../bower_components/jquery-ui/jquery-ui.min.js" rel="stylesheet"></script>
 
 
-              <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
-              <div class="modal-footer">
-                <a href="#!" class=" modal-action modal-close waves-effect btn-flat" id="accept">Accept</a>
-              </div>
-            </div>
 
-            <div class="container center">
-                <ul class="collection wifi_holder">
-                  <!--Traverse the length of the array that holds the wifi info-->
-                  <%for(var i = 0; i < output.length - 1; i++) { %>
-                      <!--If there is a wifi password on then render this html-->
-                       <% if(output[i].psk == "on") { %>
-                         <a href="#modal1" class="collection-item wifi_option modal-trigger" id="<%= output[i].essid%>"><%= output[i].essid%>
-                         <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
-                      <!--If not then render this -->
-                       <%} else if (output[i].psk == "off") { %>
-                         <a href="#!" class="collection-item wifi_option" id="<%= output[i].essid%>"><%= output[i].essid%>
-                         <span class="typcn typcn-lock-open right" style="font-size: 2em"></span>
-                       <%}%>
-                     </a>
-                   <%}%>
-               </ul>
-            </div>
-            <% } else {%>
+	<!-- keyboard widget css & script (required) -->
+	<link href="../bower_components/keyboard/dist/css/keyboard-basic.min.css" rel="stylesheet">
+	<script src="../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
 
-    <div class="container">
-        <h1>We curently cannot detect any internet connections</h1>
-        <br>
-        <a class="waves-effect waves-light btn">Continue with cash only/a>
-    </div>
-<% } %>
-<!--jQuery for event listeners that are bonded to this html page-->
-<script type="text/javascript">
-/*Creates the custom event from the transition between the internet connection for view transition*/
-/*Grabs the string that displays the current connection which is generated from the script*/
-var status = document.getElementById("cur_con").innerText.toString();
-/*Creates the custom event and passes in the status of the internet*/
-var connected = new CustomEvent('connected', { 'detail': status  });
+	<!-- keyboard extensions (optional) -->
+    <script src="../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
 
-/*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
-(from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
-You can think of this as the section of code which defines what our event DOES after it is created and called.*/
-document.getElementById("cur_con").addEventListener('connected', function(e) {
-  /*If the status is not "Wi-Fi: none" then render the button which allows the user to proceed*/
-  if(status != "Wi-Fi: none") {
-    var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
-    var remove = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
-    $("#connection_holder").append(remove);
-    $("#connection_holder").append(proceed);
-  }
-}, false);
-/*Here is where one of our events is dispatched*/
-document.getElementById("cur_con").dispatchEvent(connected);
-</script>
+    <title>Hello World!</title>
+  </head>
+  <body>
+
+      <!--Navigation Here with custom colors-->
+      <nav style="background-color: #125CA0;"><!--HTML RENDERED--></nav>
+
+      <!--Body Here (this is for the wifi choosing)--->
+      <main></main>
+
+
+      <!--Footer Here--->
+      <footer></footer>
+
+      <!--we need to include the javascript for our index-->
+      <script src="./index.js" charset="utf-8"></script>
+
+
+  </body>
+
+  <!--THIS IS FOR OUR CUSTOM FONTS THAT ARE KEPT LCOALLY--->
+  <style media="screen">
+    @font-face {
+        font-family: 'typicons';
+        src: url("../bower_components/typicons.font/src/font/typicons.eot");
+        src: url("../bower_components/typicons.font/src/font/typicons.eot?#iefix") format('embedded-opentype'),
+           url("../bower_components/typicons.font/src/font/typicons.woff") format('woff'),
+           url("../bower_components/typicons.font/src/font/typicons.ttf") format('truetype'),
+           url("./bower_components/typicons.font/src/font/typicons.svg#typicons") format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+  </style>
+  <script>
+    $(document).on('click', '#proceed', function() {
+      /*Inventory*/
+      //inventory = inherit_inventory();
+      inherit_inventory()
+      .then(function(result) {
+        if(result != 0)
+          window.location.assign("./views/eventstart/index.html");
+        inventory = result;
+        console.log(inventory);
+      })
+      .catch(function(result) {
+          console.log(result);
+        }
+      );
+    });
+  </script>
+</html>
