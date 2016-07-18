@@ -44,14 +44,14 @@ var internet = {
           connections[i] = wifi;
         }
         /*Runs the wifi_cur.sh script to get the output and store it as a string*/
-        var cur = execSync( __dirname + '/../../pw/wifi_cur.sh cur').toString();
+        var cur = execSync( __dirname + '/../../dixonconnect/wifi_cur.sh cur').toString();
         /*pushes it as the last element for easy access*/
         connections.push(cur);
         return connections;
     },
 
     list_connections : function(){
-        return this.JSONify(this.remove_dup(execSync( __dirname + '/../../pw/wifi_script.sh').toString('utf-8').split('\n')));
+        return this.JSONify(this.remove_dup(execSync( __dirname + '/../../dixonconnect/wifi_script.sh').toString('utf-8').split('\n')));
     },
     connect : function(){
         // ideally you would connect using this function
@@ -67,7 +67,7 @@ var psk = "";
 not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val()
-  execSync( "sudo " + __dirname + "/../../pw/wifi_con.sh " + ap_name + " " + psk);
+  execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
 
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var status;
@@ -76,7 +76,7 @@ $(document).on('click', '#accept', function() {
   var output_d = spawnSync('wpa_cli', ['scan']);
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
-     var cur = execSync("sudo " + __dirname + "/../../pw/wifi_cur.sh con").toString();
+     var cur = execSync("sudo " + __dirname + "/../../dixonconnect/wifi_cur.sh con").toString();
      $("#cur_con").text("Wi-Fi: " + cur);
      status = document.getElementById("cur_con").innerText.toString();
   }
@@ -99,7 +99,7 @@ $(document).on('click', '.wifi_option', function() {
 
 /*When the remove connection button is pressed then remove the current connection*/
 $(document).on('click', '#remove', function() {
-  execSync("sudo " + __dirname + "/../../pw/wifi_rem.sh ");
+  execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
   $("#cur_con").text("Wi-Fi: none");
   $("#remove").remove();
   $("#proceed").remove();
