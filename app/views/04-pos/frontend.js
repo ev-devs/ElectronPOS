@@ -208,5 +208,10 @@ function void_order() {
 }
 
 $(document).on("click", ".platinum", function() {
+  if(current_platinum != "NONE") {
+    $("#" + current_platinum).removeClass("green");
+  }
   current_platinum = $(this).attr("id");
+  $("#" + current_platinum).addClass("green lighten-3");
+  console.log(current_platinum);
 });
