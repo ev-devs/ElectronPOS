@@ -55,20 +55,21 @@ function selectPlatinum(list){
 				var re = new RegExp(user_input.toString(), "i");
 				for(var i = 0; i < list.length; i++){
 					if(list[i].search(re) != -1){
-						list_names.push(list[i]);  
+						list_names.push(list[i]);
 					}
 				}
 				console.log(list_names);
 				display_list(list_names);
 			}
 		});
-		
+
 }
 function display_list(list){
 	var name = "";
 	$("#platinums-list").empty();
 	for(var i = 0; i < list.length; i++){
-		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
+    var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
+		 name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
 		 $("#platinums-list").append(name);
 	}
 }

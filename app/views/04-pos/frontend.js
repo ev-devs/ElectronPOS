@@ -20,9 +20,9 @@ var subtotal = 0.00;
 var tax = 0.00;
 var total = 0.00;
 /*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
-var item_id = "";
+var item_id = "NONE";
 var item_num = 0;
-
+var current_platinum = "NONE";
 /*BEGIN SCAN CODE*/
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
@@ -206,3 +206,7 @@ function void_order() {
     $("#total").text("$"+total.toString());
 
 }
+
+$(document).on("click", ".platinum", function() {
+  current_platinum = $(this).attr("id");
+});
