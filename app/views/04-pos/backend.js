@@ -229,6 +229,8 @@ var card_flag = 0;
 var cash_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a cash and card transaction is being done.*/
 var cash_card_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a multi card transaction is being done.*/
+var multi_card_flag = 0;
 /*Flag which denotes that the user can cancel at any time assuming the flag is raised. By default it is raised.*/
 var cancel_flag = 0;
 
@@ -288,6 +290,7 @@ $(document).on("click", "#c_and_c", function () {
 /*Renders the necessary partial for completing orders with multiple cards.*/
 $(document).on("click", "#m_card", function () {
   console.log("Multi card");
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
 });
 
 /*NOTE: BEGIN CARD TRANSACTION CODE*/

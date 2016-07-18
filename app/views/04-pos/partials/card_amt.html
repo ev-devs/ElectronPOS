@@ -1,0 +1,29 @@
+<!--
+
+file name   : cash.html
+full path   : app/views/pay_options/cash.html
+purpose     : contains the html that renders the cash screen in the POS.html right side.
+              It is rendered using EJS.
+appears in  : pos.html
+
+-->
+<div id="cash_page" class="col s12 m12 l12 animated fadeIn">
+  <br />
+  <br />
+  <br/>
+  <div class="row center black-text" class="no-space">
+    <h4 class="no-space">Amount Tendered</h4>
+  </div>
+  <div class="row">
+      <div class="col s12 m12 l12 center black-text">
+        <span style="font-size:300%;">$&nbsp;</span>
+        <input style="width: 80%; height: 50%; text-align: center; font-size:300%;" placeholder="0.00" id="tendered" class="keyboard grey lighten-4" type="text">
+      </div>
+  </div>
+</div>
+
+<script>
+/*Sets the cancel and confirm buttons to red and green respectively*/
+$("#cancel").css("background-color", "red");
+$("#confirm").css("background-color", "green");
+</script>
