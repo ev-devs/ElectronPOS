@@ -1,3 +1,42 @@
+/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
+in the customers list. If so the increment the counter and if not then add to list.
+@return: index of the item in the item_list
+@param: item_list, inventory, and barcode*/
+function determine_item_status(item_list, inventory, barcode) {
+  var i = -1;
+  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
+  var inv_result = inventory.find(function(e) {
+    return e.barcode == barcode;
+  });
+
+  /*If it's in the inventory go here*/
+  if(inv_result != undefined) {
+    /*Check the customers current list to see if they already have it in their choices*/
+    //console.log("In inventory");
+    var flag = 0;
+    cus_result = item_list.find(function(e) {
+      /*This i will keep track of where it is in the list*/
+      i++;
+      return e.barcode == barcode;
+    });
+    /*If the customer already has one then just increment the quantity counter*/
+    if(cus_result != undefined) {
+      item_list[i].cust_quantity+=1;
+    }
+    /*If not then increment the counter to one and add to the customer's list called item_list*/
+    else {
+      inv_result['cust_quantity'] = 1;
+      item_list.push(inv_result);
+      i = item_list.length - 1;
+    }
+    /*return the place of the item in the list for future use*/
+    return i;
+  }
+  else {
+    return -1;
+  }
+};
+
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
   var i = -1;

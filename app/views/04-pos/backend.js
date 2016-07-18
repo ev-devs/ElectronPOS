@@ -1,3 +1,47 @@
+/*BEGIN DELETE CODE*/
+/*When a finger is on the screen and on an item record the start point.
+This is how far away the finger is from the left border.*/
+$(document).on("touchstart", ".whole-item", function(e) {
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
+  touchstart = touchobj;
+});
+
+/*When the finger leaves the screen, record it's end point in pixels.*/
+$(document).on("touchend", ".whole-item", function(e) {
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
+  touchend = touchobj;
+  /*Before seeing if this is a valid swipe take note of the item_id for future use*/
+  item_id = $(this).attr("id");
+  /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
+  if(touchstart-touchend >= 100) {
+    /*Populates the modal with the item name for seller confirmation*/
+    $(this).css("background-color", "red");
+    /*Whole item taken from the html doc*/
+    var item = $(this).find("span").text().trim();
+    var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+    var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+    if(item_qnt == "1") {
+      $('#item_type').text(item_name);
+    }
+    else {
+      /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
+      $('#delete_option').html(
+        ejs.render(
+          fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : item_qnt}
+        )
+      );
+      $('#item_type').text(" how many of " + item_name);
+    }
+    /*Open modal*/
+    $('#modal1').openModal({
+      dismissible: false, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
+
 $("#y_cancel").click(function() {
 	/*As long as the length of the list is > 0 then cancellations can happen*/
   if(item_list.length != 0) {
