@@ -182,8 +182,6 @@ $(document).on("change", "#tendered", function() {
 function fade_out() {
   $("#thanks").addClass("fadeOut");
   refocus();
-	/*Voids the order to reset the variables in anticipation for a new  transaction*/
-	void_order();
 	/*Render platinums list FIX*/
 }
 
@@ -211,4 +209,7 @@ function void_order() {
     multi_card_flag = 0;
     cash_card_flag = 0;
     current_platinum = "NONE";
+    setTimeout(function() {
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
+    }, 1500);
 }
