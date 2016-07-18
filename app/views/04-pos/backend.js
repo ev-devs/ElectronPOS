@@ -309,5 +309,6 @@ $(document).on("click", ".platinum", function() {
 	confirm_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
+	$("#current_platinum").text(current_platinum.replace(/2/g, ",").replace(/1/g, " "))
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
 });
