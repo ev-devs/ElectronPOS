@@ -1,3 +1,23 @@
+/*
+
+tl;dr This contains all the logic for the pos.html view
+
+file name   : pos.js
+full path   : app/views/pos/pos.js
+purpose     : manipulate the POS GUI when scanning items
+              as well as communication with the EMV reader (to charge client)
+present in  : pos.html
+
+*/
+var request = require('request');
+//TO be removed once connected to views
+var ejs = require('ejs');
+var fs = require('fs');
+var accounting = require('accounting-js');
+var _ = require("underscore");
+// Global variables
+var inventory = [];
+var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
 
@@ -41,7 +61,7 @@ function selectPlatinum(list, searched){
 				console.log(searched);
 			}
 		});
-	
+
 }
 function display_list(list){
 	var name = "";
@@ -54,9 +74,9 @@ function display_list(list){
 request({
 		method: 'POST',
 		uri: URL + '/evleaders',
-		form: {
-			token: process.env.EQ_TOKEN.toString()
-		}
+    form: {
+      token: process.env.EQ_TOKEN.toString()
+    }
 		}, function (error, response, body) {
 				if (!error && response.statusCode == 200) {
 					var leaders = [];  // container for the leaders object
@@ -74,6 +94,68 @@ request({
 				}
 });
 
+/*Inventory*/
+  request({
+  		method: 'POST',
+  		uri: URL + '/inventory',
+  		form: {
+  			token: process.env.EQ_TOKEN.toString()
+  		}
+  	}, function (error, response, body) {
+  		// console.log(body);
+  		if (!error && response.statusCode == 200) {
+  			var resp = JSON.parse(body);
+
+  			var ordItems = _.sortBy(resp.items, function (item) {
+  				return item.title;
+  			})
+  			//console.log(ordItems);
+				inventory = ordItems;
+  		} else if (error) {
+  			console.log(error);
+  		} else {
+  			//console.log(body);
+  		}
+  	});
+
+/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
+in the customers list. If so the increment the counter and if not then add to list.
+@return: index of the item in the item_list
+@param: item_list, inventory, and barcode*/
+function determine_item_status(item_list, inventory, barcode) {
+  var i = -1;
+  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
+  var inv_result = inventory.find(function(e) {
+    return e.barcode == barcode;
+  });
+
+  /*If it's in the inventory go here*/
+  if(inv_result != undefined) {
+    /*Check the customers current list to see if they already have it in their choices*/
+    //console.log("In inventory");
+    var flag = 0;
+    cus_result = item_list.find(function(e) {
+      /*This i will keep track of where it is in the list*/
+      i++;
+      return e.barcode == barcode;
+    });
+    /*If the customer already has one then just increment the quantity counter*/
+    if(cus_result != undefined) {
+      item_list[i].cust_quantity+=1;
+    }
+    /*If not then increment the counter to one and add to the customer's list called item_list*/
+    else {
+      inv_result['cust_quantity'] = 1;
+      item_list.push(inv_result);
+      i = item_list.length - 1;
+    }
+    /*return the place of the item in the list for future use*/
+    return i;
+  }
+  else {
+    return -1;
+  }
+};
 
 /*BEGIN DELETE CODE*/
 /*When a finger is on the screen and on an item record the start point.
