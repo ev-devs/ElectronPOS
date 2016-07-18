@@ -223,7 +223,7 @@ $("#y_cancel").click(function() {
 
 /*NOTE: BEGIN CONFIRM ORDER CODE*/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
-var confirm_flag = 1;
+var confirm_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
 var card_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
@@ -254,14 +254,6 @@ $("#confirm").click(function() {
   if(cash_flag || cash_card_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		/*Removes the red and green colors form the cancel and confirm button*/
-    $("#cancel").removeAttr("style");
-    $("#confirm").removeAttr("style");
-		/*Sets the confirm flag back to one to denote that a normal completion can happen*/
-    confirm_flag = 1;
-		/*Cash flag is set to 0 to denote the end of a cash transaction*/
-    cash_flag = 0;
-    cash_card_flag = 0;
   }
 });
 
@@ -308,5 +300,14 @@ $(document).on("click", "#swipe_sim", function() {
     		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
     }, 3000);
   }
+});
 
+$(document).on("click", ".platinum", function() {
+  if(current_platinum != "NONE") {
+    $("#" + current_platinum).removeClass("green");
+  }
+	confirm_flag = 1;
+  current_platinum = $(this).attr("id");
+  $("#" + current_platinum).addClass("green lighten-3");
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
 });

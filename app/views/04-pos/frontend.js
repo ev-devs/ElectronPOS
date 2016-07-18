@@ -29,10 +29,12 @@ $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
-  var i = determine_item_status(item_list, inventory, barcode);
+  var i;
+  if(current_platinum != "NONE")
+    i = determine_item_status(item_list, inventory, barcode);
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
-  if(i != -1) {
+  if(i != -1 && current_platinum != "NONE") {
     if(item_list[i].cust_quantity == 1) {
       /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
       where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
@@ -55,14 +57,14 @@ $("#scan_sim").click(function()  {
       $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
     }
 		cancel_flag = 1;
+    /*Update the global quantities of subtotal, tax, and total*/
+    subtotal+=item_list[i].price;
+    $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+    tax = subtotal * .075;
+    $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+    total = subtotal + tax;
+    $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
   }
-  /*Update the global quantities of subtotal, tax, and total*/
-  subtotal+=item_list[i].price;
-  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-  tax = subtotal * .075;
-  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-  total = subtotal + tax;
-  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
   $("#barcode").focus();
 });
 
@@ -165,13 +167,6 @@ $("#cancel").click(function() {
     $('#modal2').openModal();
 });
 
-/*BEGIN CANCEL ORDER CODE*/
-$("#cancel").click(function() {
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1)
-    $('#modal2').openModal();
-});
-
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
   refocus()
@@ -204,14 +199,16 @@ function void_order() {
     $("#subtotal").text("$" + subtotal.toString());
     $("#tax").text("$"+tax.toString());
     $("#total").text("$"+total.toString());
-
+    $("#cancel").removeAttr("style");
+    $("#confirm").removeAttr("style");
+    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+    confirm_flag = 0;
+    cancel_flag = 0;
+    /*Cash flag is set to 0 to denote the end of a cash transaction*/
+    cash_flag = 0;
+    /**/
+    card_flag = 0;
+    multi_card_flag = 0;
+    cash_card_flag = 0;
+    current_platinum = "NONE";
 }
-
-$(document).on("click", ".platinum", function() {
-  if(current_platinum != "NONE") {
-    $("#" + current_platinum).removeClass("green");
-  }
-  current_platinum = $(this).attr("id");
-  $("#" + current_platinum).addClass("green lighten-3");
-  console.log(current_platinum);
-});
