@@ -445,7 +445,6 @@ $(document).on("click", "#m_card", function () {
 
 /*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/
 $(document).on("change", "#tendered", function() {
-  console.log($(this).val());
   if($(this).val() >= total)
     $("#change").text("$" + accounting.formatNumber(Number($(this).val()) - total, 2, ",").toString())
 });
