@@ -45,26 +45,28 @@ function alphabetize(list){
 //search for regex in each element of the array array[i].search(regex)
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
-function selectPlatinum(list, searched){
+function selectPlatinum(list){
 	var user_input = "";
 	var name = "";
 	$("#enter-platinum").change(function(){
 			user_input = $("#enter-platinum").val();
 			if(user_input != ""){
-				searched = [];
+				list_names = [];
 				var re = new RegExp(user_input.toString(), "i");
 				for(var i = 0; i < list.length; i++){
 					if(list[i].search(re) != -1){
-						searched.push(list[i]);
+						list_names.push(list[i]);  
 					}
 				}
-				console.log(searched);
+				console.log(list_names);
+				display_list(list_names);
 			}
 		});
-
+		
 }
 function display_list(list){
 	var name = "";
+	$("#platinums-list").empty();
 	for(var i = 0; i < list.length; i++){
 		 name = "<a href=\"#!\" class=\"collection-item\">" + list[i].toString() + "</a>";
 		 $("#platinums-list").append(name);
@@ -82,11 +84,9 @@ request({
 					var leaders = [];  // container for the leaders object
 					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
 					alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
-					display_list(leaders_list);
-					selectPlatinum(leaders_list, list_names)
+					selectPlatinum(leaders_list)
 					$('#platinums-list').show()
 					$('.loading').hide()
-
 				} else if (error) {
 					console.log(error);
 				} else {
