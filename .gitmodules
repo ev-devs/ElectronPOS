@@ -1,0 +1,3 @@
+[submodule "dixonconnect"]
+	path = dixonconnect
+	url = git@github.com:ev-devs/dixonconnect.git
