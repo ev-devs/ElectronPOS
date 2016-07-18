@@ -339,14 +339,3 @@ $("#n_delete").click(function() {
 	/*Refocuses the page on the barcode input*/
   refocus();
 });
-/*BEGIN SEARCH INVENTORY CODE*/
-$("#search").change(function() {
-  console.log("Changed");
-});
-
-/*BEGIN CANCEL ORDER CODE*/
-$("#cancel").click(function() {
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1)
-    $('#modal2').openModal();
-});
