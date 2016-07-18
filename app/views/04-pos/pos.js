@@ -350,22 +350,3 @@ $("#cancel").click(function() {
   if(item_list.length > 0 && cancel_flag == 1)
     $('#modal2').openModal();
 });
-
-$("#y_cancel").click(function() {
-	/*As long as the length of the list is > 0 then cancellations can happen*/
-  if(item_list.length != 0) {
-		/*Voids the order*/
-    void_order();
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		/*Fades out the "thanks" element from the compelte.html file*/
-    setTimeout(fade_out, 1500);
-		/*Sets the confirm flag to 1 denoting an order CAN be confirmed*/
-    confirm_flag = 1;
-		/*Sets the card flag to 0 denoting a cancelled transaction*/
-    cash_flag = 0;
-		/*Sets the card flag to 0 denoting a cancelled transaction*/
-    card_flag = 0;
-		/*Refocus the page on the barcode input*/
-    refocus();
-  }
-});

@@ -1,3 +1,10 @@
+/*BEGIN CANCEL ORDER CODE*/
+$("#cancel").click(function() {
+  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
+  if(item_list.length > 0 && cancel_flag == 1)
+    $('#modal2').openModal();
+});
+
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
   refocus()
