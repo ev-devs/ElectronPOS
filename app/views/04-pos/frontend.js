@@ -174,8 +174,10 @@ $("#n_cancel").click(function() {
 
 /*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/ /*MAY NEED TO GO IN BACKEND.JS*/
 $(document).on("change", "#tendered", function() {
-  if($(this).val() >= total)
-    $("#change").text("$" + accounting.formatNumber(Number($(this).val()) - total, 2, ",").toString())
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
 });
 
 /*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
