@@ -3,6 +3,11 @@ var URL = process.env.EQ_URL.toString();
 
 var event_flag = 0;
 
+
+
+
+
+
 $('#events_submit').click(function(event){
     // error checking for event code
     if ($('#event_code').val() == ""){
@@ -20,10 +25,10 @@ $('#events_submit').click(function(event){
     }
     else {
       if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
-        validate_event('s', $("#" + event_id).val(), $("#" + event_code).val())
+        validate_event('s', $("#event_id").val(), $("#event_code").val())
       }
       if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
-        validate_event('c', $("#" + event_id).val(), $("#" + event_code).val())
+        validate_event('c', $("#event_id").val(), $("#event_code").val());
       }
     }
 });
