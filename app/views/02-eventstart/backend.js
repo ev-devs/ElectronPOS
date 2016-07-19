@@ -3,38 +3,50 @@ var URL = process.env.EQ_URL;
 
 $('#events_submit').click(function(event){
 
-    $('#input_body').hide()
-    $('#event_type_input').hide()
-    $('#loading').show()
 
 
     // error checking for event code
     if ($('#event_code').val() == ""){
          Materialize.toast('No Event Code!', 3000, 'rounded')
+         return;
     }
     // error checking for event id
     if ($('#event_id').val() == ""){
          Materialize.toast('No Event Id!', 3000, 'rounded')
+         return;
     }
     // error checking for event type input
     var status = 0;
     if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#808080" && rgb2hex($($('.convention').children()[0]).css('background-color')) == "#808080"){
          Materialize.toast('No Event Type Selected', 3000, 'rounded')
+         return;
     }
     else {
       if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
+
+          $('#input_body').hide()
+          $('#event_type_input').hide()
+          $('#loading').show()
+
         validate_event('s', $("#event_id").val(), $("#event_code").val())
         .then(function(result) {
+
             if(result[Object.keys(result)[0]] == -1) {
-              $('#modal1').openModal({
-                dismissible: true, // Modal can be dismissed by clicking outside of the modal
-                opacity: .5, // Opacity of modal background
-                in_duration: 300, // Transition in duration
-                out_duration: 200, // Transition out duration
-              });
+                $('#input_body').show()
+                $('#event_type_input').show()
+                $('#loading').hide()
+
+                $('#modal1').openModal({
+                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    opacity: .5, // Opacity of modal background
+                    in_duration: 300, // Transition in duration
+                    out_duration: 200, // Transition out duration
+                });
             }
-            else
-              window.location.assign("../04-pos/index.html");
+            else {
+                window.location.assign("../04-pos/index.html");
+
+          }
         })
         .catch(function(result) {
             console.log(result);

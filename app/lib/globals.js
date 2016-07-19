@@ -1,4 +1,4 @@
-var URL = process.env.EQ_URL.toString();
+var URL = process.env.EQ_URL
 var request = require('request');
 var _ = require("underscore");
 
@@ -10,7 +10,7 @@ function inherit_platinums() {
       method: 'POST',
       uri: URL + '/evleaders',
       form: {
-        token: process.env.EQ_TOKEN.toString()
+        token: process.env.EQ_TOKEN
       }
     }, function (error, response, body) {
       // console.log(body);
@@ -34,7 +34,7 @@ function inherit_inventory() {
         method: 'POST',
         uri: URL + '/inventory',
         form: {
-          token: process.env.EQ_TOKEN.toString()
+          token: process.env.EQ_TOKEN
         }
       },
       function (error, response, body) {
