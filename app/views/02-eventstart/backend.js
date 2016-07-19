@@ -2,6 +2,12 @@ var request = require('request');
 var URL = process.env.EQ_URL.toString();
 
 $('#events_submit').click(function(event){
+
+    $('#input_body').hide()
+    $('#event_type_input').hide()
+    $('#loading').show()
+
+
     // error checking for event code
     if ($('#event_code').val() == ""){
          Materialize.toast('No Event Code!', 3000, 'rounded')

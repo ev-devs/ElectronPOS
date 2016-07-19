@@ -27,3 +27,7 @@
 #events_submit {
     font-size: 2em;
 }
+
+.preloader-wrapper {
+    top: 35vh;
+}
