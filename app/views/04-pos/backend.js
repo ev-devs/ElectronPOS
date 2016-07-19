@@ -313,3 +313,32 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
 });
+
+/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
+function void_order() {
+    item_list.splice(0, item_list.length);/*Empties the item list*/
+		/*Empties the left side*/
+    $("#sale_list tbody").empty();
+		/*Empties the subtotal and total*/
+    subtotal = 0;
+    tax = 0;
+    total = 0;
+    $("#subtotal").text("$" + subtotal.toString());
+    $("#tax").text("$"+tax.toString());
+    $("#total").text("$"+total.toString());
+    $("#cancel").removeAttr("style");
+    $("#confirm").removeAttr("style");
+    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+    confirm_flag = 0;
+    cancel_flag = 0;
+    /*Cash flag is set to 0 to denote the end of a cash transaction*/
+    cash_flag = 0;
+    /**/
+    card_flag = 0;
+    multi_card_flag = 0;
+    cash_card_flag = 0;
+    current_platinum = "NONE";
+    setTimeout(function() {
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {}));
+    }, 1500);
+}
