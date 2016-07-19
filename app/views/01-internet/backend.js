@@ -22,16 +22,14 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.ht
 // MOVE INTO THE NEXT VIEW
 $(document).on('click', '#proceed', function() {
   /*Inventory*/
-  //inventory = inherit_inventory();
+  var inventory_dl = 0;
   inherit_inventory()
   .then(function(result) {
-    if(result != 0)
-      window.location.assign("../02-eventstart/index.html");
     inventory = result;
-    console.log(inventory);
+    if(inventory.length != 0)
+      window.location.assign("../02-eventstart/index.html");
   })
   .catch(function(result) {
       console.log(result);
-    }
-  );
+  });
 });

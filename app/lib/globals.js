@@ -3,34 +3,33 @@ var request = require('request');
 var _ = require("underscore");
 
 var inventory = [];
+var platinums = [];
 function inherit_platinums() {
-  var x = [];
-request({
-		method: 'POST',
-		uri: URL + '/evleaders',
-		form: {
-			token: process.env.EQ_TOKEN.toString()
-		}
-	}, function (error, response, body) {
-		// console.log(body);
-		if (!error && response.statusCode == 200) {
+  return new Promise(function(resolve, reject) {
+    request({
+      method: 'POST',
+      uri: URL + '/evleaders',
+      form: {
+        token: process.env.EQ_TOKEN.toString()
+      }
+    }, function (error, response, body) {
+      // console.log(body);
+      if (!error && response.statusCode == 200) {
 
-			leaders = JSON.parse(body).evleaders;
-      x = leaders;
-
-		} else if (error) {
-			console.log(error);
-		} else {
-			//console.log(body);
-		}
-	});
-  return x;
+        leaders = JSON.parse(body).evleaders;
+        resolve(leaders);
+      } else if (error) {
+        reject(error);
+      } else {
+        //console.log(body);
+      }
+    });
+  });
 }
 
 function inherit_inventory() {
   // Return a new promise.
   return new Promise(function(resolve, reject) {
-    var x = [];
     request({
         method: 'POST',
         uri: URL + '/inventory',

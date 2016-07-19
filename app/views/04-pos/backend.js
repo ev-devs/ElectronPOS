@@ -22,7 +22,7 @@ var leaders_list = [];
 var list_names = [];
 
 
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {}));
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
 request({
 		method: 'POST',
@@ -35,9 +35,9 @@ request({
 					var leaders = [];  // container for the leaders object
 					leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
 					alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
-					selectPlatinum(leaders_list)
+					/*selectPlatinum(leaders_list)*/
 					$('#platinums-list').show()
-					$('.loading').hide()
+					$('.loading').remove()
 				} else if (error) {
 					console.log(error);
 				} else {
@@ -92,24 +92,25 @@ function alphabetize(list){
 //search for regex in each element of the array array[i].search(regex)
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
-function selectPlatinum(list){
-	var user_input = "";
-	var name = "";
-	$("#enter-platinum").change(function(){
+//function selectPlatinum(list){
+//var user_input = "";
+$(document).on("change", "#enter-platinum", function(){
+		var user_input = "";
+		console.log("CHANGED PLATINUM");
 		user_input = $("#enter-platinum").val();
 		if(user_input != ""){
 			list_names = [];
 			var re = new RegExp(user_input.toString(), "i");
-			for(var i = 0; i < list.length; i++){
-				if(list[i].search(re) != -1){
-					list_names.push(list[i]);
+			for(var i = 0; i < leaders_list.length; i++){
+				if(leaders_list[i].search(re) != -1){
+					list_names.push(leaders_list[i]);
 				}
 			}
 			console.log(list_names);
 			display_list(list_names);
 		}
 	});
-}
+//}
 
 function display_list(list){
 	var name = "";
@@ -339,6 +340,6 @@ function void_order() {
     cash_card_flag = 0;
     current_platinum = "NONE";
     setTimeout(function() {
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {}));
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
     }, 1500);
 }
