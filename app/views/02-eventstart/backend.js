@@ -1,13 +1,6 @@
 var request = require('request');
 var URL = process.env.EQ_URL.toString();
 
-var event_flag = 0;
-
-
-
-
-
-
 $('#events_submit').click(function(event){
     // error checking for event code
     if ($('#event_code').val() == ""){
@@ -17,15 +10,23 @@ $('#events_submit').click(function(event){
     if ($('#event_id').val() == ""){
          Materialize.toast('No Event Id!', 3000, 'rounded')
     }
-    // /console.log('COLOR IS: ', rgb2hex($($('.seminar').children()[0]).css('background-color')) )
     // error checking for event type input
-
+    var status = 0;
     if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#808080" && rgb2hex($($('.convention').children()[0]).css('background-color')) == "#808080"){
          Materialize.toast('No Event Type Selected', 3000, 'rounded')
     }
     else {
       if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
         validate_event('s', $("#event_id").val(), $("#event_code").val())
+        .then(function(result) {
+            if(result == 1)
+              window.location.assign("../04-pos/index.html");
+            else if(result == 0)
+              console.log("Invalid event!");
+        })
+        .catch(function(result) {
+            console.log(result);
+        });
       }
       if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
         validate_event('c', $("#event_id").val(), $("#event_code").val());
@@ -49,25 +50,27 @@ function hex(x) {
 };
 
 function validate_event(_type, _event, _code) {
-  var status_flag = 0;
-  request({
-    method: 'POST',
-    uri: URL + '/eventaccess',
-    form: {
-      token: process.env.EQ_TOKEN.toString(),
-      type: _type,
-      event: _event,
-      code: _code,
-    }
-  }, function (error, response, body) {
-    console.log(body);
-    if (!error && response.statusCode == 200) {
-      var msg = JSON.parse(body);
-      console.log(msg);
-    } else if (error) {
-      console.log(error);
-    } else {
-      console.log(body);
-    }
+  return new Promise(function(resolve, reject) {
+    request({
+      method: 'POST',
+      uri: URL + '/eventaccess',
+      form: {
+        token: process.env.EQ_TOKEN.toString(),
+        type: _type,
+        event: _event,
+        code: _code,
+      }
+    }, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var msg = JSON.parse(body);
+        console.log(msg);
+        resolve(1);
+      } else if (error) {
+        console.log(error);
+        reject(0);
+      } else {
+        //console.log(body);
+      }
+    });
   });
 }
