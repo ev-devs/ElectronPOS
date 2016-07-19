@@ -21,58 +21,8 @@ var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
 
-/*Leaders*/
-//Lists leaders in alphabetical order
-// appends html element to display all the names
-// if search is changed, takes search input and reduces html elements to display elements with
-// the searched word.
-// if searched word is not found, displays no results notification
-// if search is empty,
 
-function alphabetize(list){
-	var name = "";
-	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
-		leaders_list.push(name);
-	}
-	leaders_list.sort();
-}
-
-
-//take user input .change(function(){})   DONE
-//convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");
-//search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index
-// change to list to show in the browser
-function selectPlatinum(list){
-	var user_input = "";
-	var name = "";
-	$("#enter-platinum").change(function(){
-			user_input = $("#enter-platinum").val();
-			if(user_input != ""){
-				list_names = [];
-				var re = new RegExp(user_input.toString(), "i");
-				for(var i = 0; i < list.length; i++){
-					if(list[i].search(re) != -1){
-						list_names.push(list[i]);
-					}
-				}
-				console.log(list_names);
-				display_list(list_names);
-			}
-		});
-
-}
-function display_list(list){
-	var name = "";
-	$("#platinums-list").empty();
-	for(var i = 0; i < list.length; i++){
-    var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
-		 name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
-		 $("#platinums-list").append(name);
-	}
-}
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {}));
 
 request({
 		method: 'POST',
@@ -118,6 +68,58 @@ request({
   			//console.log(body);
   		}
   	});
+
+/*Leaders*/
+//Lists leaders in alphabetical order
+// appends html element to display all the names
+// if search is changed, takes search input and reduces html elements to display elements with
+// the searched word.
+// if searched word is not found, displays no results notification
+// if search is empty,
+
+function alphabetize(list){
+	var name = "";
+	for(var i = 0; i < list.length; i++){
+		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
+		leaders_list.push(name);
+	}
+	leaders_list.sort();
+}
+
+//take user input .change(function(){})   DONE
+//convert to string .val()     DONE
+//convert string into regex    var re = new RegExp("a|b", "i");
+//search for regex in each element of the array array[i].search(regex)
+//if regex is found, NOT -1, then get the index
+// change to list to show in the browser
+function selectPlatinum(list){
+	var user_input = "";
+	var name = "";
+	$("#enter-platinum").change(function(){
+		user_input = $("#enter-platinum").val();
+		if(user_input != ""){
+			list_names = [];
+			var re = new RegExp(user_input.toString(), "i");
+			for(var i = 0; i < list.length; i++){
+				if(list[i].search(re) != -1){
+					list_names.push(list[i]);
+				}
+			}
+			console.log(list_names);
+			display_list(list_names);
+		}
+	});
+}
+
+function display_list(list){
+	var name = "";
+	$("#platinums-list").empty();
+		for(var i = 0; i < list.length; i++){
+		  var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
+			name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
+			$("#platinums-list").append(name);
+	}
+}
 
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -309,6 +311,5 @@ $(document).on("click", ".platinum", function() {
 	confirm_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
-	$("#current_platinum").text(current_platinum.replace(/2/g, ",").replace(/1/g, " "))
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
 });
