@@ -25,10 +25,14 @@ $('#events_submit').click(function(event){
       if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
         validate_event('s', $("#event_id").val(), $("#event_code").val())
         .then(function(result) {
-            if(result == 1)
-              window.location.assign("../04-pos/index.html");
+            /*if(result == 1)
+              console.log("Valid event!");
             else if(result == 0)
+              console.log("Invalid event!");*/
+            if(result[Object.keys(result)[0]] == -1)
               console.log("Invalid event!");
+            else
+              window.location.assign("../04-pos/index.html");
         })
         .catch(function(result) {
             console.log(result);
@@ -70,10 +74,11 @@ function validate_event(_type, _event, _code) {
       if (!error && response.statusCode == 200) {
         var msg = JSON.parse(body);
         console.log(msg);
-        resolve(1);
+        resolve(msg);
       } else if (error) {
         console.log(error);
         reject(0);
+        console.log("No event found");
       } else {
         //console.log(body);
       }
