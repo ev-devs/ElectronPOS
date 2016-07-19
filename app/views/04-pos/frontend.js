@@ -40,7 +40,7 @@ $("#scan_sim").click(function()  {
       where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
       values as the text values of the td tags.*/
       var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"" + item_list[i].title.replace(/ /g, "_") + "\">\
+       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"item-list-" + i/*item_list[i].title.replace(/ /g, "_")*/ + "\">\
        x" + item_list[i].cust_quantity + ": " + item_list[i].title + "</span></td> \
        <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
       </tr>"
@@ -49,8 +49,8 @@ $("#scan_sim").click(function()  {
     }
     /*If the item is in the list then just go to its place and increment its counter and update the gui*/
     else {
-      //var item = $("#qnt-item-" + i).text().trim().toString();
-			var item = $("#" + item_list[i].title.replace(/ /g, "_")).text().trim().toString();
+			//var item = $("#" + item_list[i].title.replace(/ /g, "_")).text().trim().toString();
+      var item = inventory[i].title;
 			console.log(item)
       var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
       item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());

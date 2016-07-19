@@ -52,7 +52,7 @@ $('#events_submit').click(function(event){
             console.log(result);
         });
       }
-      if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
+      if(rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
         validate_event('c', $("#event_id").val(), $("#event_code").val())
         .then(function(result) {
             if(result[Object.keys(result)[0]] == -1) {
