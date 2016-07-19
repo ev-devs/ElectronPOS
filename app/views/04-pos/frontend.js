@@ -30,8 +30,10 @@ $("#scan_sim").click(function()  {
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   var i;
+  var places = [];
   if(current_platinum != "NONE")
-    i = determine_item_status(item_list, inventory, barcode);
+    places = determine_item_status(item_list, inventory, barcode);
+  i = places[1];
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
   if(i != -1 && current_platinum != "NONE") {
@@ -40,7 +42,7 @@ $("#scan_sim").click(function()  {
       where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
       values as the text values of the td tags.*/
       var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"item-list-" + i/*item_list[i].title.replace(/ /g, "_")*/ + "\">\
+       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + places[0]/*item_list[i].title.replace(/ /g, "_")*/ + "\">\
        x" + item_list[i].cust_quantity + ": " + item_list[i].title + "</span></td> \
        <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
       </tr>"
@@ -50,11 +52,11 @@ $("#scan_sim").click(function()  {
     /*If the item is in the list then just go to its place and increment its counter and update the gui*/
     else {
 			//var item = $("#" + item_list[i].title.replace(/ /g, "_")).text().trim().toString();
-      var item = inventory[i].title;
+      var item = $("#inv-item" + places[0]).text().trim();
 			console.log(item)
       var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
       item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
-      $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
+      $("#inv-item" + places[0]).text(item);
     }
 		cancel_flag = 1;
     /*Update the global quantities of subtotal, tax, and total*/

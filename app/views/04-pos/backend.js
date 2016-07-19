@@ -139,9 +139,10 @@ in the customers list. If so the increment the counter and if not then add to li
 @return: index of the item in the item_list
 @param: item_list, inventory, and barcode*/
 function determine_item_status(item_list, inventory, barcode) {
-  var i = -1;
+  var places = [-1, -1];
   /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
   var inv_result = inventory.find(function(e) {
+		places[0] += 1;
     return e.barcode == barcode;
   });
 
@@ -152,21 +153,21 @@ function determine_item_status(item_list, inventory, barcode) {
     var flag = 0;
     cus_result = item_list.find(function(e) {
       /*This i will keep track of where it is in the list*/
-      i++;
+      places[1] += 1;
       return e.barcode == barcode;
     });
     /*If the customer already has one then just increment the quantity counter*/
     if(cus_result != undefined) {
-      item_list[i].cust_quantity+=1;
+      item_list[places[1]].cust_quantity+=1;
     }
     /*If not then increment the counter to one and add to the customer's list called item_list*/
     else {
       inv_result['cust_quantity'] = 1;
       item_list.push(inv_result);
-      i = item_list.length - 1;
+      places[1] = item_list.length - 1;
     }
     /*return the place of the item in the list for future use*/
-    return i;
+    return places;
   }
   else {
     return -1;
