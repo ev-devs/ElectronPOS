@@ -124,6 +124,15 @@ html {
     transform: translateY(20%);
 }
 
+#current-platinum {
+    background-color: white;
+    top: 50%;
+    transform: translateY(20%);
+    font-weight: bold;
+    color: black;
+    -webkit-text-fill-color: black
+}
+
 #platinums-list-body {
     height: 55vh;
     margin: 0 -5%;

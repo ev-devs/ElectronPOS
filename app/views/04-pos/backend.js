@@ -92,6 +92,7 @@ function alphabetize(list){
 //search for regex in each element of the array array[i].search(regex)
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
+
 //function selectPlatinum(list){
 //var user_input = "";
 $(document).on("change", "#enter-platinum", function(){
@@ -121,6 +122,17 @@ function display_list(list){
 			$("#platinums-list").append(name);
 	}
 }
+
+$(document).on("click", ".platinum", function() {
+  if(current_platinum != "NONE") {
+    $("#" + current_platinum).removeClass("green");
+  }
+	confirm_flag = 1;
+  current_platinum = $(this).attr("id");
+  $("#" + current_platinum).addClass("green lighten-3");
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
+	$("#current-platinum").attr("placeholder", "Platinum: " + current_platinum.replace(/1/g, " ").replace(/2/g, ","));
+});
 
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -305,15 +317,6 @@ $(document).on("click", "#swipe_sim", function() {
   }
 });
 
-$(document).on("click", ".platinum", function() {
-  if(current_platinum != "NONE") {
-    $("#" + current_platinum).removeClass("green");
-  }
-	confirm_flag = 1;
-  current_platinum = $(this).attr("id");
-  $("#" + current_platinum).addClass("green lighten-3");
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
-});
 
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order() {
