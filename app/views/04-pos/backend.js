@@ -327,7 +327,7 @@ $("#y_delete").click(function() {
 			/*In the item info replace the old quantity with the new quantity*/
       item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
 			/*Take the title of the item and replace all the spaces with underscores because thats how the id is*/
-      $("#" + item_list[i].title.replace(/ /g, "_")).text(item);
+      $("#" + $("#" + item_id).find("span").attr("id")).text(item);
     }
 		/*If the quantity to delete matches the current quantity available*/
     else if(delete_quantity == item_qnt) {
@@ -372,6 +372,9 @@ $("#n_delete").click(function() {
   refocus();
 });
 
+
+
+/*NOTE: BEGIN CANCEL ORDER CODE*/
 $("#y_cancel").click(function() {
 	/*As long as the length of the list is > 0 then cancellations can happen*/
   if(item_list.length != 0) {
@@ -391,6 +394,8 @@ $("#y_cancel").click(function() {
   }
 });
 
+
+
 /*NOTE: BEGIN CONFIRM ORDER CODE*/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
 var confirm_flag = 0;
@@ -404,7 +409,6 @@ var cash_card_flag = 0;
 var multi_card_flag = 0;
 /*Flag which denotes that the user can cancel at any time assuming the flag is raised. By default it is raised.*/
 var cancel_flag = 0;
-
 
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
@@ -456,6 +460,8 @@ $(document).on("click", "#m_card", function () {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
 });
 
+
+
 /*NOTE: BEGIN CARD TRANSACTION CODE*/
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
@@ -473,6 +479,8 @@ $(document).on("click", "#swipe_sim", function() {
 });
 
 
+
+/*NOTE: BEGIN VOID ORDER CODE*/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order() {
     item_list.splice(0, item_list.length);/*Empties the item list*/
