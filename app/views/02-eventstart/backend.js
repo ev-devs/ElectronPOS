@@ -44,7 +44,7 @@ $('#events_submit').click(function(event){
                 });
             }
             else {
-                window.location.assign("../04-pos/index.html");
+                window.location.assign("../03-beginsession/index.html");
 
           }
         })
@@ -64,7 +64,7 @@ $('#events_submit').click(function(event){
               });
             }
             else
-              window.location.assign("../04-pos/index.html");
+              window.location.assign("../03-beginsession/index.html");
         })
         .catch(function(result) {
             console.log(result);
