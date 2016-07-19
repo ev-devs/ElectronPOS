@@ -1,5 +1,5 @@
 var request = require('request');
-var URL = process.env.EQ_URL.toString();
+var URL = process.env.EQ_URL;
 
 $('#events_submit').click(function(event){
 
@@ -65,7 +65,7 @@ function validate_event(_type, _event, _code) {
       method: 'POST',
       uri: URL + '/eventaccess',
       form: {
-        token: process.env.EQ_TOKEN.toString(),
+        token: process.env.EQ_TOKEN,
         type: _type,
         event: _event,
         code: _code,
