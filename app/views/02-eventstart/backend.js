@@ -19,12 +19,14 @@ $('#events_submit').click(function(event){
       if (rgb2hex($($('.seminar').children()[0]).css('background-color')) == "#00c853"){
         validate_event('s', $("#event_id").val(), $("#event_code").val())
         .then(function(result) {
-            /*if(result == 1)
-              console.log("Valid event!");
-            else if(result == 0)
-              console.log("Invalid event!");*/
-            if(result[Object.keys(result)[0]] == -1)
-              console.log("Invalid event!");
+            if(result[Object.keys(result)[0]] == -1) {
+              $('#modal1').openModal({
+                dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                opacity: .5, // Opacity of modal background
+                in_duration: 300, // Transition in duration
+                out_duration: 200, // Transition out duration
+              });
+            }
             else
               window.location.assign("../04-pos/index.html");
         })
@@ -33,7 +35,22 @@ $('#events_submit').click(function(event){
         });
       }
       if (rgb2hex($($('.convention').children()[0]).css('background-color')) == "#00c853"){
-        validate_event('c', $("#event_id").val(), $("#event_code").val());
+        validate_event('c', $("#event_id").val(), $("#event_code").val())
+        .then(function(result) {
+            if(result[Object.keys(result)[0]] == -1) {
+              $('#modal1').openModal({
+                dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                opacity: .5, // Opacity of modal background
+                in_duration: 300, // Transition in duration
+                out_duration: 200, // Transition out duration
+              });
+            }
+            else
+              window.location.assign("../04-pos/index.html");
+        })
+        .catch(function(result) {
+            console.log(result);
+        });;
       }
     }
 });
