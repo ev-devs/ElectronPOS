@@ -30,4 +30,11 @@
 
 .error {
   color: red;
+
+.preloader-wrapper {
+    top: 35vh;
+}
+
+#validation_label {
+    top: 35vh;
 }
