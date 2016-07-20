@@ -188,12 +188,7 @@ $("#scan_sim").click(function()  {
     }
 		cancel_flag = 1;
     /*Update the global quantities of subtotal, tax, and total*/
-    subtotal+=item_list[i].price;
-    $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-    tax = subtotal * .075;
-    $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-    total = subtotal + tax;
-    $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+		update_price('+', 1, i);
   }
   $("#barcode").focus();
 });
@@ -307,6 +302,12 @@ $("#y_delete").click(function() {
     subtotal-= item_list[i].price;
     tax = subtotal * .075;
     total = subtotal + tax;
+		/*Updates the subtotal in the gui with the accounting package*/
+	  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+		/*Updates the tax in the gui with the accounting package*/
+	  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+		/*Updates the total in the gui with the accounting package*/
+	  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
 		/*Make cust_quantity 0*/
     item_list[i].cust_quantity = 0;
 		/*Remove from gui and item_list*/
@@ -321,6 +322,12 @@ $("#y_delete").click(function() {
     subtotal-=(item_list[i].price * delete_quantity);
     tax = subtotal * .075;
     total = subtotal + tax;
+		/*Updates the subtotal in the gui with the accounting package*/
+	  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+		/*Updates the tax in the gui with the accounting package*/
+	  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+		/*Updates the total in the gui with the accounting package*/
+	  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
 		/*If the quantity of items to be deleted is less than than the current quantity*/
     if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
@@ -344,12 +351,6 @@ $("#y_delete").click(function() {
 	/*If the there aren't any items after deletion then there is nothing to cancel so lower the flag*/
 	if(item_list.length == 0)
 		cancel_flag = 0;
-	/*Updates the subtotal in the gui with the accounting package*/
-  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-	/*Updates the tax in the gui with the accounting package*/
-  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-	/*Updates the total in the gui with the accounting package*/
-  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
 	/*Removes the red from the item*/
 	$("#" + item_id).removeAttr("style");
 	/*Refocuses the page on the barcode input*/
@@ -407,10 +408,11 @@ var cash_flag = 0;
 var cash_card_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a multi card transaction is being done.*/
 var multi_card_flag = 0;
-/*Flag which denotes that the user can cancel at any time assuming the flag is raised. By default it is raised.*/
+/*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
 var cancel_flag = 0;
-var previous_flaf = 0;
-
+/*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
+var previous_flag = 0;
+var previous_page = "";
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1) {
@@ -423,6 +425,8 @@ $("#confirm").click(function() {
         confirm_flag = 0;
       }
     }
+
+		previous_flag = 1;
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
@@ -436,6 +440,9 @@ $("#confirm").click(function() {
 $(document).on("click", "#cash", function () {
 	/*Sets the cash flag to true to denote a cash transaction is in process*/
   cash_flag = 1;
+	/*Sets the cancel and confirm buttons to red and green respectively*/
+	$("#cancel").css("background-color", "red");
+	$("#confirm").css("background-color", "green");
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -444,6 +451,8 @@ $(document).on("click", "#cash", function () {
 $(document).on("click", "#card", function () {
 	/*Sets the card flag to true to denote a card transaction is in process*/
   card_flag = 1;
+	/*Sets the cancel and confirm buttons to red and green respectively*/
+	$("#cancel").css("background-color", "red");
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 });
@@ -451,13 +460,17 @@ $(document).on("click", "#card", function () {
 /*Renders the necessary partial for completing orders with cash and cards*/
 $(document).on("click", "#c_and_c", function () {
   cash_card_flag = 1;
+	/*Sets the cancel and confirm buttons to red and green respectively*/
+	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
   console.log("Cash and card");
 });
 
 /*Renders the necessary partial for completing orders with multiple cards.*/
 $(document).on("click", "#m_card", function () {
-  console.log("Multi card");
+	multi_card_flag = 1;
+	/*Sets the cancel and confirm buttons to red and green respectively*/
+	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
 });
 
@@ -467,19 +480,35 @@ $(document).on("click", "#m_card", function () {
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
+	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag || cash_card_flag) {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
       if(card_flag)
   		  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-      else if(cash_card_flag)
+      else if(cash_card_flag) {
+				previous_flag = 1;
     		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+			}
     }, 3000);
   }
 });
 
-
+function update_price(operation, quantity, placement) {
+	/*Update the global quantities of subtotal, tax, and total*/
+	if(operation == '+')
+		subtotal+=(item_list[placement].price * quantity);
+	else if(operation == '-')
+		subtotal-=(item_list[placement].price * quantity);
+	else if(operation == '~')
+		subtotal-=quantity;
+	$("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+	tax = subtotal * .075;
+	$("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+	total = subtotal + tax;
+	$("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+}
 
 /*NOTE: BEGIN VOID ORDER CODE*/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
@@ -488,12 +517,7 @@ function void_order() {
 		/*Empties the left side*/
     $("#sale_list tbody").empty();
 		/*Empties the subtotal and total*/
-    subtotal = 0;
-    tax = 0;
-    total = 0;
-    $("#subtotal").text("$" + subtotal.toString());
-    $("#tax").text("$"+tax.toString());
-    $("#total").text("$"+total.toString());
+		update_price('~', subtotal, 0);
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     /*Sets the confirm flag back to one to denote that a normal completion can happen*/

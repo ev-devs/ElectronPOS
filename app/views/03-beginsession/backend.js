@@ -94,7 +94,7 @@ function createIboSession(){
         }
         else {
 
-            ipc.send('ibo-session-messsage', session)
+            ipc.send('ibo-session-message', session)
         }
     })
 }
