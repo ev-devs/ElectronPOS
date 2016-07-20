@@ -35,3 +35,30 @@
 .preloader-wrapper {
     top: 35vh;
 }
+
+#validation-container {
+    padding-top: 10vh;
+}
+#success-icon {
+    font-size: 25em;
+    color: #00c853;
+    margin-top: 100px;
+}
+#icon-container {
+    margin-top: -150px;
+}
+#success-title {
+    display: inline-block;
+}
+
+/*this is used to keep track of our locally hosted typicons*/
+@font-face {
+    font-family: 'typicons';
+    src: url("../../../bower_components/typicons.font/src/font/typicons.eot");
+    src: url("../../../bower_components/typicons.font/src/font/typicons.eot?#iefix") format('embedded-opentype'),
+       url("../../../bower_components/typicons.font/src/font/typicons.woff") format('woff'),
+       url("../../../bower_components/typicons.font/src/font/typicons.ttf") format('truetype'),
+       url("../.././bower_components/typicons.font/src/font/typicons.svg#typicons") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}

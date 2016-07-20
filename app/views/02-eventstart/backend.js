@@ -4,7 +4,6 @@ var URL = process.env.EQ_URL;
 $('#events_submit').click(function(event){
 
 
-
     // error checking for event code
     if ($('#event_code').val() == ""){
          Materialize.toast('No Event Code!', 3000, 'rounded')
@@ -44,7 +43,12 @@ $('#events_submit').click(function(event){
                 });
             }
             else {
-                window.location.assign("../03-beginsession/index.html");
+                $('#loading').hide()
+                $('#validation-container').show()
+                setTimeout(function(){
+                    window.location.assign("../03-beginsession/index.html");
+                }, 1776)
+                // murica'
 
           }
         })
@@ -63,8 +67,15 @@ $('#events_submit').click(function(event){
                 out_duration: 200, // Transition out duration
               });
             }
-            else
-              window.location.assign("../03-beginsession/index.html");
+            else {
+                $('#loading').hide()
+                $('#validation-container').show()
+                setTimeout(function(){
+                    window.location.assign("../03-beginsession/index.html");
+                }, 1776)
+                // murica'
+
+            }
         })
         .catch(function(result) {
             console.log(result);
