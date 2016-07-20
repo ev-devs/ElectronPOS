@@ -7,7 +7,13 @@ const electron = require('electron');
 const {app, globalShortcut } = electron
 // Module to create native browser window.
 const {BrowserWindow} = electron
+// Module to communicate between the processes
+const ipc = electron.ipcMain
 
+// This is used to update our sessions and products
+var mongoose = require('mongoose')
+
+var current_ibo_session = null;
 
 // Report crashes to our server.
 // electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
@@ -84,3 +90,17 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+ipc.on('ibo-session-messsage', function (event, arg) {
+    current_ibo_session = arg
+    console.log(arg)
+    event.sender.send('ibo-session-reply', 'Started New Session Successfully')
+});
+
+ipc.on('ibo-sessiob-end', function(event, arg){
+    // we end the session here
+
+    // we make our current session null
+    current_ibo_session = null
+    console.log(arg)
+    event.sender.send('ibo-session-end-reply', 'Started New Session Successfully')
+})

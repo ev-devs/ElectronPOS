@@ -1,6 +1,13 @@
 /*First we require our mongoose session*/
 var mongoose = require('mongoose');
 
+/*This will be accessed throughout our program for session interaction*/
+var iboSession = require('../../lib/sessions.js')
+
+/*After we capture session, we send it to the main process*/
+const ipc = require('electron').ipcRenderer
+
+
 /*second we establish a connection with our database*/
 mongoose.connect('mongodb://localhost/ibosessions', function(err) {
     if (err){
@@ -12,31 +19,16 @@ mongoose.connect('mongodb://localhost/ibosessions', function(err) {
     }
 });
 
-/*second we create a schema of how our data will be modeled*/
-var iboSessionSchema = new mongoose.Schema({
-
-    firstname        : { type : String },
-    lastname         : { type : String },
-    ibonumber        : { type : String },
-    timestart        : { type : Date },
-    endtime          : { type : Date },
-    createdat        : { type : Date, default: Date.now },
-    transactions     : { type : Number, default : 0 },
-    numberofsessions : { type : Number, default : 0 }
-
-});
-
-/*now we create an actual model we can use to communicatte with our javascript*/
-var iboSession = mongoose.model('Session', iboSessionSchema);
-
-iboSession.find({}, function(err, sessions){
-    console.log(sessions)
-});
-
 $('.begin-session').click(function(event){
     // event is a click event just FYI
     if (noErrors()){
-        
+        if (iboSessionExists()){
+            // session is udated in function above so we're good
+        }
+        else {
+            // create new session
+            createIboSession()
+        }
     }
 
 });
@@ -61,17 +53,56 @@ function noErrors(){
     return return_value
 }
 
-function iboExists() {
+function iboSessionExists() {
     iboSession.findOne({
         firstname   : $('#first_name').val(),
         lastname    : $('#last_name').val(),
         ibonumber   : $('#ibo_number').val()
-    }. function(err, ibo){
-        if (err){
+    }, function(err, session){
+        if (err) {
+            // this is a potential bug in the code, but for now it will work
             return console.log(err)
         }
+
+        if (session){
+
+            session.updated = Date.now();
+            session.numberofsessions = session.numberofsessions + 1
+        }
         else {
+            return false
 
         }
     })
 }
+
+
+function createIboSession(){
+    var newSession = new iboSession({
+        firstname          : $('#first_name'),
+        lastname           : $('#last_name'),
+        ibonumber          : $('#ibo_number'),
+        timestart          : Date.now(),
+        numberofsessions   : 1,
+        updated            : Date.now()
+    });
+    newSession.save(function(err, session){
+        if (err){
+            //console.log(session)
+            console.log(err)
+            Materialize.toast( err , 4000)
+        }
+        else {
+
+            ipc.send('ibo-session-messsage', session)
+        }
+    })
+}
+
+
+ipc.on('ibo-session-reply', function (event, arg) {
+  const message = `Asynchronous message reply: ${arg}`
+  console.log(message)
+  // Here is where we now send our user to the next page
+
+});
