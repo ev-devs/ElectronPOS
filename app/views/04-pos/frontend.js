@@ -18,14 +18,6 @@ $("#search").change(function() {
   console.log("Changed");
 });
 
-/*NOTE: BEGIN CANCEL ORDER CODE*/
-$("#cancel").click(function() {
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  console.log($(this).css('background-color'));
-  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
-    $('#modal2').openModal();
-});
-
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
   refocus()

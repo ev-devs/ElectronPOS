@@ -21,6 +21,36 @@ var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
 
+/*NOTE: BEGIN SCAN VARIABLES*/
+/*Item_list is the list of items the cusotmer has*/
+var item_list = [];
+/*Next 3 variables are self-explanatory. Just look at their name.*/
+var subtotal = 0.00;
+var tax = 0.00;
+var total = 0.00;
+/*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
+var item_id = "NONE";
+var item_num = 0;
+var current_platinum = "NONE";
+
+/*NOTE: BEGIN CONFIRM ORDER VARIABLES*/
+/*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
+var confirm_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
+var card_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
+var cash_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a cash and card transaction is being done.*/
+var cash_card_flag = 0;
+/*Flag which denotes the status of a transaction. If it is raised then a multi card transaction is being done.*/
+var multi_card_flag = 0;
+/*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
+var cancel_flag = 0;
+/*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
+var previous_flag = 0;
+/*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
+var scan_flag = 0;
+var previous_page = "";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -53,14 +83,12 @@ request({
   			token: process.env.EQ_TOKEN.toString()
   		}
   	}, function (error, response, body) {
-  		// console.log(body);
   		if (!error && response.statusCode == 200) {
   			var resp = JSON.parse(body);
 
   			var ordItems = _.sortBy(resp.items, function (item) {
   				return item.title;
   			})
-  			//console.log(ordItems);
 				inventory = ordItems;
   		} else if (error) {
   			console.log(error);
@@ -100,7 +128,6 @@ function alphabetize(list){
 //var user_input = "";
 $(document).on("change", "#enter-platinum", function(){
 		var user_input = "";
-		console.log("CHANGED PLATINUM");
 		user_input = $("#enter-platinum").val();
 		if(user_input != ""){
 			list_names = [];
@@ -110,7 +137,6 @@ $(document).on("change", "#enter-platinum", function(){
 					list_names.push(leaders_list[i]);
 				}
 			}
-			console.log(list_names);
 			display_list(list_names);
 		}
 	});
@@ -131,26 +157,16 @@ $(document).on("click", ".platinum", function() {
     $("#" + current_platinum).removeClass("green");
   }
 	confirm_flag = 1;
+	scan_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
-	$("#current-platinum").attr("placeholder", "Platinum: " + current_platinum.replace(/1/g, " ").replace(/2/g, ","));
+	$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
 
 
 /*NOTE: BEGIN SCAN CODE*/
-/*1, H0187, H0192*/
-/*Item_list is the list of items the cusotmer has*/
-var item_list = [];
-/*Next 3 variables are self-explanatory. Just look at their name.*/
-var subtotal = 0.00;
-var tax = 0.00;
-var total = 0.00;
-/*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
-var item_id = "NONE";
-var item_num = 0;
-var current_platinum = "NONE";
 
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
@@ -159,12 +175,12 @@ $("#scan_sim").click(function()  {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   var i;
   var places = [];
-  if(current_platinum != "NONE")
+  if(current_platinum != "NONE" && scan_flag == 1)
     places = determine_item_status(item_list, inventory, barcode);
   i = places[1];
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
-  if(i != -1 && current_platinum != "NONE") {
+  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
     if(item_list[i].cust_quantity == 1) {
       /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
       where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
@@ -181,7 +197,6 @@ $("#scan_sim").click(function()  {
     else {
 			//var item = $("#" + item_list[i].title.replace(/ /g, "_")).text().trim().toString();
       var item = $("#inv-item" + places[0]).text().trim();
-			console.log(item)
       var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
       item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
       $("#inv-item" + places[0]).text(item);
@@ -209,7 +224,6 @@ function determine_item_status(item_list, inventory, barcode) {
   /*If it's in the inventory go here*/
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
-    //console.log("In inventory");
     var flag = 0;
     cus_result = item_list.find(function(e) {
       /*This i will keep track of where it is in the list*/
@@ -283,8 +297,6 @@ $(document).on("touchend", ".whole-item", function(e) {
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
   var i = -1;
-  /*Find the item by name in the list of customer items named "item_list"*/
-	console.log(item_id);
 	/*Grab the item info by id and using the find function to find the element in the id*/
   var item = $("#" + item_id).find("span").text().trim();
 	/*Gte the quantity of items*/
@@ -356,46 +368,38 @@ $("#n_delete").click(function() {
   refocus();
 });
 
-
-
 /*NOTE: BEGIN CANCEL ORDER CODE*/
+$("#cancel").click(function() {
+  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
+  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
+    $('#modal2').openModal();
+  else if(previous_flag) {
+		if(previous_page == "pay_choice.html") {
+			$("#cancel").removeAttr("style");
+			$("#confirm").removeAttr("style");
+			void_order(0);
+			cancel_flag = 1;
+		}
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + previous_page, 'utf-8') , {}));
+	}
+});
+
 $("#y_cancel").click(function() {
 	/*As long as the length of the list is > 0 then cancellations can happen*/
   if(item_list.length != 0) {
 		/*Voids the order*/
-    void_order();
+    void_order(1);
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 		/*Fades out the "thanks" element from the compelte.html file*/
     setTimeout(fade_out, 1500);
-		/*Sets the confirm flag to 1 denoting an order CAN be confirmed*/
-    confirm_flag = 1;
-		/*Sets the card flag to 0 denoting a cancelled transaction*/
-    cash_flag = 0;
-		/*Sets the card flag to 0 denoting a cancelled transaction*/
-    card_flag = 0;
+		void_order(1);
 		/*Refocus the page on the barcode input*/
     refocus();
   }
 });
 
 
-
 /*NOTE: BEGIN CONFIRM ORDER CODE*/
-/*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
-var confirm_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
-var card_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
-var cash_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a cash and card transaction is being done.*/
-var cash_card_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a multi card transaction is being done.*/
-var multi_card_flag = 0;
-/*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
-var cancel_flag = 0;
-/*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
-var previous_flag = 0;
-var previous_page = "";
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1) {
@@ -408,13 +412,14 @@ $("#confirm").click(function() {
         confirm_flag = 0;
       }
     }
-
+		scan_flag = 0;
 		previous_flag = 1;
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
-  if(cash_flag || cash_card_flag) {
+  if((cash_flag || cash_card_flag) && $("#tendered").val() >= total) {
 		/*Renders the html file necessary to denote the transaction is complete*/
+		void_order(1);
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
   }
 });
@@ -423,6 +428,7 @@ $("#confirm").click(function() {
 $(document).on("click", "#cash", function () {
 	/*Sets the cash flag to true to denote a cash transaction is in process*/
   cash_flag = 1;
+	previous_page = "pay_choice.html";
 	/*Sets the cancel and confirm buttons to red and green respectively*/
 	$("#cancel").css("background-color", "red");
 	$("#confirm").css("background-color", "green");
@@ -434,6 +440,7 @@ $(document).on("click", "#cash", function () {
 $(document).on("click", "#card", function () {
 	/*Sets the card flag to true to denote a card transaction is in process*/
   card_flag = 1;
+	previous_page = "pay_choice.html";
 	/*Sets the cancel and confirm buttons to red and green respectively*/
 	$("#cancel").css("background-color", "red");
 	/*Renders the html file necessary to handle card transactions*/
@@ -443,15 +450,16 @@ $(document).on("click", "#card", function () {
 /*Renders the necessary partial for completing orders with cash and cards*/
 $(document).on("click", "#c_and_c", function () {
   cash_card_flag = 1;
+	previous_page = "pay_choice.html";
 	/*Sets the cancel and confirm buttons to red and green respectively*/
 	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-  console.log("Cash and card");
 });
 
 /*Renders the necessary partial for completing orders with multiple cards.*/
 $(document).on("click", "#m_card", function () {
 	multi_card_flag = 1;
+	previous_page = "pay_choice.html";
 	/*Sets the cancel and confirm buttons to red and green respectively*/
 	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
@@ -468,10 +476,14 @@ $(document).on("click", "#swipe_sim", function() {
   if(card_flag || cash_card_flag) {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
-      if(card_flag)
+      if(card_flag) {
+				void_order(1);
   		  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+			}
       else if(cash_card_flag) {
-				previous_flag = 1;
+				previous_flag = 0;
+				$("#confirm").css("background-color", "green");
+				$("#cancel").removeAttr("style");
     		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 			}
     }, 3000);
@@ -495,7 +507,17 @@ function update_price(operation, quantity, placement) {
 
 /*NOTE: BEGIN VOID ORDER CODE*/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
-function void_order() {
+function void_order(full_void) {
+	confirm_flag = 0;
+	cancel_flag = 0;
+	/*Cash flag is set to 0 to denote the end of a cash transaction*/
+	cash_flag = 0;
+	/**/
+	card_flag = 0;
+	multi_card_flag = 0;
+	cash_card_flag = 0;
+	sacn_flag = 0;
+	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
 		/*Empties the left side*/
     $("#sale_list tbody").empty();
@@ -504,16 +526,9 @@ function void_order() {
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     /*Sets the confirm flag back to one to denote that a normal completion can happen*/
-    confirm_flag = 0;
-    cancel_flag = 0;
-    /*Cash flag is set to 0 to denote the end of a cash transaction*/
-    cash_flag = 0;
-    /**/
-    card_flag = 0;
-    multi_card_flag = 0;
-    cash_card_flag = 0;
     current_platinum = "NONE";
     setTimeout(function() {
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
     }, 1500);
+	}
 }
