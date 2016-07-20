@@ -253,8 +253,15 @@ function determine_item_status(item_list, inventory, barcode) {
 
 /*NOTE: BEGIN SEARCH INVENTORY CODE*/
 $("#search").change(function(){
-	//if(current_platinum != "NONE")
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {}));
+	if(current_platinum != "NONE") {
+		var query = $(this).val();
+		var x = inventory.find(function(e) {
+			console.log("TEST");
+      return (e.barcode == query || e.title == query);
+    });
+		console.log(x);
+		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {}));
+	}
 });
 
 
