@@ -124,7 +124,7 @@ html {
     transform: translateY(20%);
 }
 
-#current-platinum {
+.bold-input {
     background-color: white;
     top: 50%;
     transform: translateY(20%);
@@ -132,6 +132,7 @@ html {
     color: black;
     -webkit-text-fill-color: black
 }
+
 
 #platinums-list-body {
     height: 55vh;

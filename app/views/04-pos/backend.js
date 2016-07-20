@@ -124,8 +124,6 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-//function selectPlatinum(list){
-//var user_input = "";
 $(document).on("change", "#enter-platinum", function(){
 		var user_input = "";
 		user_input = $("#enter-platinum").val();
@@ -140,7 +138,6 @@ $(document).on("change", "#enter-platinum", function(){
 			display_list(list_names);
 		}
 	});
-//}
 
 function display_list(list){
 	var name = "";
@@ -168,6 +165,7 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE")
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 })
+
 
 
 /*NOTE: BEGIN SCAN CODE*/
@@ -249,6 +247,14 @@ function determine_item_status(item_list, inventory, barcode) {
     return -1;
   }
 };
+
+
+
+/*NOTE: BEGIN SEARCH INVENTORY CODE*/
+$("#search").change(function(){
+	//if(current_platinum != "NONE")
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {}));
+});
 
 
 
@@ -421,11 +427,14 @@ $("#confirm").click(function() {
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
-  if((cash_flag || cash_card_flag) && $("#tendered").val() >= total) {
+  else if((cash_flag || cash_card_flag) && $("#tendered").val() >= total) {
 		/*Renders the html file necessary to denote the transaction is complete*/
 		void_order(1);
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
   }
+	else if(multi_card_flag && $("#card_amt").val() > 0) {
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+	}
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
