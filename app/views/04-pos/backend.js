@@ -50,6 +50,7 @@ var cancel_flag = 0;
 var previous_flag = 0;
 /*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
 var scan_flag = 0;
+var card_amt = 0;
 var previous_page = "";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
@@ -417,13 +418,13 @@ $("#confirm").click(function() {
     if(item_list.length != 0) {
 			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
       if(confirm_flag == 1) {
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
         confirm_flag = 0;
+				scan_flag = 0;
+				previous_flag = 1;
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
-		scan_flag = 0;
-		previous_flag = 1;
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
@@ -433,6 +434,7 @@ $("#confirm").click(function() {
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
   }
 	else if(multi_card_flag && $("#card_amt").val() > 0) {
+		card_amt = $("#card_amt").val();
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 	}
 });
@@ -486,7 +488,7 @@ $(document).on("click", "#swipe_sim", function() {
   cancel_flag = 0;
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
-  if(card_flag || cash_card_flag) {
+  if(card_flag || cash_card_flag || multi_card_flag) {
 		$("#cancel").removeAttr("style");
 		previous_flag = 0;
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
@@ -500,6 +502,12 @@ $(document).on("click", "#swipe_sim", function() {
 				$("#confirm").css("background-color", "green");
 				$("#cancel").removeAttr("style");
     		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+			}
+			else if(multi_card_flag) {
+				if(card_amt != 0) {
+					card_amt-=1;
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+				}
 			}
     }, 3000);
   }
