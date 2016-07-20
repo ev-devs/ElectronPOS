@@ -499,16 +499,30 @@ $(document).on("click", "#swipe_sim", function() {
     }, 3000);
   }
 	else if(cash_card_flag) {
+		$("#cancel").removeAttr("style");
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 		setTimeout(function() {
 			previous_flag = 0;
 			$("#confirm").css("background-color", "green");
-			$("#cancel").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 		}, 3000);
 	}
 	else if(multi_card_flag) {
-
+		if(card_amt > 0) {
+			card_amt-=1;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+			setTimeout(function() {
+				previous_flag = 0;
+				if(card_amt == 0) {
+					void_order(1);
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+				}
+				else
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+				$("#confirm").removeAttr("style");
+				$("#cancel").removeAttr("style");
+			}, 3000);
+		}
 	}
 
 
@@ -529,12 +543,6 @@ $(document).on("click", "#swipe_sim", function() {
 		void_order(1);
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 	}
-} */
-/*else if(cash_card_flag) {
-	previous_flag = 0;
-	$("#confirm").css("background-color", "green");
-	$("#cancel").removeAttr("style");
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 } */
 
 /*NOTE: BEGIN UPDATE  PRICE CODE*/
