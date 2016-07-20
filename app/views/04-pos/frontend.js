@@ -13,11 +13,6 @@ $(".keyboard").keyboard({
   layout: "num"
 });
 
-/*NOTE: BEGIN SEARCH INVENTORY CODE*/
-$("#search").change(function() {
-  console.log("Changed");
-});
-
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
   refocus()
