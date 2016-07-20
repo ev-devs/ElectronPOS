@@ -241,7 +241,7 @@ function determine_item_status(item_list, inventory, barcode) {
 
 
 
-/*NOTE:BEGIN DELETE CODE*/
+/*NOTE: BEGIN DELETE CODE*/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
 $(document).on("touchstart", ".whole-item", function(e) {
@@ -409,6 +409,7 @@ var cash_card_flag = 0;
 var multi_card_flag = 0;
 /*Flag which denotes that the user can cancel at any time assuming the flag is raised. By default it is raised.*/
 var cancel_flag = 0;
+var previous_flaf = 0;
 
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
