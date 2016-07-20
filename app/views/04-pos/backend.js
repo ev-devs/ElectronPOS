@@ -299,16 +299,7 @@ $("#y_delete").click(function() {
 	/*If the cust_quantity value is one*/
   if(item_list[i].cust_quantity == 1) {
 		/*Do price updates*/
-    subtotal-= item_list[i].price;
-    tax = subtotal * .075;
-    total = subtotal + tax;
-		/*Updates the subtotal in the gui with the accounting package*/
-	  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-		/*Updates the tax in the gui with the accounting package*/
-	  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-		/*Updates the total in the gui with the accounting package*/
-	  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
-		/*Make cust_quantity 0*/
+		update_price('-', 1, i);
     item_list[i].cust_quantity = 0;
 		/*Remove from gui and item_list*/
     $("#" + item_id).remove();
@@ -319,15 +310,7 @@ $("#y_delete").click(function() {
 		/*Gran the value to be deleted*/
     var delete_quantity = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-    subtotal-=(item_list[i].price * delete_quantity);
-    tax = subtotal * .075;
-    total = subtotal + tax;
-		/*Updates the subtotal in the gui with the accounting package*/
-	  $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-		/*Updates the tax in the gui with the accounting package*/
-	  $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-		/*Updates the total in the gui with the accounting package*/
-	  $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+		update_price('-', delete_quantity, i);
 		/*If the quantity of items to be deleted is less than than the current quantity*/
     if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
@@ -359,7 +342,7 @@ $("#y_delete").click(function() {
 
 $("#n_delete").click(function() {
   /*Grab the item name*/
-  var item = $("#qnt-item-"+ item_num).text().trim().toString();
+  var item = $("#" + item_id).find("span").text().trim();
 	/*Grab the number of items*/
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
 	/*If there are more than one items do this*/
