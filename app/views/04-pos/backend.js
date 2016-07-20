@@ -255,12 +255,15 @@ function determine_item_status(item_list, inventory, barcode) {
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
-		var x = inventory.find(function(e) {
-			console.log("TEST");
-      return (e.barcode == query || e.title == query);
+		var query = new RegExp(query, "i");
+
+		var item = inventory.find(function(e) {
+      if(e.barcode.search(query) != -1 || e.title == query)
+				console.log("TEST");
+				console.log(e.barcode);
     });
-		console.log(x);
-		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {}));
+		if(item != undefined)
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"item" : item}));
 	}
 });
 
