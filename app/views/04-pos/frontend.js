@@ -1,6 +1,7 @@
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
+
 function refocus() {
   var event = new CustomEvent('refocus');
   document.dispatchEvent(event);
