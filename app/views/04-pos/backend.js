@@ -164,10 +164,13 @@ $(document).on("click", ".platinum", function() {
 	$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
+$("#platinum").click(function() {
+	if(current_platinum != "NONE")
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+})
 
 
 /*NOTE: BEGIN SCAN CODE*/
-
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
@@ -207,7 +210,6 @@ $("#scan_sim").click(function()  {
   }
   $("#barcode").focus();
 });
-
 
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -368,6 +370,8 @@ $("#n_delete").click(function() {
   refocus();
 });
 
+
+
 /*NOTE: BEGIN CANCEL ORDER CODE*/
 $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
@@ -474,6 +478,8 @@ $(document).on("click", "#swipe_sim", function() {
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag || cash_card_flag) {
+		$("#cancel").removeAttr("style");
+		previous_flag = 0;
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
       if(card_flag) {
@@ -490,6 +496,9 @@ $(document).on("click", "#swipe_sim", function() {
   }
 });
 
+
+
+/*NOTE: BEGIN UPDATE  PRICE CODE*/
 function update_price(operation, quantity, placement) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	if(operation == '+')
@@ -504,6 +513,8 @@ function update_price(operation, quantity, placement) {
 	total = subtotal + tax;
 	$("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
 }
+
+
 
 /*NOTE: BEGIN VOID ORDER CODE*/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
