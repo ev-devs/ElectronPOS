@@ -2,11 +2,10 @@
 var mongoose = require('mongoose');
 
 /*This will be accessed throughout our program for session interaction*/
-var iboSession = require('../../lib/sessions.js')
+var iboSession = require('../../lib/sessions.js');
 
 /*After we capture session, we send it to the main process*/
 const ipc = require('electron').ipcRenderer
-
 
 /*second we establish a connection with our database*/
 mongoose.connect('mongodb://localhost/ibosessions', function(err) {
@@ -22,8 +21,8 @@ mongoose.connect('mongodb://localhost/ibosessions', function(err) {
 $('.begin-session').click(function(event){
     // event is a click event just FYI
     if (noErrors()){
-        if (iboSessionExists()){
-            // session is udated in function above so we're good
+        if (sessionExistsThenUpdate()){
+            // session is updated in function above so we're good
         }
         else {
             // create new session
@@ -51,9 +50,9 @@ function noErrors(){
         return_value = false
     }
     return return_value
-}
+};
 
-function iboSessionExists() {
+function sessionExistsThenUpdate() {
     iboSession.findOne({
         firstname   : $('#first_name').val(),
         lastname    : $('#last_name').val(),
@@ -74,10 +73,10 @@ function iboSessionExists() {
 
         }
     })
-}
-
+};
 
 function createIboSession(){
+
     var newSession = new iboSession({
         firstname          : $('#first_name'),
         lastname           : $('#last_name'),
@@ -86,6 +85,7 @@ function createIboSession(){
         numberofsessions   : 1,
         updated            : Date.now()
     });
+
     newSession.save(function(err, session){
         if (err){
             //console.log(session)
@@ -93,12 +93,11 @@ function createIboSession(){
             Materialize.toast( err , 4000)
         }
         else {
-
+            // once the new session is created we send it to the main process
             ipc.send('ibo-session-message', session)
         }
     })
-}
-
+};
 
 ipc.on('ibo-session-reply', function (event, arg) {
   const message = `Asynchronous message reply: ${arg}`
