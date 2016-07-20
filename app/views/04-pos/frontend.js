@@ -21,7 +21,8 @@ $("#search").change(function() {
 /*NOTE: BEGIN CANCEL ORDER CODE*/
 $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1)
+  console.log($(this).css('background-color'));
+  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
     $('#modal2').openModal();
 });
 
@@ -30,7 +31,7 @@ $("#n_cancel").click(function() {
   refocus()
 });
 
-/*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*/ /*MAY NEED TO GO IN BACKEND.JS*/
+/*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*Finish tying in "Select platinum" view to the rest of code (John)/ /*MAY NEED TO GO IN BACKEND.JS*/
 $(document).on("change", "#tendered", function() {
   if($(this).val() >= total) {
     var change = $(this).val() - accounting.formatNumber(total, 2, ",");
