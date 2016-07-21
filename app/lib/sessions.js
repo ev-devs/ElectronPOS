@@ -18,6 +18,6 @@ var iboSessionSchema = new mongoose.Schema({
 });
 
 /*now we create an actual model we can use to communicatte with our javascript*/
-var iboSession = mongoose.model('Session', iboSessionSchema);
+var Session = mongoose.model('Session', iboSessionSchema);
 
-module.exports = iboSession
+module.exports = Session

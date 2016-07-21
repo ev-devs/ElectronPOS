@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 /*This will be accessed throughout our program for session interaction*/
-var iboSession = require('../../lib/sessions.js');
+var Session = require('../../lib/sessions.js');
 
 /*After we capture session, we send it to the main process*/
 const ipc = require('electron').ipcRenderer
@@ -20,14 +20,9 @@ mongoose.connect('mongodb://localhost/ibosessions', function(err) {
 
 $('.begin-session').click(function(event){
     // event is a click event just FYI
-    if (noErrors()){
-        if (sessionExistsThenUpdate()){
-            // session is updated in function above so we're good
-        }
-        else {
-            // create new session
-            createIboSession()
-        }
+    if ( noErrors() ){
+
+        updateOrCreateSession();
     }
 
 });
@@ -35,6 +30,7 @@ $('.begin-session').click(function(event){
 /*returns true if no errors. False if error is detected*/
 function noErrors(){
 
+    /*we assume there are no errors*/
     var return_value = true;
 
     if($('#first_name').val() == ""){
@@ -52,35 +48,58 @@ function noErrors(){
     return return_value
 };
 
-function sessionExistsThenUpdate() {
-    iboSession.findOne({
-        firstname   : $('#first_name').val(),
-        lastname    : $('#last_name').val(),
-        ibonumber   : $('#ibo_number').val()
-    }, function(err, session){
-        if (err) {
-            // this is a potential bug in the code, but for now it will work
-            return console.log(err)
-        }
+function updateOrCreateSession() {
 
-        if (session){
-
-            session.updated = Date.now();
-            session.numberofsessions = session.numberofsessions + 1
+    Session.find({
+        firstname   : $('#first_name').val().toString(),
+        lastname    : $('#last_name').val().toString(),
+        ibonumber   : $('#ibo_number').val().toString()
+    }).
+    limit(1).
+    exec(function(err, session){
+        if (err){
+            console.log("ERROR IS " +  err)
         }
         else {
-            return false
 
+            console.log( "SESSION CURRENTLY IS " +  session)
+            console.log(Object.keys(session).length)
+
+            /*If the session is empty, then create a new one*/
+            if (! (Object.keys(session).length !== 0 && session.constructor !== Object ) ){
+
+                createIboSession()
+            }
+            else {
+
+                session[0].timestart = Date.now()
+                session[0].updated = Date.now()
+                session[0].numberofsessions += 1
+
+                session[0].save(function(err){
+                    if (err){
+                        console.log(err)
+                    }
+                    else {
+                        console.log('UPDATED SESSION IS ' + session)
+                        ipc.send('ibo-session-message', session[0])
+                    }
+                })
+
+
+
+            }
         }
     })
+
 };
 
 function createIboSession(){
 
-    var newSession = new iboSession({
-        firstname          : $('#first_name'),
-        lastname           : $('#last_name'),
-        ibonumber          : $('#ibo_number'),
+    var newSession = new Session({
+        firstname          : $('#first_name').val(),
+        lastname           : $('#last_name').val(),
+        ibonumber          : $('#ibo_number').val(),
         timestart          : Date.now(),
         numberofsessions   : 1,
         updated            : Date.now()
@@ -90,10 +109,11 @@ function createIboSession(){
         if (err){
             //console.log(session)
             console.log(err)
-            Materialize.toast( err , 4000)
+            Materialize.toast( err , 10000000)
         }
         else {
             // once the new session is created we send it to the main process
+            console.log('session is saved ' + session)
             ipc.send('ibo-session-message', session)
         }
     })
