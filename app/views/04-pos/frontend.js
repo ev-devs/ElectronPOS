@@ -1,6 +1,7 @@
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
+
 function refocus() {
   var event = new CustomEvent('refocus');
   document.dispatchEvent(event);
@@ -9,8 +10,8 @@ function refocus() {
 $(".keyboard").keyboard({
   restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
   preventPaste : true,  // prevent ctrl-v and right click
-  autoAccept : true,
-  layout: "num"
+  autoAccept : true/*,
+  layout: "num"*/
 });
 
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
