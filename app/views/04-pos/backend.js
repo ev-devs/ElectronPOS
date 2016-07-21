@@ -159,8 +159,8 @@ $(document).on("click", ".platinum", function() {
 	scan_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {}));
-	$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	//$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
 $("#platinum").click(function() {
@@ -289,7 +289,9 @@ $(document).on("click",  "#confirm_item_selection", function() {
 	}
 });
 
-
+$(document).on("click",  "#cancel_item_selection", function() {
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
 
 /*NOTE: BEGIN DELETE CODE*/
 /*When a finger is on the screen and on an item record the start point.

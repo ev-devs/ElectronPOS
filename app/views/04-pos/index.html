@@ -92,10 +92,19 @@
               <div id="sale-list-body" style="overflow-y: scroll; margin : 0 0;">
                 <table class="responsive-table striped bordered centered" id="sale_list" style="table-layout: fixed;">
                    <tbody style="width: 100%">
+                     <tr class="whole-item animated fadeIn" id="item" onclick="expand();">
+                   		 <td id="add" class="eq-cells name" style="width: 77%; border-left: 1px solid #ddd;"><span class="truncate" id="inv-item">Hello</span></td>
+                   		 <td class="eq-cells price" style="width: 23%; border-left: 1px solid #ddd;">Hello</td>
+                 		 </tr>
                    </tbody>
                  </table>
               </div>
-
+              <script type="text/javascript">
+                //Merely for testing the above
+                function expand(){
+                  $('#add').html(ejs.render(fs.readFileSync( __dirname + '/partials/add_items.html', 'utf-8') , {"query_results" : inventory_query}));
+                }
+              </script>
                <!---ENDLEFT BODY-->
 
 
