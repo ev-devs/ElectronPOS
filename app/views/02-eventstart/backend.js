@@ -1,8 +1,12 @@
+/*used to make the actual requests*/
 var request = require('request');
+/*used to communicate with main process*/
+const ipc = require('electron').ipcRenderer
+/*URL where our endpoint will be located*/
 var URL = process.env.EQ_URL;
 
-$('#events_submit').click(function(event){
 
+$('#events_submit').click(function(event){
 
     // error checking for event code
     if ($('#event_code').val() == ""){
@@ -114,14 +118,28 @@ function validate_event(_type, _event, _code) {
       if (!error && response.statusCode == 200) {
         var msg = JSON.parse(body);
         console.log(msg);
+        ipc.send('event-validation-success', msg );
+
         resolve(msg);
-      } else if (error) {
-        console.log(error);
-        reject(0);
-        console.log("No event found");
-      } else {
-        //console.log(body);
+      }
+      else if (error) {
+            $('#modal2').openModal({
+              dismissible: true, // Modal can be dismissed by clicking outside of the modal
+              opacity: .5, // Opacity of modal background
+              in_duration: 300, // Transition in duration
+              out_duration: 200, // Transition out duration
+            });
+            console.log(error.stack)
+            resolve(0)
+      }
+      else {
+          console.log( "BODY--" + body);
       }
     });
   });
 }
+
+ipc.on('event-validaton-success-reply', function (event, arg) {
+  const message = `Asynchronous message reply: ${arg}`
+  console.log('we have the message! ' + message)
+});

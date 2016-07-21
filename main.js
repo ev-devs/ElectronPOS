@@ -15,6 +15,7 @@ var mongoose = require('mongoose')
 
 var current_ibo_session = null;
 
+var current_event = null;
 // Report crashes to our server.
 // electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
 
@@ -78,6 +79,7 @@ app.on('will-quit', () => {
 
   // Unregister all shortcuts.
   globalShortcut.unregisterAll();
+
 });
 
 app.on('activate', () => {
@@ -86,6 +88,7 @@ app.on('activate', () => {
   if (win === null) {
     createWindow();
   }
+
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -96,11 +99,17 @@ ipc.on('ibo-session-messsage', function (event, arg) {
     event.sender.send('ibo-session-reply', 'Started New Session Successfully')
 });
 
-ipc.on('ibo-sessiob-end', function(event, arg){
+ipc.on('ibo-session-end', function(event, arg){
     // we end the session here
 
     // we make our current session null
     current_ibo_session = null
     console.log(arg)
     event.sender.send('ibo-session-end-reply', 'Started New Session Successfully')
-})
+});
+
+ipc.on('event-validation-success', function(event, arg){
+    current_event = arg;
+    console.log(arg)
+    event.sender.send('event-validaton-success-reply', "Recieved Current Event")
+});
