@@ -62,8 +62,8 @@ function updateOrCreateSession() {
         }
         else {
 
-            console.log( "SESSION CURRENTLY IS " +  session)
-            console.log(Object.keys(session).length)
+            //console.log( "SESSION CURRENTLY IS " +  session)
+            //console.log(Object.keys(session).length)
 
             /*If the session is empty, then create a new one*/
             if (! (Object.keys(session).length !== 0 && session.constructor !== Object ) ){
@@ -81,12 +81,10 @@ function updateOrCreateSession() {
                         console.log(err)
                     }
                     else {
-                        console.log('UPDATED SESSION IS ' + session)
-                        ipc.send('ibo-session-message', session[0])
+                        console.log('UPDATED SESSION IS ' + session[0])
+                        ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
                     }
                 })
-
-
 
             }
         }
@@ -120,7 +118,7 @@ function createIboSession(){
 };
 
 ipc.on('ibo-session-reply', function (event, arg) {
-  const message = `Asynchronous message reply: ${arg}`
+  const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
   // Here is where we now send our user to the next page
 
