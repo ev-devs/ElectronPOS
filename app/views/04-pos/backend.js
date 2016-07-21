@@ -180,36 +180,40 @@ $("#scan_sim").click(function()  {
   var places = [];
   if(current_platinum != "NONE" && scan_flag == 1)
     places = determine_item_status(item_list, inventory, barcode);
-  i = places[1];
+  i = places[1]; //item_list_index
+	j = places[0]; //inventory_list_index
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
-  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
-    if(item_list[i].cust_quantity == 1) {
-      /*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
-      where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
-      values as the text values of the td tags.*/
-      var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + i.toString() + "\"> \
-       <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + places[0]/*item_list[i].title.replace(/ /g, "_")*/ + "\">\
-       x" + item_list[i].cust_quantity + ": " + item_list[i].title + "</span></td> \
-       <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[i].price + "</td> \
-      </tr>"
-      /*Append to the table that holds the items*/
-      $("#sale_list tbody").append(item);
-    }
-    /*If the item is in the list then just go to its place and increment its counter and update the gui*/
-    else {
-			//var item = $("#" + item_list[i].title.replace(/ /g, "_")).text().trim().toString();
-      var item = $("#inv-item" + places[0]).text().trim();
-      var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-      item = item.replace(qnt.toString(), item_list[i].cust_quantity.toString());
-      $("#inv-item" + places[0]).text(item);
-    }
-		cancel_flag = 1;
-    /*Update the global quantities of subtotal, tax, and total*/
-		update_price('+', 1, i);
-  }
+  if(i != -1 && current_platinum != "NONE" && scan_flag == 1)
+		add_item(i, j, 1, 0);
   $("#barcode").focus();
 });
+
+/*Adds items to the customers item list and does necessary updates, used twice within the code*/
+function add_item(item_list_index, inventory_list_index, quantity, manual) {
+	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
+		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+		values as the text values of the td tags.*/
+		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
+		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
+		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
+		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
+		</tr>"
+		/*Append to the table that holds the items*/
+		$("#sale_list tbody").append(item);
+	}
+	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
+	else {
+		var item = $("#inv-item" + inventory_list_index).text().trim();
+		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
+		$("#inv-item" + inventory_list_index).text(item);
+	}
+	cancel_flag = 1;
+	/*Update the global quantities of subtotal, tax, and total*/
+	update_price('+', quantity, item_list_index);
+}
 
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
 in the customers list. If so the increment the counter and if not then add to list.
@@ -258,18 +262,33 @@ $("#search").change(function(){
 		var query = $(this).val();
 		//var query = new RegExp(query, "i");
 		query = new RegExp(query, "i");
-		console.log("Begin");
+		var i = -1;
 		inventory_query.splice(0, inventory_query.length);
 	  inventory.find(function(e) {
+			i++;
 			if(e.barcode != null) {
-				if((e.title.search(query) != -1) || (e.barcode.search(query) != -1))
-					inventory_query.push(e);
+				if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+					var item = e;
+					item.title+=("-_" + i);
+					inventory_query.push(item);
+				}
 			}
     });
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 	}
 });
-//$('.seminar').children()[0]
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	console.log("Clicked");
+	var quantity = $("#selected_item_qnt").val();
+	if(quantity != 0) {
+		var item = inventory[Number($("#selected_item").attr("class"))]
+		item['cust_quantity'] = quantity;
+		item_list.push(item);
+		add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1)
+	}
+});
+
 
 
 /*NOTE: BEGIN DELETE CODE*/

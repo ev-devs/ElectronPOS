@@ -2,10 +2,25 @@
   <div class="col s12">
     <div id="inventory-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll">
       <div class="collection" id="item-list" >
-        <%for(result in query_results) {%>
-        <a href="#!" class="collection-item item"><span id="item_title"><%=query_results[result].title%></span>, $<span id="item_price"><%=query_results[result].price%></span></a>
+        <%for(result in query_results) {
+          var item = query_results[result].title;
+          var inventory_place = item.substring(item.search("-_") + 2, item.length);
+          var item_name = item.substring(0, item.search("-_"));
+          %>
+        <a href="#!" class="collection-item item"><span id="<%=inventory_place%>"><%=item_name%></span>-$<span id="item_price"><%=query_results[result].price%></span></a>
         <%}%>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="modal3" class="modal">
+  <div class="modal-content">
+    <h4 id="inventory_place">How many of <span id="selected_item" class=""></span> would you like to add?</h4>
+    <input placeholder="Enter item quantity" id="selected_item_qnt" type="text" class="validate">
+  </div>
+  <div class="modal-footer">
+    <a href="#!" id="confirm_item_selection" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    <a href="#!" id="cancel_item_selection" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
   </div>
 </div>
