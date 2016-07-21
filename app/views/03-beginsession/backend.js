@@ -114,8 +114,8 @@ function createIboSession(){
         }
         else {
             // once the new session is created we send it to the main process
-            console.log('UPDATED SESSION IS ' + session[0])
-            ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
+            console.log('UPDATED SESSION IS ' + session)
+            ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session)) )
             $('#main-container').hide()
 
         }
