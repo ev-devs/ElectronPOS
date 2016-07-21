@@ -83,6 +83,7 @@ function updateOrCreateSession() {
                     else {
                         console.log('UPDATED SESSION IS ' + session[0])
                         ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
+
                     }
                 })
 
@@ -111,8 +112,8 @@ function createIboSession(){
         }
         else {
             // once the new session is created we send it to the main process
-            console.log('session is saved ' + session)
-            ipc.send('ibo-session-message', session)
+            console.log('UPDATED SESSION IS ' + session[0])
+            ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
         }
     })
 };
@@ -120,6 +121,11 @@ function createIboSession(){
 ipc.on('ibo-session-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
+
+  setTimeout(function(){
+      window.location.assign("../04-pos/index.html");
+  }, 1776)
+
   // Here is where we now send our user to the next page
 
 });
