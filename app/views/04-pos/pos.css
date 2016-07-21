@@ -139,6 +139,10 @@ html {
     margin: 0 -5%;
 }
 
+#inventory-list-body {
+  height: 70vh;
+}
+
 
 #right-bottom {
     height: 10vh;

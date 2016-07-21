@@ -17,6 +17,7 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 // Global variables
 var inventory = [];
+var inventory_query = [];
 var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
@@ -255,18 +256,20 @@ function determine_item_status(item_list, inventory, barcode) {
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
-		var query = new RegExp(query, "i");
-
-		var item = inventory.find(function(e) {
-      if(e.barcode.search(query) != -1 || e.title == query)
-				console.log("TEST");
-				console.log(e.barcode);
+		//var query = new RegExp(query, "i");
+		query = new RegExp(query, "i");
+		console.log("Begin");
+		inventory_query.splice(0, inventory_query.length);
+	  inventory.find(function(e) {
+			if(e.barcode != null) {
+				if((e.title.search(query) != -1) || (e.barcode.search(query) != -1))
+					inventory_query.push(e);
+			}
     });
-		if(item != undefined)
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"item" : item}));
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 	}
 });
-
+//$('.seminar').children()[0]
 
 
 /*NOTE: BEGIN DELETE CODE*/
@@ -534,26 +537,9 @@ $(document).on("click", "#swipe_sim", function() {
 			}, 3000);
 		}
 	}
-
-
-
-
-
-
-
-
 });
 
-/*else if(multi_card_flag) {
-	if(card_amt > 0) {
-		card_amt-=1;
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-	}
-	else {
-		void_order(1);
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	}
-} */
+
 
 /*NOTE: BEGIN UPDATE  PRICE CODE*/
 function update_price(operation, quantity, placement) {
