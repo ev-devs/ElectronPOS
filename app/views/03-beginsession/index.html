@@ -53,28 +53,31 @@
 
   </nav>
   <main>
-    <div class="container center">
+    <div class="container center" id="main-container">
       <h1>Begin Session</h1>
       <div class="section">
-        <div class="row">
-          <form class="col s12" action="/login" method="POST">
             <div class="row">
-              <div class="input-field col s6">
-                <input placeholder="First Name" id="first_name" type="text" class="validate">
-                <label for="first_name">First Name</label>
-              </div>
-              <div class="input-field col s6">
-                <input placeholder="Last Name" id="last_name" type="text" class="validate">
-                <label for="last_name">Last Name</label>
-              </div>
-            </div>
-            <div class="row">
-                <div class="input-filed col s12">
-                    <input placeholder="IBO#" id="ibo_number" type="text" class="validate">
-                    <label for="first_name">IBO Number</label>
+              <form class="col s12" action="/login" method="POST">
+                <div class="row">
+                  <div class="input-field col s6">
+                    <input placeholder="First Name" id="first_name" type="text" class="validate">
+                    <label for="first_name">First Name</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input placeholder="Last Name" id="last_name" type="text" class="validate">
+                    <label for="last_name">Last Name</label>
+                  </div>
                 </div>
+                <div class="row">
+                    <div class="input-filed col s12">
+                        <input placeholder="IBO#" id="ibo_number" type="text" class="validate">
+                        <label for="first_name">IBO Number</label>
+                    </div>
+                </div>
+              </form>
             </div>
-          </form>
+        </div>
+            <a class="waves-effect waves-light btn-large begin-session" style="background-color: #00c853" width="100%" >Begin Session</a>
         </div>
 
 
@@ -83,7 +86,7 @@
         <div class="modal-content">
           <h4>Error</h4>
           <p>
-              Could Not Connect to the database. Please see IT representative for further information or call
+              Could Not Connect to the local database. Please see IT representative for further information or call
               (559) - 960 - 0711 and ask for Juan Gerardo Ruelas Jr.
           </p>
         </div>
@@ -92,9 +95,17 @@
         </div>
       </div>
 
-        <a class="waves-effect waves-light btn-large begin-session" style="background-color: #00c853" width="100%" >Begin Session</a>
 
-      </div>
+
+
+    <div class="center animated slideInUp" id="validation-container" style="display: none">
+        <h2 id="success-title">Successfully Started Session</h2>
+        <div id="icon-container">
+              <span class="typcn typcn-tick-outline" id="success-icon"></span>
+        </div>
+    </div>
+
+
 
       <link rel="stylesheet" href="style.css" media="screen" title="no title" charset="utf-8">
       <script src="frontend.js" charset="utf-8"></script>

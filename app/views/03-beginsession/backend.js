@@ -51,9 +51,9 @@ function noErrors(){
 function updateOrCreateSession() {
 
     Session.find({
-        firstname   : $('#first_name').val().toString(),
-        lastname    : $('#last_name').val().toString(),
-        ibonumber   : $('#ibo_number').val().toString()
+        firstname   : $('#first_name').val(),
+        lastname    : $('#last_name').val(),
+        ibonumber   : $('#ibo_number').val()
     }).
     limit(1).
     exec(function(err, session){
@@ -83,6 +83,8 @@ function updateOrCreateSession() {
                     else {
                         console.log('UPDATED SESSION IS ' + session[0])
                         ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
+                        $('#main-container').hide()
+
 
                     }
                 })
@@ -114,6 +116,8 @@ function createIboSession(){
             // once the new session is created we send it to the main process
             console.log('UPDATED SESSION IS ' + session[0])
             ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
+            $('#main-container').hide()
+
         }
     })
 };
@@ -121,6 +125,8 @@ function createIboSession(){
 ipc.on('ibo-session-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
+
+  $('#validation-container').show()
 
   setTimeout(function(){
       window.location.assign("../04-pos/index.html");
