@@ -281,12 +281,14 @@ $("#search").change(function(){
 $(document).on("click",  "#confirm_item_selection", function() {
 	console.log("Clicked");
 	var quantity = $("#selected_item_qnt").val();
-	if(quantity != 0) {
+	if(quantity != 0 || quantity != "") {
 		var item = inventory[Number($("#selected_item").attr("class"))]
 		item['cust_quantity'] = quantity;
 		item_list.push(item);
+		item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
 		add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1)
 	}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
