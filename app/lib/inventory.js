@@ -1,15 +1,12 @@
 /*second we create a schema of how our data will be modeled*/
 var inventorySchema = new mongoose.Schema({
 
-    id          : { type : String, unique : true },
-    firstname   : { type : String  },
-    lastname    : { type : String  },
-    active      : { type : Boolean },
-    ibonumber   : { type : String  },
-    rt          : { type : Boolean },
-    pnl         : { type : Number  },
-    admin       : { type : Boolean },
-    email       : { type : String }
+    id          : { type : String  , unique : true},
+    title       : { type : String  },
+    barcode     : { type : String  },
+    price       : { type : Number  },
+    prefix      : { type : String  },
+    isTicket    : { type : Boolean }
 
 });
 
