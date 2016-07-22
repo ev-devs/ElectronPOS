@@ -92,7 +92,8 @@ function pull_platinums() {
       if (!error && response.statusCode == 200) {
 
         leaders = JSON.parse(body).evleaders;
-        console.log("LEADERS ARE " + JSON.stringify(leaders))
+        //console.log("LEADERS ARE " + JSON.stringify(leaders))
+        insertPlatinumsToDatabase(leaders)
         resolve(leaders);
       }
       else if (error) {
@@ -123,7 +124,8 @@ function pull_inventory() {
           var ordItems = _.sortBy(resp.items, function (item) {
             return item.title;
           })
-          console.dir('ORD ITEMS ARE ' + JSON.stringify(ordItems))
+          //console.log('ORD ITEMS ARE ' + JSON.stringify(ordItems))
+          insertInventoryToDatabase(ordItems)
           resolve(ordItems);
         }
         else if (error) {
@@ -136,10 +138,22 @@ function pull_inventory() {
   });
 }
 
+function insertPlatinumsToDatabase(leaders) {
+    // this is gonna be tricky since every I/O of the database is ASYNC
+    leaders.forEach(function(leader){
+        console.log(leader)
+    })
+}
+function insertInventoryToDatabase(inventory){
+    inventory.forEach(function(item){
+        console.log(item)
+    })
+}
+
 
 
 /*This simulates a button click*/
-$( "#proceed" ).trigger( "click" );
+//$( "#proceed" ).trigger( "click" );
 
 /*
 $(document).on('click', '#proceed', function() {
