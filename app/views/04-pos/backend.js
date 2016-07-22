@@ -261,20 +261,22 @@ $("#search").change(function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
 		//var query = new RegExp(query, "i");
-		query = new RegExp(query, "i");
-		var i = -1;
-		inventory_query.splice(0, inventory_query.length);
-	  inventory.find(function(e) {
-			i++;
-			if(e.barcode != null) {
-				if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-					var item = e;
-					item.title+=("-_" + i);
-					inventory_query.push(item);
+		if(scan_flag == 1) {
+			query = new RegExp(query, "i");
+			var i = -1;
+			inventory_query.splice(0, inventory_query.length);
+		  inventory.find(function(e) {
+				i++;
+				if(e.barcode != null) {
+					if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+						var item = e;
+						item.title+=("-_" + i);
+						inventory_query.push(item);
+					}
 				}
-			}
-    });
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+	    });
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+		}
 	}
 });
 

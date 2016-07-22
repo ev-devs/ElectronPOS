@@ -19,10 +19,11 @@ $("#n_cancel").click(function() {
   refocus()
 });
 
-/*NOTE: BEGIN CASH TRANSACTION CODE (can be put into cash.html if wanted)*Finish tying in "Select platinum" view to the rest of code (John)/ /*MAY NEED TO GO IN BACKEND.JS*/
+/*NOTE: BEGIN CASH TRANSACTION CODE */
 $(document).on("change", "#tendered", function() {
   if($(this).val() >= total) {
     var change = $(this).val() - accounting.formatNumber(total, 2, ",");
+    console.log(change);
     $("#change").text("$" + accounting.formatNumber(change, 2, ","));
   }
 });
