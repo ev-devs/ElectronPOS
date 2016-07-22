@@ -92,7 +92,7 @@ function pull_platinums() {
       if (!error && response.statusCode == 200) {
 
         leaders = JSON.parse(body).evleaders;
-        console.log("LEADERS ARE " + leaders)
+        console.log("LEADERS ARE " + JSON.stringify(leaders))
         resolve(leaders);
       }
       else if (error) {
@@ -123,7 +123,7 @@ function pull_inventory() {
           var ordItems = _.sortBy(resp.items, function (item) {
             return item.title;
           })
-          console.log('ORD ITEMS ARE ' + ordItems)
+          console.dir('ORD ITEMS ARE ' + JSON.stringify(ordItems))
           resolve(ordItems);
         }
         else if (error) {
@@ -138,23 +138,7 @@ function pull_inventory() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*This simulates a button click*/
 $( "#proceed" ).trigger( "click" );
 
 /*
