@@ -30,8 +30,8 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     }
 })
 
-var Platinum = require('../../lib/platinum.js')
-var Inventory = require('../../lib/inventory.js')
+var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
+var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
 
 /*THIS RENDERS THE LIST OF INTERNET CONNECTIONS*/
 $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.html', 'utf-8') , {
@@ -43,6 +43,9 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.ht
 // MOVE INTO THE NEXT VIEW
 
 $('#proceed').click(function(event){
+
+    // this is us testing our connection. If either failes we need to choose
+    // another wifi or estabish a faster connection
 
     pull_inventory()
     .then(function(inventory) {
