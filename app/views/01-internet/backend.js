@@ -1,5 +1,4 @@
-
-
+/********THIS IS OUR REQUIREMENTS THAT WE NEED TO EXECUTS OUR FILES *********/
 var util       = require('util') /*this is for our utility needs*/
 var execSync   = require('child_process').execSync /*This is for our child process needs*/
 var spawnSync  = require('child_process').spawnSync
@@ -10,8 +9,14 @@ var events     = require('../../lib/eventstart.js') /* not sure what the fuck th
 var fs  = require('fs');
 var ejs = require('ejs');
 
+
+var URL = process.env.EQ_URL
+var request = require('request');
+var _ = require("underscore");
+
 var mongoose = require('mongoose');
 
+/***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
         console.log(err)
@@ -50,12 +55,12 @@ $('#proceed').click(function(event){
     pull_inventory()
     .then(function(inventory) {
       if(inventory.length != 0)
-        console.log(inventory)
+        //console.log(inventory)
         console.log('Inventory has Been Pulled and stored')
         //window.location.assign("../02-eventstart/index.html");
     })
     .catch(function(result) {
-        console.log(result);
+        console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
     });
 
 
@@ -63,16 +68,94 @@ $('#proceed').click(function(event){
     .then(function(platinuns){
         if (platinuns.lenght != 0){
 
-            console.log(platinums)
+            //console.log(platinums)
             // store inventory here
             console.log('Platinuns have Been Pulled and stored')
         }
     })
     .catch(function(result) {
-        console.log(result);
+        console.log("THERE WAS AN ERROR WITH PLATINUM PULLING " + result);
     });
 
 });
+
+function pull_platinums() {
+  return new Promise(function(resolve, reject) {
+    request({
+      method: 'POST',
+      uri: URL + '/evleaders',
+      form: {
+        token: process.env.EQ_TOKEN
+      }
+    }, function (error, response, body) {
+      // console.log(body);
+      if (!error && response.statusCode == 200) {
+
+        leaders = JSON.parse(body).evleaders;
+        console.log("LEADERS ARE " + leaders)
+        resolve(leaders);
+      }
+      else if (error) {
+        reject(error);
+      }
+      else {
+        //console.log(body);
+      }
+    });
+  });
+}
+
+function pull_inventory() {
+  // Return a new promise.
+  return new Promise(function(resolve, reject) {
+    request({
+        method: 'POST',
+        uri: URL + '/inventory',
+        form: {
+          token: process.env.EQ_TOKEN
+        }
+      },
+      function (error, response, body) {
+        // console.log(body);
+        if (!error && response.statusCode == 200) {
+          var resp = JSON.parse(body);
+          x = [1,2,3]
+          var ordItems = _.sortBy(resp.items, function (item) {
+            return item.title;
+          })
+          console.log('ORD ITEMS ARE ' + ordItems)
+          resolve(ordItems);
+        }
+        else if (error) {
+          reject(error);
+        }
+        else {
+          //console.log(body);
+        }
+      });
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$( "#proceed" ).trigger( "click" );
 
 /*
 $(document).on('click', '#proceed', function() {
