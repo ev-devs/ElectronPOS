@@ -4,7 +4,8 @@ var _ = require("underscore");
 
 var inventory = [];
 var platinums = [];
-function inherit_platinums() {
+
+function pull_platinums() {
   return new Promise(function(resolve, reject) {
     request({
       method: 'POST',
@@ -27,7 +28,7 @@ function inherit_platinums() {
   });
 }
 
-function inherit_inventory() {
+function pull_inventory() {
   // Return a new promise.
   return new Promise(function(resolve, reject) {
     request({

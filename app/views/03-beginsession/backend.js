@@ -128,10 +128,11 @@ ipc.on('ibo-session-reply', function (event, arg) {
 
   $('#validation-container').show()
 
+  // Here is where we now send our user to the next page
   setTimeout(function(){
       window.location.assign("../04-pos/index.html");
   }, 1776)
 
-  // Here is where we now send our user to the next page
+
 
 });
