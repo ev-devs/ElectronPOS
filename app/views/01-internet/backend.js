@@ -216,8 +216,8 @@ function insertPlatinumsToDatabase(leaders) {
                         }).save(function(err, newleader){
                             if (err){
                                 console.log("Error in creating new platinum  " + err)
+                                reject(err)
                             }
-                            reject(err)
                             else {
                                 console.log("New Leader Created! " + newleader)
                                 resolve(1)
