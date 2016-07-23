@@ -153,8 +153,61 @@ function insertPlatinumsToDatabase(leaders) {
     $('#test_connection').hide()
     $('#load_platinums').show()
 
-    leaders.forEach(function(leader){
-        console.log(leader)
+    leaders.forEach(function(platinum){
+
+        Platinum.find( { id : platinum._id }, function(err, leader){
+            if (err){
+                console.log( "Error in finding a platinum " +  err)
+            }
+            else {
+                if (leader){
+                    console.log("LEADER EXISTS! " + leader)
+                    // we update the leader just in case
+                    leader.id        = platinum._id,
+                    leader.active    = platinum.active,
+                    leader.admin     = platinum.admin,
+                    leader.email     = platinum.email,
+                    leader.firstname = platinum.firstname,
+                    leader.lastname  = platinum.lastname,
+                    leader.pnl       = platinum.pnl,
+                    leader.rt        = platinum.rt
+
+                    leader.save(function(err){
+                        if (err){
+                            console.log("Error in updating platinum " + err)
+                        }
+                        else {
+                            console.log("Update Existing Leader!")
+                        }
+                    })
+                }
+                else {
+                    // create new leader
+                    new Platinum({
+                        id          : platinum._id,
+                        active      : platinum.active,
+                        admin       : platinum.admin,
+                        email       : platinum.email,
+                        firstname   : platinum.firstname,
+                        ibonumber   : platinum.ibonumber,
+                        lastname    : platinum.lastname,
+                        pnl         : platinum.pnl,
+                        rt          : platinum.rt
+
+
+                    }).save(function(err, newleader){
+                        if (err){
+                            console.log("Error in creating new platinum  " + err)
+                        }
+                        else {
+                            console.log("New Leader Created! " + newleader)
+                        }
+                    })
+                }
+            }
+        })
+
+        //console.log(leader)
     })
 }
 function insertInventoryToDatabase(inventory){

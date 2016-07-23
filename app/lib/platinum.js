@@ -14,6 +14,11 @@ var platinumSchema = new mongoose.Schema({
 });
 
 /*now we create an actual model we can use to communicatte with our javascript*/
-var Platinum = mongoose.model('Platinum', platinumSchema);
+var Platinum = PlatinumConnection.model('Platinum', platinumSchema);
+/*
+    PlatinumConnection is defined within the backend.js file
+    and it is its own seperate database with a dedicated connection
+    to ONLY platinums
+*/
 
 module.exports = Platinum
