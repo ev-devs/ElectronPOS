@@ -160,7 +160,7 @@ function insertPlatinumsToDatabase(leaders) {
                 console.log( "Error in finding a platinum " +  err)
             }
             else {
-                if (leader){
+                if (leader.length != 0){
                     console.log("LEADER EXISTS! " + leader)
                     // we update the leader just in case
                     leader.id        = platinum._id,
