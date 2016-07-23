@@ -106,7 +106,7 @@ function pull_platinums() {
         reject(error);
       }
       else {
-        //console.log(body);
+        console.log( "OTHER RESPONSE " + body);
       }
     });
   });
@@ -138,7 +138,7 @@ function pull_inventory() {
           reject(error);
         }
         else {
-          //console.log(body);
+          console.log("OTHER RESPONSE " + body);
         }
       });
   });
