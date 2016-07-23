@@ -172,4 +172,4 @@ function insertInventoryToDatabase(inventory){
 
 
 /*This simulates a button click*/
-$( "#proceed" ).trigger( "click" );
+//$( "#proceed" ).trigger( "click" );
