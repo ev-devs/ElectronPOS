@@ -38,6 +38,15 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
 
+var inventorySize = null;
+var currentInventory = 0;
+
+var platinumSize = null;
+var currentPlatinum = 0;
+
+var global_interval = 0;
+
+
 /*THIS RENDERS THE LIST OF INTERNET CONNECTIONS*/
 $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.html', 'utf-8') , {
     output      : internet.list_connections(),
@@ -46,7 +55,6 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.ht
 
 // THIS WILL READ FROM THE SERVER AND STORE INTO THE DATABASE AND THEN
 // MOVE INTO THE NEXT VIEW
-
 
 
 $(document).on('click', '#proceed', function() {
@@ -90,13 +98,18 @@ $(document).on('click', '#proceed', function() {
   })
 
 
-
 });
 
 
 
 function finish_setup() {
     return new Promise(function(resolve, reject){
+        global_interval = setInterval(function(){
+            if (platinumSize === currentPlatinum && inventorySize === currentInventory){
+                clearInterval(global_interval)
+                window.location.assign('../02-eventstart/index.html')
+            }
+        }, 3000)
         resolve(1)
     })
 }
@@ -116,6 +129,7 @@ function pull_platinums() {
 
         leaders = JSON.parse(body).evleaders;
         //console.log("LEADERS ARE " + JSON.stringify(leaders))
+        platinumSize = leaders.length
         insertPlatinumsToDatabase(leaders)
         resolve(leaders);
       }
@@ -148,6 +162,7 @@ function pull_inventory() {
             return item.title;
           })
           //console.log('ORD ITEMS ARE ' + JSON.stringify(ordItems))
+          inventorySize = ordItems.length
           insertInventoryToDatabase(ordItems)
           resolve(ordItems);
         }
@@ -226,7 +241,8 @@ function insertPlatinumsToDatabase(leaders) {
                     }
                 }
             })
-
+        }).then(function(result){
+            currentPlatinum++
         })
 
     })
@@ -289,6 +305,8 @@ function insertInventoryToDatabase(inventory){
                     }
                 }
             })
+        }).then(function(result){
+            currentInventory++
         })
 
     }) // end of forEach loop
