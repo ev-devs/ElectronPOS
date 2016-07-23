@@ -55,6 +55,8 @@ $(document).on('click', '#proceed', function() {
 
   $('main').hide()
 
+  $('#test_connection').show()
+
   // this is us testing our connection. If either failes we need to choose
   // another wifi or estabish a faster connection
 
@@ -148,17 +150,26 @@ function pull_inventory() {
 
 function insertPlatinumsToDatabase(leaders) {
     // this is gonna be tricky since every I/O of the database is ASYNC
+    $('#test_connection').hide()
+    $('#load_platinums').show()
+
     leaders.forEach(function(leader){
         console.log(leader)
     })
 }
 function insertInventoryToDatabase(inventory){
+
+    $('#load_platinums').hide()
+    $('#load_inventory').show()
+
     inventory.forEach(function(item){
         console.log(item)
     })
+
+    console.log('we are done!')
 }
 
 
 
 /*This simulates a button click*/
-//$( "#proceed" ).trigger( "click" );
+$( "#proceed" ).trigger( "click" );
