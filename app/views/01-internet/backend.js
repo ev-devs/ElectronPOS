@@ -160,18 +160,18 @@ function insertPlatinumsToDatabase(leaders) {
                 console.log( "Error in finding a platinum " +  err)
             }
             else {
-                if (leader.length != 0){
+                if (leader){
 
                     //console.log("LEADER EXISTS! " + leader)
                     // we update the leader just in case
-                    leader.id        = platinum._id,
-                    leader.active    = platinum.active,
-                    leader.admin     = platinum.admin,
-                    leader.email     = platinum.email,
-                    leader.firstname = platinum.firstname,
-                    leader.lastname  = platinum.lastname,
-                    leader.pnl       = platinum.pnl,
-                    leader.rt        = platinum.rt
+                    leader.id        = platinum._id;
+                    leader.active    = platinum.active;
+                    leader.admin     = platinum.admin;
+                    leader.email     = platinum.email;
+                    leader.firstname = platinum.firstname;
+                    leader.lastname  = platinum.lastname;
+                    leader.pnl       = platinum.pnl;
+                    leader.rt        = platinum.rt;
 
                     leader.save(function(err){
                         if (err){
@@ -216,10 +216,52 @@ function insertInventoryToDatabase(inventory){
     $('#load_inventory').show()
 
     inventory.forEach(function(item){
-        console.log(item)
-    })
+        Inventory.findOne({ id : item._id}, function(err, foundItem){
+            if (err){
+                console.log( "There was an error finding an item " + err)
+            }
+            else {
+                if (foundItem){
 
-    console.log('we are done!')
+                    foundItem.id        = item._id;
+                    foundItem.barcode   = item.barcode;
+                    foundItem.title     = item.title;
+                    foundItem.isTicket  = item.isTicket;
+                    foundItem.prefix    = item.prefix;
+                    foundItem.price     = item.price;
+
+                    foundItem.save(function(err){
+                        if (err){
+                            console.log('ERROR in updating existing item ' + err)
+                        }
+                        else {
+                            console.log('Updated existing item!');
+                        }
+                    })
+                }
+                else {
+                    // create new item
+                    new Inventory({
+                        id          : item._id,
+                        barcode     : item.barcode,
+                        isTicket    : item.isTicket,
+                        prefix      : item.prefix,
+                        price       : item.price,
+                        title       : item.title,
+
+                    }).save(function(err){
+                        if (err){
+                            console.log('Error in creating new Inventory item')
+                        }
+                        else {
+                            console.log('Successfully created new item!')
+                        }
+                    })
+                }
+            }
+        })
+        //console.log(item)
+    })
 }
 
 
