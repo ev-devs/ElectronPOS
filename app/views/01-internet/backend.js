@@ -54,7 +54,6 @@ $(document).on('click', '#proceed', function() {
   // var inventory_dl = 0;
 
   $('main').hide()
-
   $('#test_connection').show()
 
   // this is us testing our connection. If either failes we need to choose
@@ -62,31 +61,45 @@ $(document).on('click', '#proceed', function() {
 
   pull_inventory()
   .then(function(inventory) {
-    if(inventory.length != 0)
-      //console.log(inventory)
-      console.log('Inventory has Been Pulled and stored')
-      //window.location.assign("../02-eventstart/index.html");
+
+
   })
   .catch(function(result) {
       console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
   });
 
 
+
   pull_platinums()
   .then(function(platinuns){
-      if (platinuns.lenght != 0){
 
-          //console.log(platinums)
-          // store inventory here
-          console.log('Platinuns have Been Pulled and stored')
-      }
+
   })
   .catch(function(result) {
       console.log("THERE WAS AN ERROR WITH PLATINUM PULLING " + result);
   });
+
+
+
+  finish_setup()
+  .then(function(status){
+      console.log('we are done')
+  })
+  .catch(function(status){
+      console.log('THIS WILL NEVER BE REACHED')
+  })
+
+
+
 });
 
 
+
+function finish_setup() {
+    return new Promise(function(resolve, reject){
+        resolve(1)
+    })
+}
 
 
 function pull_platinums() {

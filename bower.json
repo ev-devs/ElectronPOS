@@ -19,6 +19,7 @@
     "Materialize": "materialize#^0.97.6",
     "hammerjs": "^2.0.8",
     "typicons.font": "typicons#^2.0.7",
-    "keyboard": "^1.25.29"
+    "keyboard": "^1.25.29",
+    "animate.css": "^3.5.2"
   }
 }
