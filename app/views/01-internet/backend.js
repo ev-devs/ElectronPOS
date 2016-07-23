@@ -168,57 +168,65 @@ function insertPlatinumsToDatabase(leaders) {
 
     leaders.forEach(function(platinum){
 
-        Platinum.findOne( { id : platinum._id }, function(err, leader){
-            if (err){
-                console.log( "Error in finding a platinum " +  err)
-            }
-            else {
-                if (leader){
+        new Promise(function(resolve, reject){
 
-                    //console.log("LEADER EXISTS! " + leader)
-                    // we update the leader just in case
-                    leader.id        = platinum._id;
-                    leader.active    = platinum.active;
-                    leader.admin     = platinum.admin;
-                    leader.email     = platinum.email;
-                    leader.firstname = platinum.firstname;
-                    leader.lastname  = platinum.lastname;
-                    leader.pnl       = platinum.pnl;
-                    leader.rt        = platinum.rt;
-
-                    leader.save(function(err){
-                        if (err){
-                            console.log("Error in updating platinum " + err)
-                        }
-                        else {
-                            console.log("Updated Existing Leader!")
-                        }
-                    })
+            Platinum.findOne( { id : platinum._id }, function(err, leader){
+                if (err){
+                    console.log( "Error in finding a platinum " +  err)
                 }
                 else {
-                    // create new leader
-                    new Platinum({
-                        id          : platinum._id,
-                        active      : platinum.active,
-                        admin       : platinum.admin,
-                        email       : platinum.email,
-                        firstname   : platinum.firstname,
-                        ibonumber   : platinum.ibonumber,
-                        lastname    : platinum.lastname,
-                        pnl         : platinum.pnl,
-                        rt          : platinum.rt
+                    if (leader){
+
+                        //console.log("LEADER EXISTS! " + leader)
+                        // we update the leader just in case
+                        leader.id        = platinum._id;
+                        leader.active    = platinum.active;
+                        leader.admin     = platinum.admin;
+                        leader.email     = platinum.email;
+                        leader.firstname = platinum.firstname;
+                        leader.lastname  = platinum.lastname;
+                        leader.pnl       = platinum.pnl;
+                        leader.rt        = platinum.rt;
+
+                        leader.save(function(err){
+                            if (err){
+                                console.log("Error in updating platinum " + err)
+                                reject(err)
+                            }
+                            else {
+                                console.log("Updated Existing Leader!")
+                                resolve(1)
+                            }
+                        })
+                    }
+                    else {
+                        // create new leader
+                        new Platinum({
+                            id          : platinum._id,
+                            active      : platinum.active,
+                            admin       : platinum.admin,
+                            email       : platinum.email,
+                            firstname   : platinum.firstname,
+                            ibonumber   : platinum.ibonumber,
+                            lastname    : platinum.lastname,
+                            pnl         : platinum.pnl,
+                            rt          : platinum.rt
 
 
-                    }).save(function(err, newleader){
-                        if (err){
-                            console.log("Error in creating new platinum  " + err)
-                        }
-                        else {
-                            console.log("New Leader Created! " + newleader)
-                        }
-                    })
+                        }).save(function(err, newleader){
+                            if (err){
+                                console.log("Error in creating new platinum  " + err)
+                            }
+                            reject(err)
+                            else {
+                                console.log("New Leader Created! " + newleader)
+                                resolve(1)
+                            }
+                        })
+                    }
                 }
-            }
+            })
+
         })
 
     })
@@ -229,52 +237,63 @@ function insertInventoryToDatabase(inventory){
     $('#load_inventory').show()
 
     inventory.forEach(function(item){
-        Inventory.findOne({ id : item._id}, function(err, foundItem){
-            if (err){
-                console.log( "There was an error finding an item " + err)
-            }
-            else {
-                if (foundItem){
 
-                    foundItem.id        = item._id;
-                    foundItem.barcode   = item.barcode;
-                    foundItem.title     = item.title;
-                    foundItem.isTicket  = item.isTicket;
-                    foundItem.prefix    = item.prefix;
-                    foundItem.price     = item.price;
 
-                    foundItem.save(function(err){
-                        if (err){
-                            console.log('ERROR in updating existing item ' + err)
-                        }
-                        else {
-                            console.log('Updated existing item!');
-                        }
-                    })
+        new Promise(function(resolve, reject){
+
+            Inventory.findOne({ id : item._id}, function(err, foundItem){
+                if (err){
+                    console.log( "There was an error finding an item " + err)
                 }
                 else {
-                    // create new item
-                    new Inventory({
-                        id          : item._id,
-                        barcode     : item.barcode,
-                        isTicket    : item.isTicket,
-                        prefix      : item.prefix,
-                        price       : item.price,
-                        title       : item.title,
+                    if (foundItem){
 
-                    }).save(function(err){
-                        if (err){
-                            console.log('Error in creating new Inventory item')
-                        }
-                        else {
-                            console.log('Successfully created new item!')
-                        }
-                    })
+                        foundItem.id        = item._id;
+                        foundItem.barcode   = item.barcode;
+                        foundItem.title     = item.title;
+                        foundItem.isTicket  = item.isTicket;
+                        foundItem.prefix    = item.prefix;
+                        foundItem.price     = item.price;
+
+                        foundItem.save(function(err){
+                            if (err){
+                                console.log('ERROR in updating existing item ' + err)
+                                reject(err)
+                            }
+                            else {
+                                resolve(1)
+                                console.log('Updated existing item!');
+                            }
+                        })
+                    }
+                    else {
+                        // create new item
+                        new Inventory({
+                            id          : item._id,
+                            barcode     : item.barcode,
+                            isTicket    : item.isTicket,
+                            prefix      : item.prefix,
+                            price       : item.price,
+                            title       : item.title,
+
+                        }).save(function(err){
+                            if (err){
+                                console.log('Error in creating new Inventory item')
+                                reject(err)
+                            }
+                            else {
+                                resolve(1)
+                                console.log('Successfully created new item!')
+                            }
+                        })
+                    }
                 }
-            }
+            })
         })
-        //console.log(item)
-    })
+
+
+
+    }) // end of forEach loop
 }
 
 
