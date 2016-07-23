@@ -47,37 +47,43 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.ht
 // THIS WILL READ FROM THE SERVER AND STORE INTO THE DATABASE AND THEN
 // MOVE INTO THE NEXT VIEW
 
-$('#proceed').click(function(event){
-
-    // this is us testing our connection. If either failes we need to choose
-    // another wifi or estabish a faster connection
-
-    pull_inventory()
-    .then(function(inventory) {
-      if(inventory.length != 0)
-        //console.log(inventory)
-        console.log('Inventory has Been Pulled and stored')
-        //window.location.assign("../02-eventstart/index.html");
-    })
-    .catch(function(result) {
-        console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
-    });
 
 
-    pull_platinums()
-    .then(function(platinuns){
-        if (platinuns.lenght != 0){
+$(document).on('click', '#proceed', function() {
 
-            //console.log(platinums)
-            // store inventory here
-            console.log('Platinuns have Been Pulled and stored')
-        }
-    })
-    .catch(function(result) {
-        console.log("THERE WAS AN ERROR WITH PLATINUM PULLING " + result);
-    });
+  var inventory_dl = 0;
 
+  // this is us testing our connection. If either failes we need to choose
+  // another wifi or estabish a faster connection
+
+  pull_inventory()
+  .then(function(inventory) {
+    if(inventory.length != 0)
+      //console.log(inventory)
+      console.log('Inventory has Been Pulled and stored')
+      //window.location.assign("../02-eventstart/index.html");
+  })
+  .catch(function(result) {
+      console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
+  });
+
+
+  pull_platinums()
+  .then(function(platinuns){
+      if (platinuns.lenght != 0){
+
+          //console.log(platinums)
+          // store inventory here
+          console.log('Platinuns have Been Pulled and stored')
+      }
+  })
+  .catch(function(result) {
+      console.log("THERE WAS AN ERROR WITH PLATINUM PULLING " + result);
+  });
 });
+
+
+
 
 function pull_platinums() {
   return new Promise(function(resolve, reject) {
@@ -154,11 +160,3 @@ function insertInventoryToDatabase(inventory){
 
 /*This simulates a button click*/
 //$( "#proceed" ).trigger( "click" );
-
-/*
-$(document).on('click', '#proceed', function() {
-
-  var inventory_dl = 0;
-
-});
-*/
