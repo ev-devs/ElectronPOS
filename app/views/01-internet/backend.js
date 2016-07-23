@@ -291,8 +291,6 @@ function insertInventoryToDatabase(inventory){
             })
         })
 
-
-
     }) // end of forEach loop
 }
 

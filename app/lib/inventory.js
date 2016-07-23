@@ -13,4 +13,8 @@ var inventorySchema = new mongoose.Schema({
 /*now we create an actual model we can use to communicatte with our javascript*/
 var Inventory = InventoryConnection.model('Inventory', inventorySchema);
 
+/*  InventoryConnection is accessed through the backend.js file. It is its own
+    connection to its OWN database
+*/
+
 module.exports = Inventory
