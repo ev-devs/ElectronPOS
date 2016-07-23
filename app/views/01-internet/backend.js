@@ -155,13 +155,14 @@ function insertPlatinumsToDatabase(leaders) {
 
     leaders.forEach(function(platinum){
 
-        Platinum.find( { id : platinum._id }, function(err, leader){
+        Platinum.findOne( { id : platinum._id }, function(err, leader){
             if (err){
                 console.log( "Error in finding a platinum " +  err)
             }
             else {
                 if (leader.length != 0){
-                    console.log("LEADER EXISTS! " + leader)
+
+                    //console.log("LEADER EXISTS! " + leader)
                     // we update the leader just in case
                     leader.id        = platinum._id,
                     leader.active    = platinum.active,
@@ -177,7 +178,7 @@ function insertPlatinumsToDatabase(leaders) {
                             console.log("Error in updating platinum " + err)
                         }
                         else {
-                            console.log("Update Existing Leader!")
+                            console.log("Updated Existing Leader!")
                         }
                     })
                 }
@@ -207,7 +208,6 @@ function insertPlatinumsToDatabase(leaders) {
             }
         })
 
-        //console.log(leader)
     })
 }
 function insertInventoryToDatabase(inventory){
