@@ -46,3 +46,5 @@ $(document).on("click",  ".item", function() {
 		out_duration: 200, // Transition out duration
 	});
 });
+
+ $(".button-collapse").sideNav();

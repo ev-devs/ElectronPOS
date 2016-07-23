@@ -203,3 +203,7 @@ html {
     vertical-align: middle;
     line-height: 8vh;       /* the same as your div height */
 }
+
+#button-container {
+    max-height: 8vh;
+}

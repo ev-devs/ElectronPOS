@@ -11,7 +11,9 @@ const {BrowserWindow} = electron
 const ipc = electron.ipcMain
 
 // This is used to update our sessions and products
-var mongoose = require('mongoose')
+// var mongoose = require('mongoose')
+var Session = require('./app/lib/sessions.js')
+
 
 var current_ibo_session = null;
 
@@ -101,11 +103,12 @@ ipc.on('ibo-session-message', function (event, arg) {
 
 ipc.on('ibo-session-end', function(event, arg){
     // we end the session here
+    console.log(current_ibo_session);
 
     // we make our current session null
-    current_ibo_session = null
-    console.log(arg)
-    event.sender.send('ibo-session-end-reply', 'Started New Session Successfully')
+    // current_ibo_session = null
+    //console.log(arg)
+    event.sender.send('ibo-session-end-reply', 'Ended Session Successfully')
 });
 
 ipc.on('event-validation-success', function(event, arg){

@@ -1,3 +1,5 @@
+var mongoose = require('mongoose')
+
 /*second we create a schema of how our data will be modeled*/
 var iboSessionSchema = new mongoose.Schema({
 

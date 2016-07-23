@@ -53,7 +53,6 @@ $('#events_submit').click(function(event){
                     window.location.assign("../03-beginsession/index.html");
                 }, 1776)
                 // murica'
-
           }
         })
         .catch(function(result) {

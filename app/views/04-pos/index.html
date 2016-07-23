@@ -32,7 +32,7 @@
 
 <!-- keyboard extensions (optional) -->
   <script src="../../../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="../../../bower_components/animate.css/animate.css" media="screen" title="no title" charset="utf-8">
   <title>Hello World!</title>
 </head>
 
@@ -45,7 +45,7 @@
           <a href="#!" class="brand-logo">Equipo Vision</a>
           <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
           <ul class="right hide-on-med-and-down" id="button-container">
-            <li class="li-nav"><a href="#!" class="nav-link">End session</a></li>
+            <li class="li-nav" id="end-session"><a href="#!" class="nav-link">End session</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="platinum">Platinums</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="scan_sim">Scan sim</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="swipe_sim">Swipe sim</a></li>
@@ -106,7 +106,6 @@
                 }
               </script>
                <!---ENDLEFT BODY-->
-
 
                <!--BEGIN LEFT FOOTER-->
               <div class="row grey lighten-1" id="bottom-left-text">
@@ -183,14 +182,9 @@
     <!--THIS IS OUR LOGIC!-->
     <script src="./frontend.js" charset="utf-8"></script>
     <script src="./backend.js" charset="utf-8"></script>
-    <script type="text/javascript">
-          $(".button-collapse").sideNav();
-    </script>
-    <style media="screen">
-        #button-container {
-            max-height: 8vh;
-        }
-    </style>
+
+    <!--This ends our session-->
+    <script src="endsession.js" charset="utf-8"></script>
 
   </body>
 </html>
