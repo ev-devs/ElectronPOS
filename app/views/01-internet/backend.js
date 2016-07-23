@@ -51,7 +51,9 @@ $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.ht
 
 $(document).on('click', '#proceed', function() {
 
-  var inventory_dl = 0;
+  // var inventory_dl = 0;
+
+  $('main').hide()
 
   // this is us testing our connection. If either failes we need to choose
   // another wifi or estabish a faster connection
