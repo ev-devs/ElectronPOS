@@ -116,3 +116,9 @@ ipc.on('event-validation-success', function(event, arg){
     console.log(arg)
     event.sender.send('event-validaton-success-reply', "Recieved Current Event")
 });
+
+ipc.on('transaction-made', function(event, arg){
+    // we add a transaction to the user
+    console.log(arg)
+    event.sender.send('transaction-made-reply', 'Updated transaction count for current session')
+})
