@@ -7,7 +7,7 @@
           var inventory_place = item.substring(item.search("-_") + 2, item.length);
           var item_name = item.substring(0, item.search("-_"));
           %>
-        <a href="#!" class="collection-item item"><span id="<%=inventory_place%>"><%=item_name%></span>-$<span id="item_price"><%=query_results[result].price%></span><span id="item_price"> <%=query_results[result].barcode%></span></a>
+        <a href="#!" class="collection-item item"><span id="<%=inventory_place%>"><%=item_name%></span>-$<span id="item_price"><%=query_results[result].price%></span></a>
         <%}%>
       </div>
     </div>
