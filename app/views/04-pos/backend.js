@@ -195,7 +195,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
 		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
 		values as the text values of the td tags.*/
-		console.log("X: " + item_list[item_list_index].title);
 		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
 		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
 		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
@@ -206,7 +205,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	}
 	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
 	else {
-		console.log("Y");
 		var item = $("#inv-item" + inventory_list_index).text().trim();
 		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
 		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
@@ -275,11 +273,9 @@ $("#search").change(function(){
 						var item = Object.assign({}, e)
 						inventory_query.push(item);
 						item.title+=("-_" + i);
-						console.log(e);
 					}
 				}
 	    });
-			console.log(inventory_query);
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 		}
 	}
@@ -290,7 +286,6 @@ $(document).on("click",  ".item", function() {
   $("#selected_item").removeClass();
   $("#selected_item").addClass($($(this).children()[0]).attr("id"));
 	search_param = Number($($(this).children()[0]).attr("id"))
-	console.log(search_param);
 	$('#modal3').openModal({
 		dismissible: false, // Modal can be dismissed by clicking outside of the modal
 		opacity: .5, // Opacity of modal background
@@ -298,36 +293,28 @@ $(document).on("click",  ".item", function() {
 		out_duration: 200, // Transition out duration
 	});
 });
-//var f = 0;
+
 $(document).on("click",  "#confirm_item_selection", function() {
 	var quantity = $("#selected_item_qnt").val();
 	var barcode = inventory[search_param].barcode;
 	if(quantity != 0 && quantity != "") {
 		var i = -1
 		var x = item_list.find(function(e) {
-			/*This i will keep track of where it is in the list*/
 			i++;
-			console.log(i);
 			return e.barcode == barcode;
 		});
-		console.log(x);
-	//	if(f != 1) {
 			if(x != undefined) {
 				item_list[i].cust_quantity+=Number(quantity);
-				console.log("CUST QUANTITY(A): " + item_list[i].cust_quantity);
 				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
 			}
 			else {
 				var item = inventory[Number($("#selected_item").attr("class"))]
-				console.log("ITEM: " + item.title);
 				item['cust_quantity'] = Number(quantity);
 				item_list.push(item);
-				console.log(item_list[item_list.length - 1].title);
 				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
 				f = 1;
 			}
 		}
-	//}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -504,15 +491,23 @@ $("#confirm").click(function() {
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
-  else if((cash_flag || cash_card_flag) && $("#tendered").val() >= total) {
+  else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
-		void_order(1);
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		if(Number($("#tendered").val()) >= total) {
+			void_order(1);
+			console.log("HERE");
+    	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		}
+		else {
+			update_price('~', Number($("#tendered").val()), 0)
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+		}
   }
+	/*
 	else if(multi_card_flag && $("#card_amt").val() > 0) {
 		card_amt = $("#card_amt").val();
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-	}
+	}*/
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -539,23 +534,25 @@ $(document).on("click", "#card", function () {
 });
 
 /*Renders the necessary partial for completing orders with cash and cards*/
+/*
 $(document).on("click", "#c_and_c", function () {
   cash_card_flag = 1;
 	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively*/
+	/*Sets the cancel and confirm buttons to red and green respectively
 	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 });
-
+*/
 /*Renders the necessary partial for completing orders with multiple cards.*/
+/*
 $(document).on("click", "#m_card", function () {
 	multi_card_flag = 1;
 	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively*/
+	/*Sets the cancel and confirm buttons to red and green respectively
 	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
 });
-
+*/
 
 
 /*NOTE: BEGIN CARD TRANSACTION CODE*/
@@ -573,7 +570,7 @@ $(document).on("click", "#swipe_sim", function() {
 			void_order(1);
 		  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
     }, 3000);
-  }
+  }/*
 	else if(cash_card_flag) {
 		$("#cancel").removeAttr("style");
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
@@ -599,7 +596,7 @@ $(document).on("click", "#swipe_sim", function() {
 				$("#cancel").removeAttr("style");
 			}, 3000);
 		}
-	}
+	}*/
 });
 
 
@@ -630,10 +627,10 @@ function void_order(full_void) {
 	/*Cash flag is set to 0 to denote the end of a cash transaction*/
 	cash_flag = 0;
 	/**/
-	card_flag = 0;
+	card_flag = 0;/*
 	multi_card_flag = 0;
-	cash_card_flag = 0;
-	sacn_flag = 0;
+	cash_card_flag = 0;*/
+	scan_flag = 0;
 	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
 		/*Empties the left side*/
