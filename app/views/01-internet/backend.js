@@ -20,15 +20,18 @@ var mongoose = require('mongoose');
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
         console.log(err)
+        Materialize.toast('Error connecting to Platinums MongoDB. Please start up mongod', 1000000000000, 'rounded')
     }
     else {
         console.log('we are connected to mongodb://localhost/platinums')
+
     }
 });
 
 var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
     if (err){
         console.log(err)
+        Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
     }
     else {
         console.log('we are connected to mongodb://localhost/inventory')

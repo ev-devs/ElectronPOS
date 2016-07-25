@@ -14,7 +14,6 @@ const ipc = electron.ipcMain
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')
 
-
 var current_ibo_session = null;
 
 var current_event = null;

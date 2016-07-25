@@ -12,4 +12,6 @@ $('.convention').click(function(event){
 
 /*This starts the sid-nav*/
 $(".button-collapse").sideNav();
-$(".keyboard").keyboard();
+//$(".keyboard").keyboard();
+
+$('#event_id').jboard('standard')
