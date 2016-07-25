@@ -195,6 +195,7 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
 		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
 		values as the text values of the td tags.*/
+		console.log("X");
 		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
 		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
 		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
@@ -205,6 +206,7 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	}
 	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
 	else {
+		console.log("Y");
 		var item = $("#inv-item" + inventory_list_index).text().trim();
 		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
 		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
@@ -284,11 +286,25 @@ $(document).on("click",  "#confirm_item_selection", function() {
 	console.log("Clicked");
 	var quantity = $("#selected_item_qnt").val();
 	if(quantity != 0 || quantity != "") {
-		var item = inventory[Number($("#selected_item").attr("class"))]
-		item['cust_quantity'] = quantity;
-		item_list.push(item);
-		item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
-		add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1)
+		var i = -1
+		item_list.find(function(e) {
+			/*This i will keep track of where it is in the list*/
+			i++;
+			return e.barcode == barcode;
+		});
+		if(i != -1) {
+			item_list[i].cust_quantity+=Number(quantity);
+			console.log("A: " + item_list[i].cust_quantity);
+			add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+		}
+		else {
+			var item = inventory[Number($("#selected_item").attr("class"))]
+			item['cust_quantity'] = Number(quantity);
+			item_list.push(item);
+			item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
+			console.log("B: " + item_list[i].cust_quantity);
+			add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+		}
 	}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
