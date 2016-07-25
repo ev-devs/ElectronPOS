@@ -14,4 +14,6 @@ $('.convention').click(function(event){
 $(".button-collapse").sideNav();
 //$(".keyboard").keyboard();
 
+/*This makes the keyboard tick*/
 $('#event_id').jboard('standard')
+$('#event_code').jboard('standard')
