@@ -85,14 +85,11 @@ function updateOrCreateSession() {
                         ipc.send('ibo-session-message', JSON.parse(JSON.stringify(session[0])) )
                         $('#main-container').hide()
 
-
                     }
                 })
-
             }
         }
     })
-
 };
 
 function createIboSession(){
@@ -132,7 +129,5 @@ ipc.on('ibo-session-reply', function (event, arg) {
   setTimeout(function(){
       window.location.assign("../04-pos/index.html");
   }, 1776)
-
-
 
 });
