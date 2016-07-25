@@ -195,7 +195,7 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
 		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
 		values as the text values of the td tags.*/
-		console.log("X");
+		console.log("X: " + item_list[item_list_index].title);
 		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
 		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
 		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
@@ -262,21 +262,22 @@ function determine_item_status(item_list, inventory, barcode) {
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
-		//var query = new RegExp(query, "i");
 		if(scan_flag == 1) {
 			query = new RegExp(query, "i");
 			var i = -1;
 			inventory_query.splice(0, inventory_query.length);
+			$("#item_list").empty();
 		  inventory.find(function(e) {
 				i++;
 				if(e.barcode != null) {
 					if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-						var item = e;
-						item.title+=("-_" + i);
+						var item = Object.assign({}, e)
 						inventory_query.push(item);
+						item.title+=("-_" + i);
 					}
 				}
 	    });
+			console.log(inventory_query);
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 		}
 	}
@@ -294,15 +295,17 @@ $(document).on("click",  "#confirm_item_selection", function() {
 		});
 		if(i != -1) {
 			item_list[i].cust_quantity+=Number(quantity);
-			console.log("A: " + item_list[i].cust_quantity);
+			console.log("CUST QUANTITY(A): " + item_list[i].cust_quantity);
 			add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
 		}
 		else {
 			var item = inventory[Number($("#selected_item").attr("class"))]
+			console.log("ITEM: " + item.title);
 			item['cust_quantity'] = Number(quantity);
 			item_list.push(item);
-			item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
-			console.log("B: " + item_list[i].cust_quantity);
+			console.log(item_list[item_list.length - 1].title);
+			//item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
+			console.log("CUST QUANTITY(B): " + item_list[item_list.length - 1].cust_quantity + "\nLOCATION IN INV:" + Number($("#selected_item").attr("class")));
 			add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
 		}
 	}
@@ -627,3 +630,29 @@ function void_order(full_void) {
     }, 1500);
 	}
 }
+
+/*
+Software to-do:
+-Finish integrating barcode scanner with gui (Kevin and John)
+  *Figure out how to tell if input is done
+-Finish EVKeyboard (Juan)
+-Fit other views to the screen. (Juan)
+-Decide what will be on help tab (All)
+-Begin first phase of handling transactions (All)
+-Ticket transaction handling
+-Loop for pay until pay is done
+-User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.)
+-POS workflow
+-Printer config
+
+ONGOING
+-Bug check Wi-Fi (John)
+  *Check why connection that is discarded is permanently gone.
+-Bug test red cancel button bug (ongoing, John)
+-Bug test search inventory
+-Bug test handling sessions locally (Juan)
+-Bug testing pos.html (John)
+-POS workflow updates
+-Bug test Inventory and Platinum DB
+
+*/
