@@ -1,3 +1,6 @@
 [submodule "dixonconnect"]
 	path = dixonconnect
 	url = https://github.com/ev-devs/dixonconnect.git 
+[submodule "jboard"]
+	path = jboard
+	url = https://github.com/ev-devs/jboard.git

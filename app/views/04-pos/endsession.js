@@ -19,4 +19,5 @@ function transactionIsInProgress(){
 ipc.on('ibo-session-end-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
+
 })
