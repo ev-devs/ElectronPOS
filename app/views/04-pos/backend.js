@@ -259,6 +259,7 @@ function determine_item_status(item_list, inventory, barcode) {
 
 
 /*NOTE: BEGIN SEARCH INVENTORY CODE*/
+var search_param = "";
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
@@ -274,6 +275,7 @@ $("#search").change(function(){
 						var item = Object.assign({}, e)
 						inventory_query.push(item);
 						item.title+=("-_" + i);
+						console.log(e);
 					}
 				}
 	    });
@@ -283,32 +285,49 @@ $("#search").change(function(){
 	}
 });
 
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	console.log(search_param);
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+//var f = 0;
 $(document).on("click",  "#confirm_item_selection", function() {
-	console.log("Clicked");
 	var quantity = $("#selected_item_qnt").val();
-	if(quantity != 0 || quantity != "") {
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
 		var i = -1
-		item_list.find(function(e) {
+		var x = item_list.find(function(e) {
 			/*This i will keep track of where it is in the list*/
 			i++;
+			console.log(i);
 			return e.barcode == barcode;
 		});
-		if(i != -1) {
-			item_list[i].cust_quantity+=Number(quantity);
-			console.log("CUST QUANTITY(A): " + item_list[i].cust_quantity);
-			add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+		console.log(x);
+	//	if(f != 1) {
+			if(x != undefined) {
+				item_list[i].cust_quantity+=Number(quantity);
+				console.log("CUST QUANTITY(A): " + item_list[i].cust_quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				console.log("ITEM: " + item.title);
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				console.log(item_list[item_list.length - 1].title);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
 		}
-		else {
-			var item = inventory[Number($("#selected_item").attr("class"))]
-			console.log("ITEM: " + item.title);
-			item['cust_quantity'] = Number(quantity);
-			item_list.push(item);
-			console.log(item_list[item_list.length - 1].title);
-			//item_list[item_list.length - 1].title = item_list[item_list.length - 1].title.substring(0, item_list[item_list.length - 1].title.search("-_"));
-			console.log("CUST QUANTITY(B): " + item_list[item_list.length - 1].cust_quantity + "\nLOCATION IN INV:" + Number($("#selected_item").attr("class")));
-			add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-		}
-	}
+	//}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
