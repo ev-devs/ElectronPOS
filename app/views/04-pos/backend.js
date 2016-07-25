@@ -41,10 +41,6 @@ var confirm_flag = 0;
 var card_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
 var cash_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a cash and card transaction is being done.*/
-var cash_card_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a multi card transaction is being done.*/
-var multi_card_flag = 0;
 /*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
 var cancel_flag = 0;
 /*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
@@ -495,19 +491,19 @@ $("#confirm").click(function() {
 		/*Renders the html file necessary to denote the transaction is complete*/
 		if(Number($("#tendered").val()) >= total) {
 			void_order(1);
-			console.log("HERE");
     	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 		}
 		else {
 			update_price('~', Number($("#tendered").val()), 0)
+			card_flag = 0;
+			confirm_flag = 0;
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
   }
-	/*
-	else if(multi_card_flag && $("#card_amt").val() > 0) {
-		card_amt = $("#card_amt").val();
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-	}*/
+	else if(card_flag) {
+		if(card_amt != 0)
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+	}
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -515,9 +511,7 @@ $(document).on("click", "#cash", function () {
 	/*Sets the cash flag to true to denote a cash transaction is in process*/
   cash_flag = 1;
 	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively*/
-	$("#cancel").css("background-color", "red");
-	$("#confirm").css("background-color", "green");
+	colorfy();
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -527,35 +521,19 @@ $(document).on("click", "#card", function () {
 	/*Sets the card flag to true to denote a card transaction is in process*/
   card_flag = 1;
 	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively*/
-	$("#cancel").css("background-color", "red");
+	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-});
-
-/*Renders the necessary partial for completing orders with cash and cards*/
-/*
-$(document).on("click", "#c_and_c", function () {
-  cash_card_flag = 1;
-	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively
-	$("#cancel").css("background-color", "red");
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-});
-*/
-/*Renders the necessary partial for completing orders with multiple cards.*/
-/*
-$(document).on("click", "#m_card", function () {
-	multi_card_flag = 1;
-	previous_page = "pay_choice.html";
-	/*Sets the cancel and confirm buttons to red and green respectively
-	$("#cancel").css("background-color", "red");
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
 });
-*/
+
 
 
 /*NOTE: BEGIN CARD TRANSACTION CODE*/
+$(document).on("change", "#tendered_card", function() {
+	card_amt = Number($(this).val());
+	card_flag = 1;
+});
+
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
@@ -567,36 +545,18 @@ $(document).on("click", "#swipe_sim", function() {
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
-			void_order(1);
-		  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+			if(card_amt == total) {
+				void_order(1);
+			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+			}
+			else if(card_amt < total) {
+				card_flag = 0;
+				confirm_flag = 0;
+				update_price('~', card_amt, 0)
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+			}
     }, 3000);
-  }/*
-	else if(cash_card_flag) {
-		$("#cancel").removeAttr("style");
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-		setTimeout(function() {
-			previous_flag = 0;
-			$("#confirm").css("background-color", "green");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-		}, 3000);
-	}
-	else if(multi_card_flag) {
-		if(card_amt > 0) {
-			card_amt-=1;
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-			setTimeout(function() {
-				previous_flag = 0;
-				if(card_amt == 0) {
-					void_order(1);
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-				}
-				else
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-				$("#confirm").removeAttr("style");
-				$("#cancel").removeAttr("style");
-			}, 3000);
-		}
-	}*/
+  }
 });
 
 
@@ -627,9 +587,7 @@ function void_order(full_void) {
 	/*Cash flag is set to 0 to denote the end of a cash transaction*/
 	cash_flag = 0;
 	/**/
-	card_flag = 0;/*
-	multi_card_flag = 0;
-	cash_card_flag = 0;*/
+	card_flag = 0;
 	scan_flag = 0;
 	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
@@ -647,28 +605,8 @@ function void_order(full_void) {
 	}
 }
 
-/*
-Software to-do:
--Finish integrating barcode scanner with gui (Kevin and John)
-  *Figure out how to tell if input is done
--Finish EVKeyboard (Juan)
--Fit other views to the screen. (Juan)
--Decide what will be on help tab (All)
--Begin first phase of handling transactions (All)
--Ticket transaction handling
--Loop for pay until pay is done
--User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.)
--POS workflow
--Printer config
-
-ONGOING
--Bug check Wi-Fi (John)
-  *Check why connection that is discarded is permanently gone.
--Bug test red cancel button bug (ongoing, John)
--Bug test search inventory
--Bug test handling sessions locally (Juan)
--Bug testing pos.html (John)
--POS workflow updates
--Bug test Inventory and Platinum DB
-
-*/
+function colorfy() {
+	/*Sets the cancel and confirm buttons to red and green respectively*/
+	$("#cancel").css("background-color", "red");
+	$("#confirm").css("background-color", "green");
+}
