@@ -15,3 +15,4 @@ $(".button-collapse").sideNav();
 //$(".keyboard").keyboard();
 
 $('#event_id').jboard('standard')
+$('#events_submit').jboard('standard')
