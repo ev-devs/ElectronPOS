@@ -47,7 +47,7 @@ var cancel_flag = 0;
 var previous_flag = 0;
 /*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
 var scan_flag = 0;
-var card_amt = 0;
+var card_amt = 1;
 var previous_page = "";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
@@ -172,6 +172,10 @@ $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
+	if(barcode[0] == '2') {
+		verify_ticket(barcode);
+	}
+	else { //To be deleted
   var i;
   var places = [];
   if(current_platinum != "NONE" && scan_flag == 1)
@@ -180,10 +184,29 @@ $("#scan_sim").click(function()  {
 	j = places[0]; //inventory_list_index
   /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
   with the code below.*/
-  if(i != -1 && current_platinum != "NONE" && scan_flag == 1)
+  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
 		add_item(i, j, 1, 0);
+	}
   $("#barcode").focus();
+	}
 });
+/*Function that verifies tif the current scanned item is a ticket. */
+/*
+216101--0270673
+TICK-C--201610
+216101 --> 201610*/
+function verify_ticket(barcode) {
+	var scan_prefix = barcode.substring(0, 6);
+	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
+	console.log(scan_prefix);
+	var i = -1
+	var ticket = inventory.find(function(e) {
+		if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+			return true;
+	})
+
+	console.log(ticket);
+}
 
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {
@@ -208,7 +231,7 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	}
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
-	update_price('+', quantity, item_list_index);
+	update_price('+', quantity, item_list_index, 0);
 }
 
 /*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
@@ -269,6 +292,7 @@ $("#search").change(function(){
 						var item = Object.assign({}, e)
 						inventory_query.push(item);
 						item.title+=("-_" + i);
+						console.log(item);
 					}
 				}
 	    });
@@ -379,7 +403,7 @@ $("#y_delete").click(function() {
 	/*If the cust_quantity value is one*/
   if(item_list[i].cust_quantity == 1) {
 		/*Do price updates*/
-		update_price('-', 1, i);
+		update_price('-', 1, i, 0);
     item_list[i].cust_quantity = 0;
 		/*Remove from gui and item_list*/
     $("#" + item_id).remove();
@@ -390,7 +414,7 @@ $("#y_delete").click(function() {
 		/*Gran the value to be deleted*/
     var delete_quantity = $("#delete-quantity").val();
     /*Do any pricing updates before deleting (can write into a function honestly)*/
-		update_price('-', delete_quantity, i);
+		update_price('-', delete_quantity, i, 0);
 		/*If the quantity of items to be deleted is less than than the current quantity*/
     if(delete_quantity < item_qnt) {
       item_list[i].cust_quantity-=delete_quantity;
@@ -489,20 +513,24 @@ $("#confirm").click(function() {
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
-		if(Number($("#tendered").val()) >= total) {
+		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			void_order(1);
     	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 		}
 		else {
-			update_price('~', Number($("#tendered").val()), 0)
-			card_flag = 0;
+			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+			cash_flag = 0;
 			confirm_flag = 0;
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
   }
 	else if(card_flag) {
-		if(card_amt != 0)
+		if(card_amt != 0) {
+			previous_page = "card_amt.html";
+			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
+			console.log(card_amt);
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+		}
 	}
 });
 
@@ -523,17 +551,12 @@ $(document).on("click", "#card", function () {
 	previous_page = "pay_choice.html";
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {}));
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
 
 
 /*NOTE: BEGIN CARD TRANSACTION CODE*/
-$(document).on("change", "#tendered_card", function() {
-	card_amt = Number($(this).val());
-	card_flag = 1;
-});
-
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
@@ -541,18 +564,22 @@ $(document).on("click", "#swipe_sim", function() {
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag) {
 		$("#cancel").removeAttr("style");
+		$("#confirm").removeAttr("style");
+		confirm_flag = 0;
+		card_flag = 0;
 		/*THIS CODE CAN BE REWRITTEN IN A BETTER MANNER BUT RIGHT NOW THIS WILL DO*/
+		cancel_flag = 0;
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
-			if(card_amt == total) {
+			if(card_amt == accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 				void_order(1);
 			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 			}
-			else if(card_amt < total) {
+			else if(card_amt < accounting.formatNumber(total, 2, ",")) {
 				card_flag = 0;
 				confirm_flag = 0;
-				update_price('~', card_amt, 0)
+				update_price('~', card_amt, 0, 1)
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 			}
     }, 3000);
@@ -562,21 +589,26 @@ $(document).on("click", "#swipe_sim", function() {
 
 
 /*NOTE: BEGIN UPDATE  PRICE CODE*/
-function update_price(operation, quantity, placement) {
-	/*Update the global quantities of subtotal, tax, and total*/
-	if(operation == '+')
-		subtotal+=(item_list[placement].price * quantity);
-	else if(operation == '-')
-		subtotal-=(item_list[placement].price * quantity);
-	else if(operation == '~')
-		subtotal-=quantity;
-	$("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-	tax = subtotal * .075;
-	$("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
-	total = subtotal + tax;
-	$("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+function update_price(operation, quantity, placement, confirmed) {
+	if(!confirmed) {
+		/*Update the global quantities of subtotal, tax, and total*/
+		if(operation == '+')
+			subtotal+=((item_list[placement].price * quantity));
+		else if(operation == '-')
+			subtotal-=((item_list[placement].price * quantity));
+		else if(operation == '~')
+			subtotal-=quantity;
+		$("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+		tax = subtotal * .075;
+		$("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+		total = subtotal + tax;
+		$("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+	}
+	else if(confirmed) {
+		total-=quantity;
+		$("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+	}
 }
-
 
 
 /*NOTE: BEGIN VOID ORDER CODE*/
@@ -594,7 +626,7 @@ function void_order(full_void) {
 		/*Empties the left side*/
     $("#sale_list tbody").empty();
 		/*Empties the subtotal and total*/
-		update_price('~', subtotal, 0);
+		update_price('~', subtotal, 0, 0);
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     /*Sets the confirm flag back to one to denote that a normal completion can happen*/
@@ -610,3 +642,29 @@ function colorfy() {
 	$("#cancel").css("background-color", "red");
 	$("#confirm").css("background-color", "green");
 }
+/*
+Software to-do:
+-Finish integrating barcode scanner with gui (Kevin and John)
+ *Figure out how to tell if input is done
+-Fit other views to the screen. (Juan)
+-Decide what will be on help tab (All)
+-Begin first phase of handling transactions (Juan)
+-Ticket transaction handling
+-User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.)
+-POS workflow update
+-Printer config
+-Integrate db into code
+
+ONGOING
+-Bug check Wi-Fi (John)
+ *Check why connection that is discarded is permanently gone.
+-Bug test red cancel button bug (ongoing, John)
+-Bug test search inventory
+-Bug test handling sessions locally (Juan)
+-Bug testing pos.html (John)
+-POS workflow updates
+-Bug test Inventory and Platinum DB
+-Bug test jboard
+
+
+*/

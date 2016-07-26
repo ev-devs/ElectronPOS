@@ -207,3 +207,11 @@ html {
 #button-container {
     max-height: 8vh;
 }
+
+.pay-buttons {
+  height: 182px;
+}
+
+.pay-buttons-text {
+  font-size: 600%;
+}

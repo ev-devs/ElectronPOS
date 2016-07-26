@@ -22,10 +22,11 @@ $("#n_cancel").click(function() {
 /*NOTE: BEGIN CASH TRANSACTION CODE */
 $(document).on("change", "#tendered", function() {
   if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",");
-    console.log(change);
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
     $("#change").text("$" + accounting.formatNumber(change, 2, ","));
   }
+  else
+    $("#change").text(0);
 });
 
 /*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
