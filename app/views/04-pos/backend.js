@@ -33,6 +33,7 @@ var total = 0.00;
 var item_id = "NONE";
 var item_num = 0;
 var current_platinum = "NONE";
+var current_ticket = "NONE";
 
 /*NOTE: BEGIN CONFIRM ORDER VARIABLES*/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
@@ -47,6 +48,8 @@ var cancel_flag = 0;
 var previous_flag = 0;
 /*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
 var scan_flag = 0;
+/*Flag which denotes that the user is handling a ticket transaction*/
+var ticket_flag = 0;
 var card_amt = 1;
 var previous_page = "";
 
@@ -172,24 +175,53 @@ $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
+	var k = -1;
 	if(barcode[0] == '2') {
-		verify_ticket(barcode);
+		k = verify_ticket(barcode);
 	}
-	else { //To be deleted
-  var i;
-  var places = [];
-  if(current_platinum != "NONE" && scan_flag == 1)
-    places = determine_item_status(item_list, inventory, barcode);
-  i = places[1]; //item_list_index
-	j = places[0]; //inventory_list_index
-  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
-  with the code below.*/
-  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
-		add_item(i, j, 1, 0);
+
+	if(k != -1) {
+		if(ticket_flag == 0) {
+			ticket_flag = 1;
+		}
+		else if(ticket_flag == 1) {
+			ticket_flag = 0;
+		}
+		console.log("Ticket: " + ticket_flag);
 	}
-  $("#barcode").focus();
+	else if(k == -1 && ticket_flag == 1) {
+		console.log("expected ticket");
+	}
+	/*Handles transactions other than tickets*/
+	else if(k == -1){
+	  var i;
+	  var places = [];
+	  if(current_platinum != "NONE" && scan_flag == 1)
+	    places = determine_item_status(item_list, inventory, barcode);
+	  i = places[1]; //item_list_index
+		j = places[0]; //inventory_list_index
+	  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
+	  with the code below.*/
+	  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
+			add_item(i, j, 1, 0);
+		}
+	  $("#barcode").focus();
 	}
 });
+/*Finds the specified item in the list, returns -1 if not found.*/
+function find_in_customer_list(key, query) {
+	var i = -1;
+	cus_result = item_list.find(function(e) {
+		/*This i will keep track of where it is in the list*/
+		i++;
+		return e[key] == query;
+	});
+	if(cus_result == undefined)
+		return -1;
+	else
+		return i;
+}
+/*NOTE: BEGIN TICKET TRANSACTION CODE*/
 /*Function that verifies tif the current scanned item is a ticket. */
 /*
 216101--0270673
@@ -199,12 +231,19 @@ function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
 	console.log(scan_prefix);
-	var i = -1
+	var places = [];
+	var i = -1;
 	var ticket = inventory.find(function(e) {
+		i++;
 		if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
 			return true;
 	})
-
+	if(ticket == undefined)
+		return -1;
+	else {
+		var j = find_in_customer_list("barcode", barcode)
+		return i;
+	}
 	console.log(ticket);
 }
 
@@ -250,13 +289,15 @@ function determine_item_status(item_list, inventory, barcode) {
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
     var flag = 0;
+		/*
     cus_result = item_list.find(function(e) {
-      /*This i will keep track of where it is in the list*/
       places[1] += 1;
       return e.barcode == barcode;
     });
+		*/
+		places[1] = find_in_customer_list("barcode", barcode);
     /*If the customer already has one then just increment the quantity counter*/
-    if(cus_result != undefined) {
+    if(/*cus_result != undefined*/places[1] != -1) {
       item_list[places[1]].cust_quantity+=1;
     }
     /*If not then increment the counter to one and add to the customer's list called item_list*/
@@ -318,12 +359,12 @@ $(document).on("click",  "#confirm_item_selection", function() {
 	var quantity = $("#selected_item_qnt").val();
 	var barcode = inventory[search_param].barcode;
 	if(quantity != 0 && quantity != "") {
-		var i = -1
-		var x = item_list.find(function(e) {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)/*item_list.find(function(e) {
 			i++;
 			return e.barcode == barcode;
-		});
-			if(x != undefined) {
+		});*/
+			if(i != -1/*undefined*/) {
 				item_list[i].cust_quantity+=Number(quantity);
 				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
 			}
@@ -388,18 +429,18 @@ $(document).on("touchend", ".whole-item", function(e) {
 
 /*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
 $("#y_delete").click(function() {
-  var i = -1;
+  //var i = -1;
 	/*Grab the item info by id and using the find function to find the element in the id*/
   var item = $("#" + item_id).find("span").text().trim();
 	/*Gte the quantity of items*/
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
 	/*Get the item name*/
   var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-  item_list.find(function(e) {
-    /*This i will keep track of where it is in the list*/
+  /*item_list.find(function(e) {
     i++;
     return e.title == item_name;
-  });
+  });*/
+	var i =find_in_customer_list("title", item_name)
 	/*If the cust_quantity value is one*/
   if(item_list[i].cust_quantity == 1) {
 		/*Do price updates*/
@@ -649,11 +690,11 @@ Software to-do:
 -Fit other views to the screen. (Juan)
 -Decide what will be on help tab (All)
 -Begin first phase of handling transactions (Juan)
--Ticket transaction handling
--User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.)
--POS workflow update
--Printer config
--Integrate db into code
+-Finish ticket transaction handling (John)
+-User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
+-POS workflow update (John)
+-Printer config script (John)
+-Integrate db into code (John)
 
 ONGOING
 -Bug check Wi-Fi (John)
@@ -666,5 +707,5 @@ ONGOING
 -Bug test Inventory and Platinum DB
 -Bug test jboard
 
-
+Optimize code by minimizing inventory searches. Can grab values in first search or etc.
 */
