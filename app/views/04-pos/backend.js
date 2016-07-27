@@ -33,7 +33,7 @@ var total = 0.00;
 var item_id = "NONE";
 var item_num = 0;
 var current_platinum = "NONE";
-var current_ticket = "NONE";
+var current_ticket = [-1, -1, "CODE"];
 
 /*NOTE: BEGIN CONFIRM ORDER VARIABLES*/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
@@ -179,15 +179,27 @@ $("#scan_sim").click(function()  {
 	if(barcode[0] == '2') {
 		k = verify_ticket(barcode);
 	}
-
+	var ticket;
 	if(k != -1) {
 		if(ticket_flag == 0) {
 			ticket_flag = 1;
 		}
 		else if(ticket_flag == 1) {
+			if(current_ticket[1] == -1) {
+				ticket = Object.assign({}, inventory[current_ticket[0]])
+				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
+				console.log(ticket);
+				item_list.push(ticket);
+				current_ticket[1] = item_list.length - 1;
+				//places[1] = item_list.length - 1;
+			}
+			else if(current_ticket[1] == -1) {
+
+			}
+			add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			ticket_flag = 0;
 		}
-		console.log("Ticket: " + ticket_flag);
+		console.log("Ticket flag: " + ticket_flag);
 	}
 	else if(k == -1 && ticket_flag == 1) {
 		console.log("expected ticket");
@@ -221,7 +233,7 @@ function find_in_customer_list(key, query) {
 	else
 		return i;
 }
-/*NOTE: BEGIN TICKET TRANSACTION CODE*/
+/***********************NOTE: BEGIN TICKET TRANSACTION CODE***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 /*
 216101--0270673
@@ -230,6 +242,8 @@ TICK-C--201610
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
+	//2____X ______ C
+	//216101 027067 3
 	console.log(scan_prefix);
 	var places = [];
 	var i = -1;
@@ -240,11 +254,14 @@ function verify_ticket(barcode) {
 	})
 	if(ticket == undefined)
 		return -1;
-	else {
+	else if(ticket_flag != 1){
+		current_ticket[0] = i;
 		var j = find_in_customer_list("barcode", barcode)
-		return i;
+		current_ticket[1] = j;
+		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
-	console.log(ticket);
+	console.log("Ticket: " + ticket);
+	console.log("Places: " + current_ticket);
 }
 
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
@@ -316,7 +333,7 @@ function determine_item_status(item_list, inventory, barcode) {
 
 
 
-/*NOTE: BEGIN SEARCH INVENTORY CODE*/
+/***********************NOTE: BEGIN SEARCH INVENTORY CODE***********************/
 var search_param = "";
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
@@ -440,7 +457,7 @@ $("#y_delete").click(function() {
     i++;
     return e.title == item_name;
   });*/
-	var i =find_in_customer_list("title", item_name)
+	var i = find_in_customer_list("title", item_name)
 	/*If the cust_quantity value is one*/
   if(item_list[i].cust_quantity == 1) {
 		/*Do price updates*/
@@ -708,4 +725,6 @@ ONGOING
 -Bug test jboard
 
 Optimize code by minimizing inventory searches. Can grab values in first search or etc.
+possble code chanages: make search inventory into function, optimize it
+make adding item to customer list a function
 */
