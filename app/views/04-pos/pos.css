@@ -215,3 +215,7 @@ html {
 .pay-buttons-text {
   font-size: 600%;
 }
+
+.error {
+  color: red;
+}
