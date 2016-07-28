@@ -22,7 +22,7 @@ var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
 
-/*NOTE: BEGIN SCAN VARIABLES*/
+/*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
 /*Next 3 variables are self-explanatory. Just look at their name.*/
@@ -35,7 +35,7 @@ var item_num = 0;
 var current_platinum = "NONE";
 var current_ticket = [-1, -1, "CODE"];
 
-/*NOTE: BEGIN CONFIRM ORDER VARIABLES*/
+/*********************************************NOTE: BEGIN CONFIRM ORDER VARIABLES*********************************************/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
 var confirm_flag = 0;
 /*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
@@ -100,7 +100,7 @@ request({
 
 
 
-/*NOTE: BEGIN PLATINUM CODE*/
+/*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
 /*Leaders*/
 //Lists leaders in alphabetical order
 // appends html element to display all the names
@@ -163,49 +163,55 @@ $(document).on("click", ".platinum", function() {
 });
 
 $("#platinum").click(function() {
-	if(current_platinum != "NONE")
+	if(current_platinum != "NONE") {
+		current_platinum = "NONE";
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+	}
 })
 
 
 
-/*NOTE: BEGIN SCAN CODE*/
+/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
-	if(barcode[0] == '2') {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
 		k = verify_ticket(barcode);
 	}
 	var ticket;
-	if(k != -1) {
+	/*BRANCH which handles ticket transactions*/
+	if(k != -1 && current_platinum != "NONE") {
 		if(ticket_flag == 0) {
 			ticket_flag = 1;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
 		}
+		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
 				ticket = Object.assign({}, inventory[current_ticket[0]])
 				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
-				console.log(ticket);
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
-				//places[1] = item_list.length - 1;
+				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			}
-			else if(current_ticket[1] == -1) {
-
+			else if(current_ticket[1] != -1) {
+				console.log("Already there");
+				item_list[current_ticket[1]].cust_quantity+=Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
+				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
-			add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			ticket_flag = 0;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		console.log("Ticket flag: " + ticket_flag);
 	}
-	else if(k == -1 && ticket_flag == 1) {
-		console.log("expected ticket");
+	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
+		$("#errors").text("Error! Please scan a ticket!");
 	}
 	/*Handles transactions other than tickets*/
-	else if(k == -1){
+	else if(k == -1 && current_platinum != "NONE"){
 	  var i;
 	  var places = [];
 	  if(current_platinum != "NONE" && scan_flag == 1)
@@ -219,10 +225,15 @@ $("#scan_sim").click(function()  {
 		}
 	  $("#barcode").focus();
 	}
+	else {
+		error_platinum();
+	}
 });
+
 /*Finds the specified item in the list, returns -1 if not found.*/
 function find_in_customer_list(key, query) {
 	var i = -1;
+	console.log("QUERY: " + query);
 	cus_result = item_list.find(function(e) {
 		/*This i will keep track of where it is in the list*/
 		i++;
@@ -233,12 +244,13 @@ function find_in_customer_list(key, query) {
 	else
 		return i;
 }
-/***********************NOTE: BEGIN TICKET TRANSACTION CODE***********************/
+/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
 /*
 216101--0270673
 TICK-C--201610
-216101 --> 201610*/
+216101 --> 201610
+can only do 50 tickets*/
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
@@ -256,7 +268,9 @@ function verify_ticket(barcode) {
 		return -1;
 	else if(ticket_flag != 1){
 		current_ticket[0] = i;
-		var j = find_in_customer_list("barcode", barcode)
+		var title = inventory[i].title;
+		var j = find_in_customer_list("title", title)
+		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
@@ -306,15 +320,9 @@ function determine_item_status(item_list, inventory, barcode) {
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
     var flag = 0;
-		/*
-    cus_result = item_list.find(function(e) {
-      places[1] += 1;
-      return e.barcode == barcode;
-    });
-		*/
 		places[1] = find_in_customer_list("barcode", barcode);
     /*If the customer already has one then just increment the quantity counter*/
-    if(/*cus_result != undefined*/places[1] != -1) {
+    if(places[1] != -1) {
       item_list[places[1]].cust_quantity+=1;
     }
     /*If not then increment the counter to one and add to the customer's list called item_list*/
@@ -333,7 +341,7 @@ function determine_item_status(item_list, inventory, barcode) {
 
 
 
-/***********************NOTE: BEGIN SEARCH INVENTORY CODE***********************/
+/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
 var search_param = "";
 $("#search").change(function(){
 	if(current_platinum != "NONE") {
@@ -357,6 +365,9 @@ $("#search").change(function(){
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 		}
 	}
+	else {
+		error_platinum();
+	}
 });
 
 $(document).on("click",  ".item", function() {
@@ -377,10 +388,7 @@ $(document).on("click",  "#confirm_item_selection", function() {
 	var barcode = inventory[search_param].barcode;
 	if(quantity != 0 && quantity != "") {
 		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)/*item_list.find(function(e) {
-			i++;
-			return e.barcode == barcode;
-		});*/
+		var i = find_in_customer_list("barcode", barcode)
 			if(i != -1/*undefined*/) {
 				item_list[i].cust_quantity+=Number(quantity);
 				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
@@ -400,7 +408,7 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
-/*NOTE: BEGIN DELETE CODE*/
+/*********************************************NOTE: BEGIN DELETE CODE*********************************************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
 $(document).on("touchstart", ".whole-item", function(e) {
@@ -453,10 +461,6 @@ $("#y_delete").click(function() {
   var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
 	/*Get the item name*/
   var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-  /*item_list.find(function(e) {
-    i++;
-    return e.title == item_name;
-  });*/
 	var i = find_in_customer_list("title", item_name)
 	/*If the cust_quantity value is one*/
   if(item_list[i].cust_quantity == 1) {
@@ -520,7 +524,7 @@ $("#n_delete").click(function() {
 
 
 
-/*NOTE: BEGIN CANCEL ORDER CODE*/
+/*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
   if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
@@ -533,6 +537,9 @@ $("#cancel").click(function() {
 			cancel_flag = 1;
 		}
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + previous_page, 'utf-8') , {}));
+	}
+	else if(current_platinum == "NONE"){
+		error_platinum();
 	}
 });
 
@@ -551,7 +558,7 @@ $("#y_cancel").click(function() {
 });
 
 
-/*NOTE: BEGIN CONFIRM ORDER CODE*/
+/*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1) {
@@ -590,6 +597,9 @@ $("#confirm").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 		}
 	}
+	else if(current_platinum == "NONE") {
+		error_platinum();
+	}
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -614,7 +624,7 @@ $(document).on("click", "#card", function () {
 
 
 
-/*NOTE: BEGIN CARD TRANSACTION CODE*/
+/*********************************************NOTE: BEGIN CARD TRANSACTION CODE*********************************************/
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
@@ -642,11 +652,14 @@ $(document).on("click", "#swipe_sim", function() {
 			}
     }, 3000);
   }
+	else if(current_platinum == "NONE") {
+		error_platinum();
+	}
 });
 
 
 
-/*NOTE: BEGIN UPDATE  PRICE CODE*/
+/*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
 function update_price(operation, quantity, placement, confirmed) {
 	if(!confirmed) {
 		/*Update the global quantities of subtotal, tax, and total*/
@@ -669,7 +682,7 @@ function update_price(operation, quantity, placement, confirmed) {
 }
 
 
-/*NOTE: BEGIN VOID ORDER CODE*/
+/*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order(full_void) {
 	confirm_flag = 0;
@@ -679,6 +692,8 @@ function void_order(full_void) {
 	/**/
 	card_flag = 0;
 	scan_flag = 0;
+	ticket_flag = 0;
+	current_ticket = [-1, -1, "CODE"];
 	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
 		/*Empties the left side*/
@@ -700,6 +715,16 @@ function colorfy() {
 	$("#cancel").css("background-color", "red");
 	$("#confirm").css("background-color", "green");
 }
+
+/*********************************************BEGIN ERROR MODAL CODE*********************************************/
+function error_platinum() {
+	$('#modal4').openModal({
+		dismissible: true, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+}
 /*
 Software to-do:
 -Finish integrating barcode scanner with gui (Kevin and John)
@@ -707,8 +732,7 @@ Software to-do:
 -Fit other views to the screen. (Juan)
 -Decide what will be on help tab (All)
 -Begin first phase of handling transactions (Juan)
--Finish ticket transaction handling (John)
--User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
+-User fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
 -POS workflow update (John)
 -Printer config script (John)
 -Integrate db into code (John)
@@ -723,8 +747,10 @@ ONGOING
 -POS workflow updates
 -Bug test Inventory and Platinum DB
 -Bug test jboard
+-Bug test ticket transactions
 
 Optimize code by minimizing inventory searches. Can grab values in first search or etc.
 possble code chanages: make search inventory into function, optimize it
 make adding item to customer list a function
+50 tickets max,
 */
