@@ -219,3 +219,15 @@ html {
 .error {
   color: red;
 }
+
+.error-color {
+  color: red;
+  font-size: 30px;
+}
+
+.text-style {
+  font-size: 300%;
+  width: 50vw;
+  height: 10vh;
+  margin-top: 13vh;
+}

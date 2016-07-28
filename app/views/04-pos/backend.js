@@ -178,7 +178,7 @@ $("#scan_sim").click(function()  {
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
-	if(barcode[0] == '2' && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
 		k = verify_ticket(barcode);
 	}
 	var ticket;
@@ -188,6 +188,7 @@ $("#scan_sim").click(function()  {
 			ticket_flag = 1;
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
 		}
+		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
 				ticket = Object.assign({}, inventory[current_ticket[0]])
@@ -202,11 +203,12 @@ $("#scan_sim").click(function()  {
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
 			ticket_flag = 0;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		console.log("Ticket flag: " + ticket_flag);
 	}
 	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
-		console.log("expected ticket");
+		$("#errors").text("Error! Please scan a ticket!");
 	}
 	/*Handles transactions other than tickets*/
 	else if(k == -1 && current_platinum != "NONE"){
