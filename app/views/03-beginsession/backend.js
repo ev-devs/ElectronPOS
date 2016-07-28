@@ -21,7 +21,6 @@ mongoose.connect('mongodb://localhost/ibosessions', function(err) {
 $('.begin-session').click(function(event){
     // event is a click event just FYI
     if ( noErrors() ){
-
         updateOrCreateSession();
     }
 
