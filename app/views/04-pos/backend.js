@@ -188,15 +188,15 @@ $("#scan_sim").click(function()  {
 			if(current_ticket[1] == -1) {
 				ticket = Object.assign({}, inventory[current_ticket[0]])
 				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
-				console.log(ticket);
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
-				//places[1] = item_list.length - 1;
+				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			}
-			else if(current_ticket[1] == -1) {
-
+			else if(current_ticket[1] != -1) {
+				console.log("Already there");
+				item_list[current_ticket[1]].cust_quantity+=Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
+				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
-			add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			ticket_flag = 0;
 		}
 		console.log("Ticket flag: " + ticket_flag);
@@ -223,6 +223,7 @@ $("#scan_sim").click(function()  {
 /*Finds the specified item in the list, returns -1 if not found.*/
 function find_in_customer_list(key, query) {
 	var i = -1;
+	console.log("QUERY: " + query);
 	cus_result = item_list.find(function(e) {
 		/*This i will keep track of where it is in the list*/
 		i++;
@@ -238,7 +239,8 @@ function find_in_customer_list(key, query) {
 /*
 216101--0270673
 TICK-C--201610
-216101 --> 201610*/
+216101 --> 201610
+can only do 50 tickets*/
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
@@ -256,7 +258,9 @@ function verify_ticket(barcode) {
 		return -1;
 	else if(ticket_flag != 1){
 		current_ticket[0] = i;
-		var j = find_in_customer_list("barcode", barcode)
+		var title = inventory[i].title;
+		var j = find_in_customer_list("title", title)
+		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
@@ -306,15 +310,9 @@ function determine_item_status(item_list, inventory, barcode) {
   if(inv_result != undefined) {
     /*Check the customers current list to see if they already have it in their choices*/
     var flag = 0;
-		/*
-    cus_result = item_list.find(function(e) {
-      places[1] += 1;
-      return e.barcode == barcode;
-    });
-		*/
 		places[1] = find_in_customer_list("barcode", barcode);
     /*If the customer already has one then just increment the quantity counter*/
-    if(/*cus_result != undefined*/places[1] != -1) {
+    if(places[1] != -1) {
       item_list[places[1]].cust_quantity+=1;
     }
     /*If not then increment the counter to one and add to the customer's list called item_list*/
@@ -377,10 +375,7 @@ $(document).on("click",  "#confirm_item_selection", function() {
 	var barcode = inventory[search_param].barcode;
 	if(quantity != 0 && quantity != "") {
 		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)/*item_list.find(function(e) {
-			i++;
-			return e.barcode == barcode;
-		});*/
+		var i = find_in_customer_list("barcode", barcode)
 			if(i != -1/*undefined*/) {
 				item_list[i].cust_quantity+=Number(quantity);
 				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
@@ -679,6 +674,8 @@ function void_order(full_void) {
 	/**/
 	card_flag = 0;
 	scan_flag = 0;
+	ticket_flag = 0;
+	current_ticket = [-1, -1, "CODE"];
 	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
 		/*Empties the left side*/
@@ -707,8 +704,7 @@ Software to-do:
 -Fit other views to the screen. (Juan)
 -Decide what will be on help tab (All)
 -Begin first phase of handling transactions (Juan)
--Finish ticket transaction handling (John)
--User flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
+-User fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
 -POS workflow update (John)
 -Printer config script (John)
 -Integrate db into code (John)
@@ -723,8 +719,10 @@ ONGOING
 -POS workflow updates
 -Bug test Inventory and Platinum DB
 -Bug test jboard
+-Bug test ticket transactions
 
 Optimize code by minimizing inventory searches. Can grab values in first search or etc.
 possble code chanages: make search inventory into function, optimize it
 make adding item to customer list a function
+50 tickets max,
 */
