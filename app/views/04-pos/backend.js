@@ -179,33 +179,32 @@ $("#scan_sim").click(function()  {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+		console.log("BEGIN EVERYTHING HERE");
 		k = verify_ticket(barcode);
 	}
 	var ticket;
+
+
+
 	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE") {
+	if(k != -1 && current_platinum != "NONE" && previous_ticket != Number(barcode.substring(6, barcode.length - 1))) {
 		if(ticket_flag == 0) {
-			if(previous_ticket == Number(barcode.substring(6, barcode.length - 1))) {
-				console.log("Error! Ticket has already been used!");
-				//$("#errors").text("Error! Ticket has already been used!");
-			}
-			else {
 				ticket_flag = 1;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
-			}
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
+				console.log("WAS NOT FOUND IN LIST");
 				ticket = Object.assign({}, inventory[current_ticket[0]])
-				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
+				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			}
 			else if(current_ticket[1] != -1) {
-				console.log("Already there");
-				item_list[current_ticket[1]].cust_quantity+=Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
+				console.log("WAS FOUND IN LIST");
+				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
 			ticket_flag = 0;
@@ -213,10 +212,20 @@ $("#scan_sim").click(function()  {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		console.log("Ticket flag: " + ticket_flag);
+		console.log("Item list: ");
+		console.log(item_list);
+		console.log("Previous: " + previous_ticket)
+	}
+	else if(previous_ticket == Number(barcode.substring(6, barcode.length - 1))) {
+		ticket_flag = 0;
+		console.log("Already scanned");
 	}
 	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
 		$("#errors").text("Error! Please scan a ticket!");
 	}
+	/*END TICKET HANDLING CODE*/
+
+
 	/*Handles transactions other than tickets*/
 	else if(k == -1 && current_platinum != "NONE"){
 	  var i;
@@ -261,8 +270,6 @@ can only do 50 tickets*/
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	//2____X ______ C
-	//216101 027067 3
 	console.log(scan_prefix);
 	var places = [];
 	var i = -1;
@@ -276,13 +283,11 @@ function verify_ticket(barcode) {
 	else if(ticket_flag != 1){
 		current_ticket[0] = i;
 		var title = inventory[i].title;
-		var j = find_in_customer_list("title", title)
+		var j = find_in_customer_list("title", title);
 		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
-	console.log("Ticket: " + ticket);
-	console.log("Places: " + current_ticket);
 }
 
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
@@ -761,4 +766,5 @@ possble code chanages: make search inventory into function, optimize it
 make adding item to customer list a function
 
 -Alignment for price is only viable on the rPi screen not on large screens
+-confirm while switching platinums bug
 */
