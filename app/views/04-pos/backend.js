@@ -165,7 +165,7 @@ $(document).on("click", ".platinum", function() {
 });
 
 $("#platinum").click(function() {
-	if(current_platinum != "NONE") {
+	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
@@ -797,6 +797,6 @@ make adding item to customer list a function
 Bugs:
 -Alignment for price is only viable on the rPi screen not on large screens X
 -confirm while switching platinums bug
--Swipe processes while prompitng user for cash
--
+-Swipe processes while prompting user for cash
+-Platinums list is accessable from all views
 */
