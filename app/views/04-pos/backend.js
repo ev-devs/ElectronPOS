@@ -51,8 +51,8 @@ var scan_flag = 0;
 /*Flag which denotes that the user is handling a ticket transaction*/
 var ticket_flag = 0;
 var card_amt = 1;
-var previous_page_A = "1";
-var previous_page_B = "2";
+var previous_page = "1";
+var current_page = "2";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -550,7 +550,15 @@ $("#cancel").click(function() {
 			void_order(0);
 			cancel_flag = 1;
 		}
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + previous_page, 'utf-8') , {}));
+		if(current_page == "card.html") {
+			current_page = "card_amt.html"
+			previous_page = "pay_choice.html"
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		else {
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + previous_page, 'utf-8') , {}));
+		}
+		console.log(previous_page);
 	}
 	else if(current_platinum == "NONE"){
 		error_platinum();
@@ -605,6 +613,7 @@ $("#confirm").click(function() {
   }
 	else if(card_flag) {
 		if(card_amt != 0) {
+			current_page = "card.html";
 			previous_page = "card_amt.html";
 			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
 			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
@@ -622,6 +631,7 @@ $(document).on("click", "#cash", function () {
 	/*Sets the cash flag to true to denote a cash transaction is in process*/
   cash_flag = 1;
 	previous_page = "pay_choice.html";
+	current_page = "cash.html"
 	colorfy();
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
@@ -632,6 +642,7 @@ $(document).on("click", "#card", function () {
 	/*Sets the card flag to true to denote a card transaction is in process*/
   card_flag = 1;
 	previous_page = "pay_choice.html";
+	current_page = "card_amt.html";
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
@@ -719,6 +730,8 @@ function void_order(full_void) {
     $("#confirm").removeAttr("style");
     /*Sets the confirm flag back to one to denote that a normal completion can happen*/
     current_platinum = "NONE";
+		previous_page = "1";
+		current_page = "2";
     setTimeout(function() {
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
     }, 1500);
