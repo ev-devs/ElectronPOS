@@ -51,7 +51,8 @@ var scan_flag = 0;
 /*Flag which denotes that the user is handling a ticket transaction*/
 var ticket_flag = 0;
 var card_amt = 1;
-var previous_page = "1";
+var previous_page_A = "1";
+var previous_page_B = "2";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -165,6 +166,7 @@ $(document).on("click", ".platinum", function() {
 $("#platinum").click(function() {
 	if(current_platinum != "NONE") {
 		current_platinum = "NONE";
+		confirm_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })
@@ -605,6 +607,7 @@ $("#confirm").click(function() {
 		if(card_amt != 0) {
 			previous_page = "card_amt.html";
 			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
+			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
 			console.log(card_amt);
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 		}
@@ -652,11 +655,11 @@ $(document).on("click", "#swipe_sim", function() {
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
-			if(card_amt == accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				void_order(1);
 			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 			}
-			else if(card_amt < accounting.formatNumber(total, 2, ",")) {
+			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				card_flag = 0;
 				confirm_flag = 0;
 				update_price('~', card_amt, 0, 1)
@@ -773,6 +776,11 @@ Optimize code by minimizing inventory searches. Can grab values in first search 
 possble code chanages: make search inventory into function, optimize it
 make adding item to customer list a function
 
--Alignment for price is only viable on the rPi screen not on large screens
+
+
+Bugs:
+-Alignment for price is only viable on the rPi screen not on large screens X
 -confirm while switching platinums bug
+-Bug while processing card with 1000 dollars
+-cancel while how much on card
 */
