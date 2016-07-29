@@ -51,7 +51,7 @@ var scan_flag = 0;
 /*Flag which denotes that the user is handling a ticket transaction*/
 var ticket_flag = 0;
 var card_amt = 1;
-var previous_page = "";
+var previous_page = "1";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -187,7 +187,7 @@ $("#scan_sim").click(function()  {
 
 
 	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && previous_ticket != Number(barcode.substring(6, barcode.length - 1))) {
+	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
 		if(ticket_flag == 0) {
 				ticket_flag = 1;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
@@ -216,9 +216,9 @@ $("#scan_sim").click(function()  {
 		console.log(item_list);
 		console.log("Previous: " + previous_ticket)
 	}
-	else if(previous_ticket == Number(barcode.substring(6, barcode.length - 1))) {
+	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1))) {
 		ticket_flag = 0;
-		console.log("Already scanned");
+		error_in_used();
 	}
 	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
 		$("#errors").text("Error! Please scan a ticket!");
@@ -737,16 +737,24 @@ function error_platinum() {
 		out_duration: 200, // Transition out duration
 	});
 }
+
+function error_in_used() {
+	$('#modal5').openModal({
+		dismissible: true, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+}
 /*
 Software to-do:
 -Finish integrating barcode scanner with gui (Kevin and John)
  *Figure out how to tell if input is done
 -Fit other views to the screen. (Juan)
 -Decide what will be on help tab (All)
--Integration transactions with pos.html
 -Finish fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
--Printer config script (John)
--Integrate db into code (John)
+-Integrate db with pos.html (John)
+-Integrate transactions with pos.html
 
 ONGOING
 -Bug check Wi-Fi (John)
