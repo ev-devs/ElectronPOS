@@ -34,7 +34,7 @@ var item_id = "NONE";
 var item_num = 0;
 var current_platinum = "NONE";
 var current_ticket = [-1, -1, "CODE"];
-
+var previous_ticket = 0;
 /*********************************************NOTE: BEGIN CONFIRM ORDER VARIABLES*********************************************/
 /*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
 var confirm_flag = 0;
@@ -185,14 +185,20 @@ $("#scan_sim").click(function()  {
 	/*BRANCH which handles ticket transactions*/
 	if(k != -1 && current_platinum != "NONE") {
 		if(ticket_flag == 0) {
-			ticket_flag = 1;
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+			if(previous_ticket == Number(barcode.substring(6, barcode.length - 1))) {
+				console.log("Error! Ticket has already been used!");
+				//$("#errors").text("Error! Ticket has already been used!");
+			}
+			else {
+				ticket_flag = 1;
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+			}
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
 				ticket = Object.assign({}, inventory[current_ticket[0]])
-				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]);
+				ticket['cust_quantity'] = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
@@ -203,6 +209,7 @@ $("#scan_sim").click(function()  {
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
 			ticket_flag = 0;
+			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		console.log("Ticket flag: " + ticket_flag);
@@ -731,9 +738,8 @@ Software to-do:
  *Figure out how to tell if input is done
 -Fit other views to the screen. (Juan)
 -Decide what will be on help tab (All)
--Begin first phase of handling transactions (Juan)
--User fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
--POS workflow update (John)
+-Integration transactions with pos.html
+-Finish fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
 -Printer config script (John)
 -Integrate db into code (John)
 
@@ -748,9 +754,11 @@ ONGOING
 -Bug test Inventory and Platinum DB
 -Bug test jboard
 -Bug test ticket transactions
+-POS workflow update (John)
 
 Optimize code by minimizing inventory searches. Can grab values in first search or etc.
 possble code chanages: make search inventory into function, optimize it
 make adding item to customer list a function
-50 tickets max,
+
+-Alignment for price is only viable on the rPi screen not on large screens
 */
