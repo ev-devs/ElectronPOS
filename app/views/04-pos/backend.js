@@ -50,6 +50,7 @@ var previous_flag = 0;
 var scan_flag = 0;
 /*Flag which denotes that the user is handling a ticket transaction*/
 var ticket_flag = 0;
+var swipe_flag = 0;
 var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
@@ -618,6 +619,7 @@ $("#confirm").click(function() {
 			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
 			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
 			console.log(card_amt);
+			swipe_flag = 1;
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 		}
 	}
@@ -656,7 +658,7 @@ $(document).on("click", "#swipe_sim", function() {
   cancel_flag = 0;
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
-  if(card_flag) {
+  if(card_flag && swipe_flag) {
 		$("#cancel").removeAttr("style");
 		$("#confirm").removeAttr("style");
 		confirm_flag = 0;
@@ -719,6 +721,7 @@ function void_order(full_void) {
 	card_flag = 0;
 	scan_flag = 0;
 	ticket_flag = 0;
+	swipe_flag = 0;
 	current_ticket = [-1, -1, "CODE"];
 	if(full_void == 1) {
     item_list.splice(0, item_list.length);/*Empties the item list*/
@@ -794,6 +797,6 @@ make adding item to customer list a function
 Bugs:
 -Alignment for price is only viable on the rPi screen not on large screens X
 -confirm while switching platinums bug
--Bug while processing card with 1000 dollars
--cancel while how much on card
+-Swipe processes while prompitng user for cash
+-
 */
