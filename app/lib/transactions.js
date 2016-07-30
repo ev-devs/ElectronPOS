@@ -90,7 +90,6 @@ var transaction = function(){
                         resolve(thisObj)
                     }
                     else if (!error && response.statusCode == 200){
-                        console.log("RESPNSE IS", body)
                         if (body.error){
                             thisObj.error = body.error
                             console.error(body.error)
@@ -115,8 +114,6 @@ var transaction = function(){
                     }
                 })
             });
-
-
         }
         else {
             console.error('Not enough paramters fam')
@@ -130,20 +127,20 @@ var transaction = function(){
             resolve(thisObj)
         });
     }
-
-
     /*when we instantiate a new variable*/
     return this
 }
 
 
+
+/****EXAMPLE CODE***/
 var newTrans = new transaction()
 
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
     ccv         : "123",
-    amount      : "1889.99"
+    amount      : "889.99"
 }).then(function(obj){
 
     if (!obj.error){
@@ -157,6 +154,7 @@ newTrans.chargeCreditCard({
         console.log("Error Text:", obj.transErrorText)
     }
 
+    console.log('\n')
 })
 
 setTimeout(function(){
@@ -166,12 +164,12 @@ setTimeout(function(){
     }).then(function(obj){
         if (!obj.error){
             console.log(obj.transMessage)
-            console.log(obj.transId)
+            console.log("Transaction Id:", obj.transId)
         }
         else {
             console.log(obj.transMessage)
-            console.log(obj.transErrorCode)
-            console.log(obj.transErrorText)
+            console.log("Error Code:", obj.transErrorCode)
+            console.log("Error Text:", obj.transErrorText)
         }
     })
 
