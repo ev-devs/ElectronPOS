@@ -36,7 +36,6 @@ var transaction = function(){
                             resolve(thisObj)
                         }
                         else if (!error && response.statusCode == 200) {
-
                             if (body.error){
                                 thisObj.error = body.error
                                 console.error(body.error)
@@ -53,7 +52,6 @@ var transaction = function(){
                                 thisObj.transErrorText  = body.response.errorText
                                 thisObj.error = true;
                             }
-
                             resolve(thisObj)
                         }
                         else {
@@ -80,9 +78,8 @@ var transaction = function(){
                     url : EQ_BACKEND_URL + '/void',
                     method  : 'POST',
                     json : {
-                        transid : obj.transId
+                        transId : obj.transId
                     }
-
                 }, function(error, response, body){
                     if (error){
                         console.error("Error making post request to " + EQ_BACKEND_URL + '/void')
@@ -96,7 +93,7 @@ var transaction = function(){
                             resolve(thisObj)
                         }
                         if (body.response.transId){
-                            thisObj.transId         = body.response.transId
+                            //thisObj.transId       = body.response.transId
                             thisObj.transMessage    = body.response.message
                         }
                         else {
@@ -132,17 +129,14 @@ var transaction = function(){
     return this
 }
 
-
-
 /****EXAMPLE CODE***/
 var newTrans = new transaction()
-
 
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
     ccv         : "123",
-    amount      : "119.67"
+    amount      : "199.97"
 }).then(function(obj){
 
     if (!obj.error){
@@ -155,14 +149,11 @@ newTrans.chargeCreditCard({
         console.log("Error Code:", obj.transErrorCode)
         console.log("Error Text:", obj.transErrorText)
     }
-
     console.log('\n')
 })
 
 
-
-setTimeout(function(){
-
+setInterval(function(){
 
     newTrans.voidTransaction({
         transId  : newTrans.transId
@@ -178,35 +169,8 @@ setTimeout(function(){
         }
         console.log('\n')
     })
-
 
 }, 5000)
-
-
-
-
-setTimeout(function(){
-
-
-    newTrans.voidTransaction({
-        transId  : newTrans.transId
-    }).then(function(obj){
-        if (!obj.error){
-            console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
-        }
-        else {
-            console.log(obj.transMessage)
-            console.log("Error Code:", obj.transErrorCode)
-            console.log("Error Text:", obj.transErrorText)
-        }
-        console.log('\n')
-    })
-
-
-}, 10000)
-
-
 
 
 
