@@ -193,12 +193,13 @@ $("#scan_sim").click(function()  {
 	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
 		if(ticket_flag == 0) {
 				ticket_flag = 1;
+				confirm_flag = 0;
+				cancel_flag = 0;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
-				console.log("WAS NOT FOUND IN LIST");
 				ticket = Object.assign({}, inventory[current_ticket[0]])
 				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				item_list.push(ticket);
@@ -210,13 +211,11 @@ $("#scan_sim").click(function()  {
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
 			ticket_flag = 0;
+			confirm_flag = 1;
+			cancel_flag = 1;
 			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
-		console.log("Ticket flag: " + ticket_flag);
-		console.log("Item list: ");
-		console.log(item_list);
-		console.log("Previous: " + previous_ticket)
 	}
 	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
 		ticket_flag = 0;
@@ -264,11 +263,6 @@ function find_in_customer_list(key, query) {
 }
 /*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
-/*
-216101--0270673
-TICK-C--201610
-216101 --> 201610
-can only do 50 tickets*/
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
@@ -544,21 +538,37 @@ $("#cancel").click(function() {
   if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
     $('#modal2').openModal();
   else if(previous_flag) {
-		if(previous_page == "pay_choice.html") {
+		if(current_page == "pay_choice.html") {
+			confirm_flag = 1;
+			scan_flag = 1;
+			previous_flag = 0;
+			current_page = "handle_order.html"
+			previous_page = "handle_order.html"
 			$("#cancel").removeAttr("style");
-			$("#confirm").removeAttr("style");
-			void_order(0);
-			cancel_flag = 1;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
-		if(current_page == "card.html") {
-			current_page = "card_amt.html"
-			previous_page = "pay_choice.html"
+		else if(current_page == "card_amt.html") {
+			current_page = "pay_choice.html";
+			previous_page = "handle_order.html";
+			card_flag = 0;
+			$("#confirm").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
-		else {
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + previous_page, 'utf-8') , {}));
+		else if(current_page == "cash.html") {
+			current_page = "pay_choice.html"
+			previous_page = "handle_order.html"
+			cash_flag = 0;
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
-		console.log(previous_page);
+		else if(current_page == "card.html") {
+			current_page = "card_amt.html"
+			previous_page = "pay_choice.html"
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		console.log("PREV:" + previous_page);
+		console.log("CUR:" + current_page);
 	}
 	else if(current_platinum == "NONE"){
 		error_platinum();
@@ -592,6 +602,9 @@ $("#confirm").click(function() {
         confirm_flag = 0;
 				scan_flag = 0;
 				previous_flag = 1;
+				previous_page = "handle_order.html";
+				current_page = "pay_choice.html";
+				$("#cancel").css("background-color", "red");
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -601,8 +614,12 @@ $("#confirm").click(function() {
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-			void_order(1);
-    	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+			$('#modal6').openModal({
+				dismissible: true, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				in_duration: 300, // Transition in duration
+				out_duration: 200, // Transition out duration
+			});
 		}
 		else {
 			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
@@ -627,6 +644,10 @@ $("#confirm").click(function() {
 	}
 });
 
+$("#yes-cash").click(function () {
+	void_order(1);
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+});
 /*Renders the necessary partial for completing orders with cash.*/
 $(document).on("click", "#cash", function () {
 	/*Sets the cash flag to true to denote a cash transaction is in process*/
@@ -795,7 +816,10 @@ make adding item to customer list a function
 
 Bugs:
 -Alignment for price is only viable on the rPi screen not on large screens X
--confirm while switching platinums bug
 -Swipe processes while prompting user for cash
 -Platinums list is accessable from all views
+
+To-Add:
+
+-50 tickets.
 */
