@@ -31,18 +31,17 @@ var transaction = function(){
                     function( error, response, body ) {
 
                         if (error){
-                            console.error("ERROR making post request to " + EQ_BACKEND_URL + '/charge')
+                            console.error("Error making post request to " + EQ_BACKEND_URL + '/charge')
                             thisObj.error = error
                             resolve(thisObj)
                         }
                         else if (!error && response.statusCode == 200) {
-                            //console.log(body)
 
                             if (body.error){
-                                console.log(body.error)
+                                thisObj.error = body.error
+                                console.error(body.error)
                                 resolve(thisObj)
                             }
-
                             if (body.response.transId && body.response.authCode){
                                 thisObj.transId         = body.response.transId
                                 thisObj.transMessage    = body.response.message
@@ -52,6 +51,7 @@ var transaction = function(){
                                 thisObj.transMessage    = body.response.message
                                 thisObj.transErrorCode  = body.response.errorCode
                                 thisObj.transErrorText  = body.response.errorText
+                                thisObj.error = true;
                             }
 
                             resolve(thisObj)
@@ -59,44 +59,58 @@ var transaction = function(){
                         else {
                             console.warn("There was a different response")
                             thisObj.error = "different response other than 200"
+                            console.warn(body)
                             resolve(thisObj)
                         }
                 })
             });
         }
         else {
-            console.error("ERROR, invalid credentials");
-            thisObj.error = "ERROR, invalid credentials";
+            console.error("ERROR, invalid credentials when making API call");
+            thisObj.error = "Error, invalid credentials when making API call";
             return thisObj
         }
     }
 
     this.voidTransaction = function(obj){
 
-        if (obj.transid){
+        if (obj.transId){
             return new Promise(function(resolve, reject) {
                 request({
                     url : EQ_BACKEND_URL + '/void',
                     method  : 'POST',
                     json : {
-                        transid : obj.transid
+                        transid : obj.transId
                     }
 
                 }, function(error, response, body){
                     if (error){
-                        console.error("ERROR making post request to " + EQ_BACKEND_URL + '/void')
+                        console.error("Error making post request to " + EQ_BACKEND_URL + '/void')
                         thisObj.error = error
                         resolve(thisObj)
                     }
                     else if (!error && response.statusCode == 200){
-                        console.log(body)
-                        thisObj.response = body
+                        console.log("RESPNSE IS", body)
+                        if (body.error){
+                            thisObj.error = body.error
+                            console.error(body.error)
+                            resolve(thisObj)
+                        }
+                        if (body.response.transid){
+                            thisObj.transId         = body.response.transId
+                            thisObj.transMessage    = body.response.message
+                        }
+                        else {
+                            thisObj.transMessage    = body.response.message
+                            thisObj.transErrorCode  = body.response.errorCode
+                            thisObj.transErrorText  = body.response.errorText
+                        }
                         resolve(thisObj)
                     }
                     else {
-                        console.warn("There was a different reponse")
-                        console.log(response, body)
-                        thisObj.response = body
+                        console.warn("There was a different response other than 200")
+                        console.log(body)
+                        thisObj.error = true
                         resolve(thisObj)
                     }
                 })
@@ -112,7 +126,7 @@ var transaction = function(){
     }
 
     this.refundTransaction = function() {
-        new Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
             resolve(thisObj)
         });
     }
@@ -129,22 +143,42 @@ newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
     ccv         : "123",
-    amount      : "1999.99"
+    amount      : "1889.99"
 }).then(function(obj){
 
-    if (obj.error){
-
+    if (!obj.error){
+        console.log(obj.transMessage)
+        console.log("Trasaction Id:", obj.transId)
+        console.log("Authorization Code:", obj.transAuthCode)
     }
     else {
-        console.log(obj.transactionId)
+        console.log(obj.transMessage)
+        console.log("Error Code:", obj.transErrorCode)
+        console.log("Error Text:", obj.transErrorText)
     }
 
 })
 
+setTimeout(function(){
 
-/*
-test.voidTransaction({
-    transid  : '60005921714'
-})
-*/
+    newTrans.voidTransaction({
+        transId  : newTrans.transId
+    }).then(function(obj){
+        if (!obj.error){
+            console.log(obj.transMessage)
+            console.log(obj.transId)
+        }
+        else {
+            console.log(obj.transMessage)
+            console.log(obj.transErrorCode)
+            console.log(obj.transErrorText)
+        }
+    })
+
+}, 5000)
+
+
+
+
+
 module.exports = transaction
