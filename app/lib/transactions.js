@@ -95,7 +95,7 @@ var transaction = function(){
                             console.error(body.error)
                             resolve(thisObj)
                         }
-                        if (body.response.transid){
+                        if (body.response.transId){
                             thisObj.transId         = body.response.transId
                             thisObj.transMessage    = body.response.message
                         }
@@ -103,6 +103,7 @@ var transaction = function(){
                             thisObj.transMessage    = body.response.message
                             thisObj.transErrorCode  = body.response.errorCode
                             thisObj.transErrorText  = body.response.errorText
+                            thisObj.error = true
                         }
                         resolve(thisObj)
                     }
@@ -136,11 +137,12 @@ var transaction = function(){
 /****EXAMPLE CODE***/
 var newTrans = new transaction()
 
+
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
     ccv         : "123",
-    amount      : "889.99"
+    amount      : "119.67"
 }).then(function(obj){
 
     if (!obj.error){
@@ -157,7 +159,10 @@ newTrans.chargeCreditCard({
     console.log('\n')
 })
 
+
+
 setTimeout(function(){
+
 
     newTrans.voidTransaction({
         transId  : newTrans.transId
@@ -171,9 +176,35 @@ setTimeout(function(){
             console.log("Error Code:", obj.transErrorCode)
             console.log("Error Text:", obj.transErrorText)
         }
+        console.log('\n')
     })
 
+
 }, 5000)
+
+
+
+
+setTimeout(function(){
+
+
+    newTrans.voidTransaction({
+        transId  : newTrans.transId
+    }).then(function(obj){
+        if (!obj.error){
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+        }
+        else {
+            console.log(obj.transMessage)
+            console.log("Error Code:", obj.transErrorCode)
+            console.log("Error Text:", obj.transErrorText)
+        }
+        console.log('\n')
+    })
+
+
+}, 10000)
 
 
 
