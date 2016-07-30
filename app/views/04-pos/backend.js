@@ -206,7 +206,6 @@ $("#scan_sim").click(function()  {
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
 			}
 			else if(current_ticket[1] != -1) {
-				console.log("WAS FOUND IN LIST");
 				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
 			}
@@ -219,7 +218,7 @@ $("#scan_sim").click(function()  {
 		console.log(item_list);
 		console.log("Previous: " + previous_ticket)
 	}
-	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1))) {
+	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
 		ticket_flag = 0;
 		error_in_used();
 	}
