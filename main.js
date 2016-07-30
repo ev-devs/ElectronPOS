@@ -19,8 +19,6 @@ var current_ibo_session = null;
 var current_event = null;
 // Report crashes to our server.
 // electron.crashReporter.start({companyName : 'asdf', submitURL : 'localhost'});
-
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
