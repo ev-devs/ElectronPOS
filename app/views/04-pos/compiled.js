@@ -621,7 +621,7 @@ function error_in_used() {
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 
-	if (key == "enter" || key=="shift" || key == "123"){
+	if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
 		// do nothing
 	}
 	else {
