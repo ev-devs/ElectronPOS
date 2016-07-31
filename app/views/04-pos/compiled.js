@@ -1,4 +1,7 @@
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
+
+
+
 $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
   if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
