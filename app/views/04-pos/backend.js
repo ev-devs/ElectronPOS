@@ -261,6 +261,42 @@ function find_in_customer_list(key, query) {
 	else
 		return i;
 }
+
+/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
+in the customers list. If so the increment the counter and if not then add to list.
+@return: index of the item in the item_list
+@param: item_list, inventory, and barcode*/
+function determine_item_status(item_list, inventory, barcode) {
+  var places = [-1, -1];
+  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
+  var inv_result = inventory.find(function(e) {
+		places[0] += 1;
+    return e.barcode == barcode;
+  });
+
+  /*If it's in the inventory go here*/
+  if(inv_result != undefined) {
+    /*Check the customers current list to see if they already have it in their choices*/
+    var flag = 0;
+		places[1] = find_in_customer_list("barcode", barcode);
+    /*If the customer already has one then just increment the quantity counter*/
+    if(places[1] != -1) {
+      item_list[places[1]].cust_quantity+=1;
+    }
+    /*If not then increment the counter to one and add to the customer's list called item_list*/
+    else {
+      inv_result['cust_quantity'] = 1;
+      item_list.push(inv_result);
+      places[1] = item_list.length - 1;
+    }
+    /*return the place of the item in the list for future use*/
+    return places;
+  }
+  else {
+    return -1;
+  }
+};
+
 /*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
@@ -312,40 +348,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
-in the customers list. If so the increment the counter and if not then add to list.
-@return: index of the item in the item_list
-@param: item_list, inventory, and barcode*/
-function determine_item_status(item_list, inventory, barcode) {
-  var places = [-1, -1];
-  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
-  var inv_result = inventory.find(function(e) {
-		places[0] += 1;
-    return e.barcode == barcode;
-  });
-
-  /*If it's in the inventory go here*/
-  if(inv_result != undefined) {
-    /*Check the customers current list to see if they already have it in their choices*/
-    var flag = 0;
-		places[1] = find_in_customer_list("barcode", barcode);
-    /*If the customer already has one then just increment the quantity counter*/
-    if(places[1] != -1) {
-      item_list[places[1]].cust_quantity+=1;
-    }
-    /*If not then increment the counter to one and add to the customer's list called item_list*/
-    else {
-      inv_result['cust_quantity'] = 1;
-      item_list.push(inv_result);
-      places[1] = item_list.length - 1;
-    }
-    /*return the place of the item in the list for future use*/
-    return places;
-  }
-  else {
-    return -1;
-  }
-};
 
 
 
@@ -535,10 +537,14 @@ $("#n_delete").click(function() {
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)')
+  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
     $('#modal2').openModal();
+		console.log("X")
+	}
   else if(previous_flag) {
+		console.log("Y");
 		if(current_page == "pay_choice.html") {
+			console.log("1");
 			confirm_flag = 1;
 			scan_flag = 1;
 			previous_flag = 0;
@@ -548,6 +554,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
+			console.log("2");
 			current_page = "pay_choice.html";
 			previous_page = "handle_order.html";
 			card_flag = 0;
@@ -555,6 +562,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "cash.html") {
+			console.log("3");
 			current_page = "pay_choice.html"
 			previous_page = "handle_order.html"
 			cash_flag = 0;
@@ -562,6 +570,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "card.html") {
+			console.log("4");
 			current_page = "card_amt.html"
 			previous_page = "pay_choice.html"
 			$("#confirm").removeAttr("style");
@@ -625,6 +634,11 @@ $("#confirm").click(function() {
 			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
 			cash_flag = 0;
 			confirm_flag = 0;
+			$("#cancel").removeAttr("style");
+			$("#confirm").removeAttr("style");
+			current_page = "pay_choice.html";
+			previous_page = "handle_order.html";
+			$("#cancel").css("background-color", "red");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
   }
@@ -642,6 +656,8 @@ $("#confirm").click(function() {
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
+	console.log("PREV:" + previous_page);
+	console.log("CUR:" + current_page);
 });
 
 $("#yes-cash").click(function () {
@@ -655,6 +671,8 @@ $(document).on("click", "#cash", function () {
 	previous_page = "pay_choice.html";
 	current_page = "cash.html"
 	colorfy();
+	console.log("PREV:" + previous_page);
+	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -666,44 +684,14 @@ $(document).on("click", "#card", function () {
 	previous_page = "pay_choice.html";
 	current_page = "card_amt.html";
 	colorfy();
+	console.log("PREV:" + previous_page);
+	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
 
 
-/*********************************************NOTE: BEGIN CARD TRANSACTION CODE*********************************************/
-$(document).on("click", "#swipe_sim", function() {
-	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
-  cancel_flag = 0;
-	previous_flag = 0;
-	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
-  if(card_flag && swipe_flag) {
-		$("#cancel").removeAttr("style");
-		$("#confirm").removeAttr("style");
-		confirm_flag = 0;
-		card_flag = 0;
-		/*THIS CODE CAN BE REWRITTEN IN A BETTER MANNER BUT RIGHT NOW THIS WILL DO*/
-		cancel_flag = 0;
-		previous_flag = 0;
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-    setTimeout(function() {
-			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				void_order(1);
-			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-			}
-			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				card_flag = 0;
-				confirm_flag = 0;
-				update_price('~', card_amt, 0, 1)
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-			}
-    }, 3000);
-  }
-	else if(current_platinum == "NONE") {
-		error_platinum();
-	}
-});
 
 
 
@@ -794,6 +782,7 @@ Software to-do:
 -Finish fail flags (Not selecting platinum, not putting right amount of money in, scan card, etc.) (John)
 -Integrate db with pos.html (John)
 -Integrate transactions with pos.html
+-Gulpify the backend.js
 
 ONGOING
 -Bug check Wi-Fi (John)
@@ -821,5 +810,5 @@ Bugs:
 
 To-Add:
 
--50 tickets.
+-50 tickets and keeping track of tickets
 */
