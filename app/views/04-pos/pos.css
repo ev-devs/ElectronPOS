@@ -105,7 +105,8 @@ html {
     top: 50%;
     transform: translateY(20%);
 }
-.search {
+
+#search {
     background-color: white;
     top: 50%;
     transform: translateY(20%);
