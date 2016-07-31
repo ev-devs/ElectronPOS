@@ -21,8 +21,8 @@ gulp.task('stream', function(){
 */
 
 gulp.task('compile', function(){
-	gulp.src('./app/views/04-pos/backend/*.js')
-   .pipe(watch('./app/views/04-pos/backend/*.js', {ignoreInitial : false}))
+	gulp.src('./app/views/04-pos/lib/*.js')
+   .pipe(watch('./app/views/04-pos/lib/*.js', {ignoreInitial : false}))
    .pipe(concat('compiled.js'))
    .pipe(gulp.dest('./app/views/04-pos/'))
 })
