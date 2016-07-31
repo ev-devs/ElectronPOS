@@ -105,7 +105,7 @@ html {
     top: 50%;
     transform: translateY(20%);
 }
-#search {
+.keyboard {
     background-color: white;
     top: 50%;
     transform: translateY(20%);

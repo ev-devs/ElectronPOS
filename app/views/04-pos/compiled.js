@@ -848,4 +848,8 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-$('keyboard-1').jboard('standard')
+$('#keyboard-1').jboard('standard')
+
+$('#keyboard-1').on( 'jpress', function(event, key){
+    console.log(key)
+})
