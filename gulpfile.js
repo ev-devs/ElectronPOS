@@ -12,5 +12,5 @@ gulp.task('default', function() {
 
 gulp.task('stream', function(){
 	return watch('./app/views/04-pos/backend/*.js', { ignoreInitial: false })
-	 .pipe(gulp.dest('./app/views/04-pos/'));
-})
+	.pipe(gulp.dest('./app/views/04-pos/backend/'));
+});
