@@ -8,7 +8,7 @@ gulp.task('default', function() {
 	gutil.log('This is an empty task')
 	return
 
-	return gulp.src('./app/views/04-pos/backend/*.js')
+	return gulp.src('./app/views/04-pos/lib/*.js')
 	.pipe(concat('compiled.js'))
 	.pipe(gulp.dest('./app/views/04-pos/'));
 });
