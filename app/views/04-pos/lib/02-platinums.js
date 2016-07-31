@@ -23,7 +23,14 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-$(document).on( "jpress", "#enter-platinum", function(){
+$(document).on( "jpress", "#enter-platinum" , function(event, key){
+
+	console.log("THE MOFO KEY IS", key)
+	if (key == "shift" || key == "enter" || key == "123"){
+
+	}
+	else {
+
 		var user_input = "";
 		user_input = $("#enter-platinum").val();
 		if(user_input != ""){
@@ -36,7 +43,8 @@ $(document).on( "jpress", "#enter-platinum", function(){
 			}
 			display_list(list_names);
 		}
-	});
+	}
+});
 
 function display_list(list){
 	var name = "";

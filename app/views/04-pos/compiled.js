@@ -114,7 +114,14 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-$(document).on( "jpress", "#enter-platinum", function(){
+$(document).on( "jpress", "#enter-platinum" , function(event, key){
+
+	console.log("THE MOFO KEY IS", key)
+	if (key == "shift" || key == "enter" || key == "123"){
+
+	}
+	else {
+
 		var user_input = "";
 		user_input = $("#enter-platinum").val();
 		if(user_input != ""){
@@ -127,7 +134,8 @@ $(document).on( "jpress", "#enter-platinum", function(){
 			}
 			display_list(list_names);
 		}
-	});
+	}
+});
 
 function display_list(list){
 	var name = "";
@@ -611,31 +619,39 @@ function error_in_used() {
 
 /**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
 var search_param = "";
-$("#search").on( 'jpress', function(){
-	if(current_platinum != "NONE") {
-		var query = $(this).val();
-		if(scan_flag == 1) {
-			query = new RegExp(query, "i");
-			var i = -1;
-			inventory_query.splice(0, inventory_query.length);
-			$("#item_list").empty();
-		  inventory.find(function(e) {
-				i++;
-				if(e.barcode != null) {
-					if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-						var item = Object.assign({}, e)
-						inventory_query.push(item);
-						item.title+=("-_" + i);
-						console.log(item);
-					}
-				}
-	    });
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-		}
+$("#search").on( 'jpress', function(event , key){
+
+	if (key == "enter" || key=="shift" || key == "123"){
+		// do nothing
 	}
 	else {
-		error_platinum();
+
+		if(current_platinum != "NONE") {
+			var query = $(this).val();
+			if(scan_flag == 1) {
+				query = new RegExp(query, "i");
+				var i = -1;
+				inventory_query.splice(0, inventory_query.length);
+				$("#item_list").empty();
+			  inventory.find(function(e) {
+					i++;
+					if(e.barcode != null) {
+						if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+							var item = Object.assign({}, e)
+							inventory_query.push(item);
+							item.title+=("-_" + i);
+							console.log(item);
+						}
+					}
+			});
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+			}
+		}
+		else {
+			error_platinum();
+		}
 	}
+
 });
 
 $(document).on("click",  ".item", function() {
