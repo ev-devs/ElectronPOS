@@ -1,6 +1,6 @@
 /**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
 var search_param = "";
-$("#search").change(function(){
+$("#search").on( 'jpress', function(){
 	if(current_platinum != "NONE") {
 		var query = $(this).val();
 		if(scan_flag == 1) {
