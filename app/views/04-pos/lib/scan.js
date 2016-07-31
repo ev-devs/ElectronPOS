@@ -11,8 +11,6 @@ $("#scan_sim").click(function()  {
 	}
 	var ticket;
 
-
-
 	/*BRANCH which handles ticket transactions*/
 	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
 		if(ticket_flag == 0) {
