@@ -20,19 +20,9 @@
   <link rel="stylesheet" href="../../../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
   <!--We are inlcuding our material design js for our everyday GUI needs-->
   <script src="../../../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
-  <!--Used before the DATABASE is up-->
-
-  <!--- THIS IS NEEDED FOR US TO GET A KEYBOARD ON THE SCREEN---->
-  <!-- jQuery (required) & jQuery UI + theme (optional) -->
-  <script src="../../../bower_components/jquery-ui/jquery-ui.min.js" rel="stylesheet"></script>
-
-  <!-- keyboard widget css & script (required) -->
-  <link href="../../../bower_components/keyboard/dist/css/keyboard.min.css" rel="stylesheet">
-  <script src="../../../bower_components/keyboard/dist/js/jquery.keyboard.js"></script>
-
-<!-- keyboard extensions (optional) -->
-  <script src="../../../bower_components/keyboard/dist/js/jquery.keyboard.extension-all.min.js" charset="utf-8"></script>
   <link rel="stylesheet" href="../../../bower_components/animate.css/animate.css" media="screen" title="no title" charset="utf-8">
+
+  
   <title>Hello World!</title>
 </head>
 
@@ -183,7 +173,7 @@
                        <input value="2161010270673" placeholder="Barcode..." style="text-align: center;" id="barcode" class="bold-input" type="text">
                   </div>
                   <div class="col s6">
-                      <input placeholder="Search inventory by barcode or title..." style="text-align: center;" id="search" class="keyboard bold-input" type="text">
+                      <input placeholder="Search inventory by barcode or title..." style="text-align: center;" id="search" class="keyboard-1 bold-input" type="text">
                   </div>
               </div>
               <!--STOP TOP RIGHT SIDE-->
@@ -209,15 +199,107 @@
       </div>
  </main>
 
+
+ <!-- Modal Structure -->
+ <div id="standard-modal-template" class="modal bottom-sheet">
+   <div class="modal-content">
+       <div class="container center standard-jboard-container" id="standard-jboard-container">
+           <div class="row standard-row" id="standard-row-1" style="margin : 0">
+               <div class="jboard-key" id="q" style="display : inline-block">q</div>
+               <div class="jboard-key" id="w" style="display : inline-block">w</div>
+               <div class="jboard-key" id="e" style="display : inline-block">e</div>
+               <div class="jboard-key" id="r" style="display : inline-block">r</div>
+               <div class="jboard-key" id="t" style="display : inline-block">t</div>
+               <div class="jboard-key" id="y" style="display : inline-block">y</div>
+               <div class="jboard-key" id="u" style="display : inline-block">u</div>
+               <div class="jboard-key" id="i" style="display : inline-block">i</div>
+               <div class="jboard-key" id="o" style="display : inline-block">o</div>
+               <div class="jboard-key" id="y" style="display : inline-block">p</div>
+               <div class="jboard-key delete-key" id="delete" style="display : inline-block">delete</div>
+           </div>
+
+           <div class="row  standard-row" id="standard-row-2" style="margin : 0">
+               <div class="jboard-key" id="a" style="display : inline-block">a</div>
+               <div class="jboard-key" id="s" style="display : inline-block">s</div>
+               <div class="jboard-key" id="d" style="display : inline-block">d</div>
+               <div class="jboard-key" id="f" style="display : inline-block">f</div>
+               <div class="jboard-key" id="g" style="display : inline-block">g</div>
+               <div class="jboard-key" id="h" style="display : inline-block">h</div>
+               <div class="jboard-key" id="j" style="display : inline-block">j</div>
+               <div class="jboard-key" id="k" style="display : inline-block">k</div>
+               <div class="jboard-key" id="l" style="display : inline-block">l</div>
+               <div class="jboard-key enter-key" id="enter" style="display : inline-block">enter</div>
+           </div>
+
+           <div class="row standard-row" id="standard-row-3" style="margin : 0">
+               <div class="jboard-key shift-key" id="shift" style="display : inline-block">Shift</div>
+               <div class="jboard-key" id="z" style="display : inline-block">z</div>
+               <div class="jboard-key" id="x" style="display : inline-block">x</div>
+               <div class="jboard-key" id="c" style="display : inline-block">c</div>
+               <div class="jboard-key" id="v" style="display : inline-block">v</div>
+               <div class="jboard-key" id="b" style="display : inline-block">b</div>
+               <div class="jboard-key" id="n" style="display : inline-block">n</div>
+               <div class="jboard-key" id="m" style="display : inline-block">m</div>
+               <div class="jboard-key" id="," style="display : inline-block">,</div>
+               <div class="jboard-key" id="." style="display : inline-block">.</div>
+               <div class="jboard-key" id="@" style="display : inline-block">@</div>
+               <div class="jboard-key extra-key" id="extra-key" style="display: inline-block; display: none">^</div>
+           </div>
+
+           <div class="row standard-row" id="standard-row-4" style="margin : 0">
+               <div class="jboard-key" id="123" style="display : inline-block">123</div>
+               <div class="jboard-key space-key" id="space" style="display : inline-block">Space</div>
+               <!-- <div class="jboard-key" id="#$+" style="display : inline-block">#$+</div> -->
+           </div>
+
+       </div>
+   </div>
+ </div>
+
+
+ <!-- Modal Structure -->
+ <div id="num-modal-template" class="modal bottom-sheet">
+   <div class="modal-content">
+       <div class="container center num-jboard-container" id="num-jboard-container">
+           <div class="row num-row" id="row-1" style="margin : 0">
+               <div class="jboard-key" id="7" style="display : inline-block">7</div>
+               <div class="jboard-key" id="8" style="display : inline-block">8</div>
+               <div class="jboard-key" id="9" style="display : inline-block">9</div>
+               <div class="jboard-key" id="backspace" style="display : inline-block"> ⌫ </div>
+           </div>
+           <div class="row num-row" id="row-2" style="margin : 0">
+               <div class="jboard-key" id="4" style="display : inline-block">4</div>
+               <div class="jboard-key" id="5" style="display : inline-block">5</div>
+               <div class="jboard-key" id="6" style="display : inline-block">6</div>
+               <div class="jboard-key" id="clear" style="display : inline-block"> C </div>
+           </div>
+           <div class="row num-row" id="row-3" style="margin : 0">
+               <div class="jboard-key" id="1" style="display : inline-block">1</div>
+               <div class="jboard-key" id="2" style="display : inline-block">2</div>
+               <div class="jboard-key" id="3" style="display : inline-block">3</div>
+               <div class="jboard-key blank-key" id="blank" style="display : inline-block"> &nbsp</div>
+           </div>
+           <div class="row num-row" id="row-4" style="margin : 0">
+               <div class="jboard-key" id="0" style="display : inline-block">0</div>
+               <div class="jboard-key" id="dot" style="display : inline-block">.</div>
+               <div class="jboard-key" id="accept" style="display : inline-block"> ✓ </div>
+               <div class="jboard-key" id="reject" style="display : inline-block"> ✖ </div>
+           </div>
+       </div>
+   </div>
+ </div>
+
+
+
+
+
+
     <!--THIS IS OUR CUSTOM STYLESHEET!-->
     <link rel="stylesheet" href="./pos.css" media="screen"  charset="utf-8">
-    <!--THIS IS OUR LOGIC!-->
-    <!-- <script src="./frontend.js" charset="utf-8"></script> -->
-    <!-- <script src="./backend.js" charset="utf-8"></script> -->
     <script src="./compiled.js" charset="utf-8"></script>
+    <script src="../../../jboard/bin/jboard.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../../../jboard/bin/jboard.css"charset="utf-8">
 
-    <!--This ends our session-->
-    <!-- <script src="endsession.js" charset="utf-8"></script> -->
 
   </body>
 </html>

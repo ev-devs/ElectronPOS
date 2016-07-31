@@ -147,7 +147,7 @@ $(document).on("click", ".platinum", function() {
 	scan_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '../partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 	//$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
@@ -155,7 +155,7 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '../partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })
 
@@ -504,12 +504,6 @@ function refocus() {
   document.dispatchEvent(event);
 }
 
-$(".keyboard").keyboard({
-  restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
-  preventPaste : true,  // prevent ctrl-v and right click
-  autoAccept : true/*,
-  layout: "num"*/
-});
 
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
@@ -853,3 +847,5 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
+
+$('keyboard-1').jboard('standard')

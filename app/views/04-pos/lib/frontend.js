@@ -7,12 +7,6 @@ function refocus() {
   document.dispatchEvent(event);
 }
 
-$(".keyboard").keyboard({
-  restrictInput : true, // Prevent keys not in the displayed keyboard from being typed in
-  preventPaste : true,  // prevent ctrl-v and right click
-  autoAccept : true/*,
-  layout: "num"*/
-});
 
 /*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
 $("#n_cancel").click(function() {
