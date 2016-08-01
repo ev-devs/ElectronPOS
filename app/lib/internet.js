@@ -116,6 +116,7 @@ $(document).on('click', '#accept', function() {
 
 
 function connect(ap_name, psk) {
+  execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
   return new Promise(function(resolve, reject) {
     exec( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk, (error, stdout, stderr) => {
       resolve(stdout);
