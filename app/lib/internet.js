@@ -98,8 +98,7 @@ $(document).on('click', '#accept', function() {
       <div class=\"modal-footer\"> \
         <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
       </div>"
-  var remove =
-  //$("#connection_holder").append(load);
+  $("#connection_holder").append(load);
   //$("#connection_holder").append(proceed);
 });
 
