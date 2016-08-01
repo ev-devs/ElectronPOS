@@ -21,6 +21,8 @@ $("#confirm").click(function() {
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
+		
+
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal

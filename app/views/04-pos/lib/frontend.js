@@ -14,7 +14,7 @@ $("#n_cancel").click(function() {
 });
 
 /*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on("change", "#tendered", function() {
+$(document).on( "jpress", "#tendered", function() {
   if($(this).val() >= total) {
     var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
     $("#change").text("$" + accounting.formatNumber(change, 2, ","));

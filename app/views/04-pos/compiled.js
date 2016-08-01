@@ -327,6 +327,8 @@ $("#confirm").click(function() {
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
+		
+
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -519,7 +521,7 @@ $("#n_cancel").click(function() {
 });
 
 /*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on("change", "#tendered", function() {
+$(document).on( "jpress", "#tendered", function() {
   if($(this).val() >= total) {
     var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
     $("#change").text("$" + accounting.formatNumber(change, 2, ","));
@@ -864,12 +866,16 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
 $('#search').jboard('standard')
 
 $('#barcode').jboard('standard')
 
-$('#enter-platinum').jboard('standard')
-
+//$('#enter-platinum').jboard('standard')
 
 $('#search').on( 'jpress', function(event, key){
     console.log(key)
