@@ -67,16 +67,6 @@ var psk = "";
 not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val();
-  $(".modal-content-pw").empty();
-  $(".modal-content-pw").append(
-    "<div class=\"modal-content\"> \
-          <h4>Error!</h4> \
-          <i class=\"medium center error material-icons\">report_problem</i> \
-          <p>Check Internet Connectivity!</p> \
-        </div> \
-        <div class=\"modal-footer\"> \
-          <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
-        </div>")
    //execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
   if(psk.search("#") != -1) {
     console.log("PRESENT");
@@ -100,6 +90,17 @@ $(document).on('click', '#accept', function() {
        $("#cur_con").text("Wi-Fi: none");
      }
   });
+  var load = "<div id=\"loading\" class=\"modal-content\"> \
+        <h4>Error!</h4> \
+        <i class=\"medium center error material-icons\">report_problem</i> \
+        <p>Check Internet Connectivity!</p> \
+      </div> \
+      <div class=\"modal-footer\"> \
+        <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
+      </div>"
+  var remove =
+  //$("#connection_holder").append(load);
+  //$("#connection_holder").append(proceed);
 });
 
 
