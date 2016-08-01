@@ -77,8 +77,8 @@ $(document).on('click', '#accept', function() {
         <div class=\"modal-footer\"> \
           <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
         </div>")
-   execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
-   if(psk.search("#") != -1) {
+   //execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
+  if(psk.search("#") != -1) {
     console.log("PRESENT");
     psk = psk.replace(/#/g, "\\#");
   }
