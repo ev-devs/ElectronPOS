@@ -66,7 +66,6 @@ var psk = "";
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
 $(document).on('click', '#accept', function() {
-  execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
   psk = $("#keyboard").val();
   $(".modal-content-pw").empty();
   $(".modal-content-pw").append(
@@ -78,6 +77,7 @@ $(document).on('click', '#accept', function() {
         <div class=\"modal-footer\"> \
           <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
         </div>")
+   execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
    if(psk.search("#") != -1) {
     console.log("PRESENT");
     psk = psk.replace(/#/g, "\\#");
