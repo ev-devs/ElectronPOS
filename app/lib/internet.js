@@ -90,14 +90,17 @@ $(document).on('click', '#accept', function() {
        $("#cur_con").text("Wi-Fi: none");
      }
   });
-  var load = "<div id=\"loading\" class=\"modal-content\"> \
-        <h4>Error!</h4> \
-        <i class=\"medium center error material-icons\">report_problem</i> \
-        <p>Check Internet Connectivity!</p> \
+  var load = "  <div id=\"loading\" class=\"preloader-wrapper small active\"> \
+    <div class=\"spinner-layer spinner-green-only\"> \
+      <div class=\"circle-clipper left\"> \
+        <div class=\"circle\"></div> \
+      </div><div class=\"gap-patch\"> \
+        <div class=\"circle\"></div> \
+      </div><div class=\"circle-clipper right\"> \
+        <div class=\"circle\"></div> \
       </div> \
-      <div class=\"modal-footer\"> \
-        <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
-      </div>"
+    </div> \
+  </div>";
   $("#connection_holder").append(load);
   //$("#connection_holder").append(proceed);
 });
