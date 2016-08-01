@@ -83,13 +83,10 @@ $(document).on('click', '#accept', function() {
     psk = psk.replace(/#/g, "\\#");
   }
   console.log(psk);
-  execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
+  var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
-  var status;
-  execSync("sleep 2");
-  /*NEEDS TO BE CHANGED AS THIS DOES NOT CHECK FOR CONNECTIONS PROPERLY*/
 
-  if(output_d.stderr.length == 0) {
+  if(status.search("FAILED") == -1) {
 	   console.log("CONNECTED");
      var cur = execSync("sudo " + __dirname + "/../../dixonconnect/wifi_cur.sh con").toString();
      $("#cur_con").text("Wi-Fi: " + cur);
