@@ -86,7 +86,7 @@ $(document).on('click', '#accept', function() {
        document.getElementById("cur_con").dispatchEvent(connected);
     }
     else {
-      $('#modal4').openModal({
+      $('failModal').openModal({
           dismissible: true, // Modal can be dismissed by clicking outside of the modal
           opacity: .5, // Opacity of modal background
           in_duration: 300, // Transition in duration
