@@ -86,21 +86,20 @@ $(document).on('click', '#accept', function() {
   //var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
   var status = "";
   connect(ap_name, psk).then(function(obj){
-    console.log(obj)
+    /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
+    console.log(obj.toString())
+    if(obj.toString().search("FAILED") == -1) {
+       console.log("CONNECTED");
+       var cur = execSync("sudo " + __dirname + "/../../dixonconnect/wifi_cur.sh con").toString();
+       $("#cur_con").text("Wi-Fi: " + cur);
+       status = document.getElementById("cur_con").innerText.toString();
+       document.getElementById("cur_con").dispatchEvent(connected);
+    }
+    else {
+       console.log("DISCONNECTED");
+       $("#cur_con").text("Wi-Fi: none");
+     }
   });
-  /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
-
-  if(status.search("FAILED") == -1) {
-	   console.log("CONNECTED");
-     var cur = execSync("sudo " + __dirname + "/../../dixonconnect/wifi_cur.sh con").toString();
-     $("#cur_con").text("Wi-Fi: " + cur);
-     status = document.getElementById("cur_con").innerText.toString();
-     document.getElementById("cur_con").dispatchEvent(connected);
-  }
-  else {
-	   console.log("DISCONNECTED");
-     $("#cur_con").text("Wi-Fi: none");
-   }
 });
 
 
