@@ -2,7 +2,7 @@
 
 
 var execSync = require('child_process').execSync
-
+var exec = require('child_process').exec
 var internet = {
 
     remove_dup : function(wifis){
@@ -83,7 +83,11 @@ $(document).on('click', '#accept', function() {
     psk = psk.replace(/#/g, "\\#");
   }
   console.log(psk);
-  var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
+  //var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
+  var status = "";
+  connect(ap_name, psk).then(function(obj){
+    console.log(obj)
+  });
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
 
   if(status.search("FAILED") == -1) {
@@ -99,10 +103,16 @@ $(document).on('click', '#accept', function() {
    }
 });
 
-/*When the proceed button is rendered if it is pressed render the next view. NOTE: readFileSync is causing a warning. Should be changed to readFile?*/
-/*$(document).on('click', '#proceed', function() {
-  $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/eventstart/index.html', 'utf-8') , {}));
-}); */
+
+
+function connect(ap_name, psk) {
+  return new Promise(function(resolve, reject) {
+    exec( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk, (error, stdout, stderr) => {
+      resolve(stdout);
+    });
+  });
+}
+
 
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
