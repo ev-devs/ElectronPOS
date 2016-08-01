@@ -70,6 +70,7 @@ $(document).on('click', '#accept', function() {
   execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
   if(psk.search("#") != -1)
     psk.replace(/#/g, "\\#")
+  console.log(psk);
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var status;
   execSync("sleep 2");
