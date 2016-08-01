@@ -68,7 +68,8 @@ not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val()
   execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
-
+  if(psk.search("#") != -1)
+    psk.replace(/#/g, "\\#")
   /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
   var status;
   execSync("sleep 2");
@@ -95,6 +96,8 @@ $(document).on('click', '#accept', function() {
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
+  if(ap_name.search("#") != -1)
+    ap_name.replace(/#/g, "\\#")
 });
 
 /*When the remove connection button is pressed then remove the current connection*/
