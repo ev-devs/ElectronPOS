@@ -23,9 +23,9 @@
 
             <!-- Modal Structure for the password input. Will need to either scrap OR interface with the digital keyboard.-->
             <div id="modal1" class="modal">
-              <div class="modal-content">
+              <div class="modal-content-pw">
               <!--Text area to enter the password-->
-                <h4>Enter password</h4>
+                <h4 id="con_pw">Enter password</h4>
                 <input id="keyboard" type="text">
                 <script type="text/javascript">
                   $('#keyboard').jboard('standard');
@@ -33,6 +33,17 @@
                       console.log(key)
                   })
                 </script>
+                <div class="preloader-wrapper big active">
+                 <div class="spinner-layer spinner-blue-only">
+                   <div class="circle-clipper left">
+                     <div class="circle"></div>
+                   </div><div class="gap-patch">
+                     <div class="circle"></div>
+                   </div><div class="circle-clipper right">
+                     <div class="circle"></div>
+                   </div>
+                 </div>
+               </div>
               </div>
 
               <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->

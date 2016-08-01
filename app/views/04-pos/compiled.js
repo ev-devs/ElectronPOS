@@ -3,6 +3,7 @@ var request = require('request');
 var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
+var mongoose = require('mongoose');
 var _ = require("underscore");
 // Global variables
 var inventory = [];
@@ -46,6 +47,19 @@ var current_page = "2";
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transaction', function(err){
+    if (err){
+        console.log(err)
+        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/transaction')
+
+    }
+});
+
+var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
+
 request({
 	method: 'POST',
 	uri: URL + '/evleaders',
@@ -88,6 +102,10 @@ request({
 			//console.log(body);
 		}
 	});
+
+function handleTransaction() {
+
+}
 
 /*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
 /*Leaders*/
@@ -694,6 +712,25 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+$('#search').jboard('standard')
+
+$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
 $("#scan_sim").click(function()  {
@@ -865,22 +902,3 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
-
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-$('#search').jboard('standard')
-
-$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})

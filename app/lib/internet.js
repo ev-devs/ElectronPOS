@@ -66,8 +66,18 @@ var psk = "";
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
 $(document).on('click', '#accept', function() {
+  $(".modal-content-pw").empty();
+  $(".modal-content-pw").append(
+    "<div class=\"modal-content\"> \
+          <h4>Error!</h4> \
+          <i class=\"medium center error material-icons\">report_problem</i> \
+          <p>Check Internet Connectivity!</p> \
+        </div> \
+        <div class=\"modal-footer\"> \
+          <a href=\"#!\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">Ok</a> \
+        </div>")
   execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
-  psk = $("#keyboard").val()
+  psk = $("#keyboard").val();
    if(psk.search("#") != -1) {
     console.log("PRESENT");
     psk = psk.replace(/#/g, "\\#");
@@ -78,7 +88,7 @@ $(document).on('click', '#accept', function() {
   var status;
   execSync("sleep 2");
   /*NEEDS TO BE CHANGED AS THIS DOES NOT CHECK FOR CONNECTIONS PROPERLY*/
-  var output_d = spawnSync('wpa_cli', ['scan']);
+
   if(output_d.stderr.length == 0) {
 	   console.log("CONNECTED");
      var cur = execSync("sudo " + __dirname + "/../../dixonconnect/wifi_cur.sh con").toString();

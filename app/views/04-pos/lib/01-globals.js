@@ -3,6 +3,7 @@ var request = require('request');
 var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
+var mongoose = require('mongoose');
 var _ = require("underscore");
 // Global variables
 var inventory = [];
@@ -43,8 +44,22 @@ var swipe_flag = 0;
 var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
+var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
+
+var TransactionsConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+    if (err){
+        console.log(err)
+        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/transactions')
+
+    }
+});
+
+var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
 
 request({
 	method: 'POST',
@@ -88,3 +103,41 @@ request({
 			//console.log(body);
 		}
 	});
+
+function handleTransaction() {
+
+}
+function insertInventoryToDatabase(_type, price, transaction){
+  new Promise(function(resolve, reject){
+    if (err){
+        console.log( "There was an error finding an item " + err)
+    }
+    else {
+      new Inventory({
+        /*  id          : item._id,
+          barcode     : item.barcode,
+          isTicket    : item.isTicket,
+          prefix      : item.prefix,
+          price       : item.price,
+          title       : item.title, */
+          _type          : _type
+          price          : price
+          transId        : transaction.transId
+          message        : transaction.message
+          authCode       : transaction.authCode
+
+      }).save(function(err){
+          if (err){
+              console.log('Error in creating new transaction item')
+              reject(err)
+          }
+          else {
+              resolve(1)
+              console.log('Successfully created new item!')
+          }
+      })
+    }
+  }).then(function(result){
+      currentTransaction++
+  })
+}
