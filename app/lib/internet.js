@@ -86,8 +86,15 @@ $(document).on('click', '#accept', function() {
        document.getElementById("cur_con").dispatchEvent(connected);
     }
     else {
-       console.log("DISCONNECTED");
-       $("#cur_con").text("Wi-Fi: none");
+      $('#modal4').openModal({
+          dismissible: true, // Modal can be dismissed by clicking outside of the modal
+          opacity: .5, // Opacity of modal background
+          in_duration: 300, // Transition in duration
+          out_duration: 200, // Transition out duration
+      });
+      $("#loading").remove();
+      $("#connecting").remove();
+      $("#cur_con").text("Wi-Fi: none");
      }
   });
   var load = "  <div id=\"loading\" class=\"preloader-wrapper small active\"> \
@@ -100,7 +107,8 @@ $(document).on('click', '#accept', function() {
         <div class=\"circle\"></div> \
       </div> \
     </div> \
-  </div>";
+  </div> \
+  <span id=\"connecting\">Connecting...</span>";
   $("#connection_holder").append(load);
   //$("#connection_holder").append(proceed);
 });

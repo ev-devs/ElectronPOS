@@ -41,6 +41,19 @@
               </div>
             </div>
 
+            <div id="failModal" class="modal">
+              <div class="modal-content-pw">
+              <!--Text area to enter the password-->
+                <h4 id="con_pw">Connection failed!</h4>
+                <p>The connection failed. Please choose another connection or re-input the password.</p>
+              </div>
+
+              <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
+              <div class="modal-footer">
+                <a href="#!" class=" modal-action modal-close waves-effect btn-flat">Ok</a>
+              </div>
+            </div>
+
             <div class="container center">
                 <ul class="collection wifi_holder">
                   <!--Traverse the length of the array that holds the wifi info-->
@@ -84,6 +97,7 @@ document.getElementById("cur_con").addEventListener('connected', function(e) {
     $("#connection_holder").append(remove);
     $("#connection_holder").append(proceed);
     $("#loading").remove();
+    $("#connecting").remove();
 }, false);
 /*Here is where one of our events is dispatched*/
 if(status != "Wi-Fi: none")
