@@ -323,6 +323,10 @@ function insertInventoryToDatabase(inventory){
     })
 }
 
+$('#retry').click(function(event){
+    $( "#proceed" ).trigger( "click" );
+});
+
 
 /*This simulates a button click*/
 //$( "#proceed" ).trigger( "click" );
