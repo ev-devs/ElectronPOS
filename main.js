@@ -26,7 +26,7 @@ let win;
 function createWindow(window) {
   // Create the browser window.
   window = new BrowserWindow({
-      //fullscreen : true,
+      fullscreen : true,
       height : 600,
       width : 100000,
       autoHideMenuBar : true,
@@ -59,6 +59,10 @@ app.on('ready', () => {
     /* globalShortcut.register('CommandOrControl+J+K+M', () => {
         app.quit()
     });*/
+
+    globalShortcut.register('CommandOrControl+C', () => {
+        app.quit()
+    })
 
     createWindow(win)
 });
