@@ -72,6 +72,10 @@ $(document).on('click', '#accept', function() {
     console.log("PRESENT");
     psk = psk.replace(/#/g, "\\#");
   }
+  if(ap_name.search(" ") != -1) {
+    console.log("PRESENT");
+    ap_name = ap_name.replace(/ /g, "\\ ");
+  }
   console.log(psk);
   //var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
   var status = "";
