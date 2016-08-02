@@ -77,6 +77,11 @@ $(document).on('click', '#proceed', function() {
 
   })
   .catch(function(result) {
+
+      $('#test_connection').hide()
+      $('#load_platinums').hide()
+      $('#load_inventory').show()
+
       console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
   });
 
@@ -313,7 +318,7 @@ function insertInventoryToDatabase(inventory){
             currentInventory++
         })
 
-    }) // end of forEach loop
+    })
 }
 
 
