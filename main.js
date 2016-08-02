@@ -59,6 +59,10 @@ app.on('ready', () => {
     /* globalShortcut.register('CommandOrControl+J+K+M', () => {
         app.quit()
     });*/
+    
+    globalShortcut.register('CommandOrControl+C', () => {
+        app.quit()
+    }
 
     createWindow(win)
 });
