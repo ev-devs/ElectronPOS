@@ -25,18 +25,21 @@ function alphabetize(list){
 
 
 
-
-var leader = function(leader) {
-	var user_input = $("#enter-platinum").val();
-	var name = new RegExp(user_input.toString(), "i");
-	if(user_input != ""){
-		if(leader.search(name) != -1){
+var criteria = function(item, check) {
+	if(check!= ""){
+		if(item.search(check) != -1){
 			return true
 		}
 	}
 	else
 		return false;
-}
+};
+
+
+var leader = function(leader) {
+	var name = new RegExp($("#enter-platinum").val(), "i");
+	return criteria(leader, name);
+};
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {

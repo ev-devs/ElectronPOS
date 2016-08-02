@@ -169,18 +169,21 @@ function alphabetize(list){
 
 
 
-
-var leader = function(leader) {
-	var user_input = $("#enter-platinum").val();
-	var name = new RegExp(user_input.toString(), "i");
-	if(user_input != ""){
-		if(leader.search(name) != -1){
+var criteria = function(item, check) {
+	if(check!= ""){
+		if(item.search(check) != -1){
 			return true
 		}
 	}
 	else
 		return false;
-}
+};
+
+
+var leader = function(leader) {
+	var name = new RegExp($("#enter-platinum").val(), "i");
+	return criteria(leader, name);
+};
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {
@@ -677,40 +680,50 @@ function error_in_used() {
 }
 
 /**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/*var i_i = -1;
+
+var inventory_item = function(item) {
+	i_i++;
+	if(item.barcode != null) {
+		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
+			var item = Object.assign({}, item)
+			inventory_query.push(item);
+			item.title+=("-_" + i_i);
+		}
+	}
+}
+*/
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
-
-	if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
-		// do nothing
-	}
-	else {
-
 		if(current_platinum != "NONE") {
-			var query = $(this).val();
-			if(scan_flag == 1) {
-				query = new RegExp(query, "i");
-				var i = -1;
-				inventory_query.splice(0, inventory_query.length);
-				$("#item_list").empty();
-			  inventory.find(function(e) {
-					i++;
-					if(e.barcode != null) {
-						if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-							var item = Object.assign({}, e)
-							inventory_query.push(item);
-							item.title+=("-_" + i);
-							console.log(item);
+			if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = Object.assign({}, e)
+								inventory_query.push(item);
+								item.title+=("-_" + i);
+								console.log(item);
+							}
 						}
-					}
-			});
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+					});
+					/*
+					i_i = -1;
+					inventory_query = inventory_query.filter(inventory_item);*/
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
 			}
 		}
 		else {
 			error_platinum();
 		}
-	}
-
 });
 
 $(document).on("click",  ".item", function() {
