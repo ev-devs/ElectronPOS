@@ -80,9 +80,11 @@ $(document).on('click', '#proceed', function() {
 
       $('#test_connection').hide()
       $('#load_platinums').hide()
-      $('#load_inventory').show()
+      $('#load_inventory').hide()
 
       console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
+
+      $('#retry').show()
   });
 
 
