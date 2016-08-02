@@ -67,16 +67,8 @@ var psk = "";
 not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val();
-   //execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
-  if(psk.search("#") != -1) {
-    console.log("PRESENT");
-    psk = psk.replace(/#/g, "\\#");
-  }
-  if(ap_name.search(" ") != -1) {
-    console.log("PRESENT");
-    ap_name = ap_name.replace(/ /g, "\\ ");
-  }
-  
+  psk = bashify(psk);
+  ap_name = bashify(ap_name);
   console.log(psk);
   //var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
   var status = "";
@@ -129,12 +121,16 @@ function connect(ap_name, psk) {
   });
 }
 
-
+function bashify(word) {
+  word = word.replace(/#|'| |>|<|"|!|&|$|\*|\||\$|`|\\/g, function(match) {
+    match = "\\" + match;
+    return match;
+  });
+  return word.slice(0, word.length - 1);
+}
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
-  if(ap_name.search("#") != -1)
-    ap_name = ap_name.replace(/#/g, "\\#")
 });
 
 /*When the remove connection button is pressed then remove the current connection*/
