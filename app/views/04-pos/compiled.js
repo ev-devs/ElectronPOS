@@ -48,6 +48,7 @@ var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
+
 var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
     if (err){
         console.log(err)
@@ -215,8 +216,8 @@ $(document).on("click", ".platinum", function() {
 	scan_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
+	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-	//$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
 $("#platinum").click(function() {
@@ -362,69 +363,6 @@ $(document).on("click", "#cash", function () {
 	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
-/*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
-$("#confirm").click(function() {
-	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
-  if(confirm_flag == 1) {
-		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
-    if(item_list.length != 0) {
-			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
-      if(confirm_flag == 1) {
-				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
-        confirm_flag = 0;
-				scan_flag = 0;
-				previous_flag = 1;
-				previous_page = "handle_order.html";
-				current_page = "pay_choice.html";
-				$("#cancel").css("background-color", "red");
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-      }
-    }
-  }
-	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
-	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
-  else if(cash_flag) {
-		/*Renders the html file necessary to denote the transaction is complete*/
-		
-
-		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-			$('#modal6').openModal({
-				dismissible: true, // Modal can be dismissed by clicking outside of the modal
-				opacity: .5, // Opacity of modal background
-				in_duration: 300, // Transition in duration
-				out_duration: 200, // Transition out duration
-			});
-		}
-		else {
-			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-			cash_flag = 0;
-			confirm_flag = 0;
-			$("#cancel").removeAttr("style");
-			$("#confirm").removeAttr("style");
-			current_page = "pay_choice.html";
-			previous_page = "handle_order.html";
-			$("#cancel").css("background-color", "red");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		}
-  }
-	else if(card_flag) {
-		if(card_amt != 0) {
-			current_page = "card.html";
-			previous_page = "card_amt.html";
-			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
-			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
-			console.log(card_amt);
-			swipe_flag = 1;
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-		}
-	}
-	else if(current_platinum == "NONE") {
-		error_platinum();
-	}
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 });
 
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
@@ -679,89 +617,67 @@ function error_in_used() {
     });
 }
 
-/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
-/*var i_i = -1;
+/*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
+$("#confirm").click(function() {
+	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
+  if(confirm_flag == 1) {
+		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
+    if(item_list.length != 0) {
+			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
+      if(confirm_flag == 1) {
+				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
+        confirm_flag = 0;
+				scan_flag = 0;
+				previous_flag = 1;
+				previous_page = "handle_order.html";
+				current_page = "pay_choice.html";
+				$("#cancel").css("background-color", "red");
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+      }
+    }
+  }
+	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
+	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
+  else if(cash_flag) {
+		/*Renders the html file necessary to denote the transaction is complete*/
+		
 
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = Object.assign({}, e)
-								inventory_query.push(item);
-								item.title+=("-_" + i);
-								console.log(item);
-							}
-						}
-					});
-					/*
-					i_i = -1;
-					inventory_query = inventory_query.filter(inventory_item);*/
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				}
-			}
+		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+			$('#modal6').openModal({
+				dismissible: true, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				in_duration: 300, // Transition in duration
+				out_duration: 200, // Transition out duration
+			});
 		}
 		else {
-			error_platinum();
+			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+			cash_flag = 0;
+			confirm_flag = 0;
+			$("#cancel").removeAttr("style");
+			$("#confirm").removeAttr("style");
+			current_page = "pay_choice.html";
+			previous_page = "handle_order.html";
+			$("#cancel").css("background-color", "red");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
-});
-
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
-});
-
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
-			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
-			}
+  }
+	else if(card_flag) {
+		if(card_amt != 0) {
+			current_page = "card.html";
+			previous_page = "card_amt.html";
+			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
+			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
+			console.log(card_amt);
+			swipe_flag = 1;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
-
-$(document).on("click",  "#cancel_item_selection", function() {
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	}
+	else if(current_platinum == "NONE") {
+		error_platinum();
+	}
+	console.log("PREV:" + previous_page);
+	console.log("CUR:" + current_page);
 });
 
 function jboardify(id, type) {
@@ -785,6 +701,10 @@ $('#barcode').on( 'jpress', function(event, key){
 
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
+$(document).on("input", "#barcode", function()  {
+  console.log("TEST");
+});
+
 $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
@@ -903,6 +823,91 @@ function determine_item_status(item_list, inventory, barcode) {
     return -1;
   }
 };
+
+/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/*var i_i = -1;
+
+var inventory_item = function(item) {
+	i_i++;
+	if(item.barcode != null) {
+		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
+			var item = Object.assign({}, item)
+			inventory_query.push(item);
+			item.title+=("-_" + i_i);
+		}
+	}
+}
+*/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = Object.assign({}, e)
+								inventory_query.push(item);
+								item.title+=("-_" + i);
+								console.log(item);
+							}
+						}
+					});
+					/*
+					i_i = -1;
+					inventory_query = inventory_query.filter(inventory_item);*/
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
+});
+
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
+$(document).on("click",  "#cancel_item_selection", function() {
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
 
 /*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
