@@ -69,8 +69,8 @@ $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val();
   psk = bashify(psk);
   ap_name = bashify(ap_name);
-  console.log(psk);
-  //var status = execSync( "sudo " + __dirname + "/../../dixonconnect/wifi_con.sh " + ap_name + " " + psk);
+  console.log("NAME: {" + ap_name + "}");
+  console.log("PSK: {" + psk + "}");
   var status = "";
   connect(ap_name, psk).then(function(obj){
     /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
@@ -107,7 +107,6 @@ $(document).on('click', '#accept', function() {
   </div> \
   <span id=\"connecting\">Connecting...</span>";
   $("#connection_holder").append(load);
-  //$("#connection_holder").append(proceed);
 });
 
 
@@ -128,6 +127,7 @@ function bashify(word) {
   word = word.replace(/#|'| |>|<|"|!|&|$|\*|\||\$|`|\\/g, escape);
   return word.slice(0, word.length - 1);
 }
+
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
