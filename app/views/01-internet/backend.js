@@ -16,6 +16,14 @@ var _ = require("underscore");
 
 var mongoose = require('mongoose');
 
+/* ' " # space < > ! | \ & * ` $*/
+var test = "'\"# <>!|\\&*`$";
+
+test = test.replace(/#|'| |>|<|"|!|&|$|\*|\||\$|`|\\/g, function(match) {
+  match = "TEST";
+  return match;
+});
+ console.log(test);
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
