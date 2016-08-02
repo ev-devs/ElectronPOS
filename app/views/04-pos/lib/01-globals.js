@@ -48,7 +48,7 @@ var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
-var TransactionsConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
     if (err){
         console.log(err)
         Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
@@ -120,10 +120,10 @@ function insertInventoryToDatabase(_type, price, transaction){
           prefix      : item.prefix,
           price       : item.price,
           title       : item.title, */
-          _type          : _type
-          price          : price
-          transId        : transaction.transId
-          message        : transaction.message
+          _type          : _type,
+          price          : price,
+          transId        : transaction.transId,
+          message        : transaction.message,
           authCode       : transaction.authCode
 
       }).save(function(err){

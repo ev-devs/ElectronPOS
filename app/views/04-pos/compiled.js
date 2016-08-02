@@ -44,16 +44,17 @@ var swipe_flag = 0;
 var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
+var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
-var TransactionConnection = mongoose.createConnection('mongodb://localhost/transaction', function(err){
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
     if (err){
         console.log(err)
         Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
     }
     else {
-        console.log('we are connected to mongodb://localhost/transaction')
+        console.log('we are connected to mongodb://localhost/transactions')
 
     }
 });
@@ -106,6 +107,40 @@ request({
 function handleTransaction() {
 
 }
+function insertInventoryToDatabase(_type, price, transaction){
+  new Promise(function(resolve, reject){
+    if (err){
+        console.log( "There was an error finding an item " + err)
+    }
+    else {
+      new Inventory({
+        /*  id          : item._id,
+          barcode     : item.barcode,
+          isTicket    : item.isTicket,
+          prefix      : item.prefix,
+          price       : item.price,
+          title       : item.title, */
+          _type          : _type,
+          price          : price,
+          transId        : transaction.transId,
+          message        : transaction.message,
+          authCode       : transaction.authCode
+
+      }).save(function(err){
+          if (err){
+              console.log('Error in creating new transaction item')
+              reject(err)
+          }
+          else {
+              resolve(1)
+              console.log('Successfully created new item!')
+          }
+      })
+    }
+  }).then(function(result){
+      currentTransaction++
+  })
+}
 
 /*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
 /*Leaders*/
@@ -132,28 +167,32 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-$(document).on( "jpress", "#enter-platinum" , function(event, key){
 
-	console.log("THE MOFO KEY IS", key)
-	if (key == "shift" || key == "enter" || key == "123"){
 
+
+var leader = function(leader) {
+	var user_input = $("#enter-platinum").val();
+	var name = new RegExp(user_input.toString(), "i");
+	if(user_input != ""){
+		if(leader.search(name) != -1){
+			return true
+		}
 	}
-	else {
+	else
+		return false;
+}
 
-		var user_input = "";
-		user_input = $("#enter-platinum").val();
+$(document).on( "jpress", "#enter-platinum" , function(event, key){
+   if(key != "shift" && key != "enter" && key != "123") {
+		var user_input = $("#enter-platinum").val();
 		if(user_input != ""){
-			list_names = [];
-			var re = new RegExp(user_input.toString(), "i");
-			for(var i = 0; i < leaders_list.length; i++){
-				if(leaders_list[i].search(re) != -1){
-					list_names.push(leaders_list[i]);
-				}
-			}
+			list_names = leaders_list.filter(leader);
 			display_list(list_names);
 		}
 	}
 });
+
+
 
 function display_list(list){
 	var name = "";
@@ -345,7 +384,7 @@ $("#confirm").click(function() {
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
-
+		
 
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({

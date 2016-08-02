@@ -120,12 +120,12 @@ function connect(ap_name, psk) {
     });
   });
 }
-
+var escape = function(match) {
+  match = "\\" + match;
+  return match;
+}
 function bashify(word) {
-  word = word.replace(/#|'| |>|<|"|!|&|$|\*|\||\$|`|\\/g, function(match) {
-    match = "\\" + match;
-    return match;
-  });
+  word = word.replace(/#|'| |>|<|"|!|&|$|\*|\||\$|`|\\/g, escape);
   return word.slice(0, word.length - 1);
 }
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/

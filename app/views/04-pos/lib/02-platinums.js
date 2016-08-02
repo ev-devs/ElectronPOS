@@ -23,28 +23,32 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-$(document).on( "jpress", "#enter-platinum" , function(event, key){
 
-	console.log("THE MOFO KEY IS", key)
-	if (key == "shift" || key == "enter" || key == "123"){
 
+
+var leader = function(leader) {
+	var user_input = $("#enter-platinum").val();
+	var name = new RegExp(user_input.toString(), "i");
+	if(user_input != ""){
+		if(leader.search(name) != -1){
+			return true
+		}
 	}
-	else {
+	else
+		return false;
+}
 
-		var user_input = "";
-		user_input = $("#enter-platinum").val();
+$(document).on( "jpress", "#enter-platinum" , function(event, key){
+   if(key != "shift" && key != "enter" && key != "123") {
+		var user_input = $("#enter-platinum").val();
 		if(user_input != ""){
-			list_names = [];
-			var re = new RegExp(user_input.toString(), "i");
-			for(var i = 0; i < leaders_list.length; i++){
-				if(leaders_list[i].search(re) != -1){
-					list_names.push(leaders_list[i]);
-				}
-			}
+			list_names = leaders_list.filter(leader);
 			display_list(list_names);
 		}
 	}
 });
+
+
 
 function display_list(list){
 	var name = "";

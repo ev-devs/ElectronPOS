@@ -16,6 +16,7 @@ var _ = require("underscore");
 
 var mongoose = require('mongoose');
 
+
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
