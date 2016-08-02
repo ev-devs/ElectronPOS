@@ -79,7 +79,14 @@ $(document).on('click', '#proceed', function() {
 
   })
   .catch(function(result) {
+
+      $('#test_connection').hide()
+      $('#load_platinums').hide()
+      $('#load_inventory').hide()
+
       console.log("THERE WAS AN ERROR WITH INVENTORY PULLING " + result);
+
+      $('#retry').show()
   });
 
 
@@ -105,8 +112,6 @@ $(document).on('click', '#proceed', function() {
 
 
 });
-
-
 
 function finish_setup() {
     return new Promise(function(resolve, reject){
@@ -315,8 +320,14 @@ function insertInventoryToDatabase(inventory){
             currentInventory++
         })
 
-    }) // end of forEach loop
+    })
 }
+
+$('#retry').click(function(event){
+    //$( "#proceed" ).trigger( "click" );
+    var ping = execSync('ping google.com')
+    console.log(ping)
+});
 
 
 /*This simulates a button click*/

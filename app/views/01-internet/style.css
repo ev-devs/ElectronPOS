@@ -8,3 +8,8 @@
     font-weight: normal;
     font-style: normal;
 }
+
+#error-icon {
+    font-size: 150px;
+    color: red;
+}

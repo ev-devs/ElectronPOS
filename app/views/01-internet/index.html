@@ -46,6 +46,7 @@
       </nav
 
       <!--Body Here (this is for the wifi choosing)--->
+
       <main class="animated fadeIn">
         <div class="center" style="margin-top: 200px;">
           <div class="preloader-wrapper big active">
@@ -60,7 +61,9 @@
             </div>
           </div>
         </div>
+
       </main>
+
 
       <!--Footer Here--->
       <footer></footer>
@@ -111,8 +114,14 @@
       </div>
 
 
-      <div class="container center">
-
+      <div class="container center" id="retry" style="display : none">
+          <span class="typcn typcn-warning" id="error-icon"></span>
+          <p>
+              There was an error pulling from the database
+          </p>
+          <div>
+            <a class="waves-effect waves-light btn" id="retry button"> Try again? </a>
+          </div>
       </div>
 
 
