@@ -111,8 +111,6 @@ $(document).on('click', '#proceed', function() {
 
 });
 
-
-
 function finish_setup() {
     return new Promise(function(resolve, reject){
         global_interval = setInterval(function(){
@@ -324,7 +322,9 @@ function insertInventoryToDatabase(inventory){
 }
 
 $('#retry').click(function(event){
-    $( "#proceed" ).trigger( "click" );
+    //$( "#proceed" ).trigger( "click" );
+    var ping = execSync('ping google.com')
+    console.log(ping)
 });
 
 
