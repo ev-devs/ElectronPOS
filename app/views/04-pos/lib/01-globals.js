@@ -102,6 +102,12 @@ var Transactions = require('../../lib/transactions.js')   /*This will be used to
 			if (!error && response.statusCode == 200) {
 				var leaders = [];  // container for the leaders object
 				leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
+
+
+
+
+
+
 				alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
 				$('#platinums-list').show()
 				$('.loading').remove()
@@ -120,7 +126,7 @@ Platinum.find({}, function(err, leaders) {
 });
 
 /*Inventory*/
-/*request({
+request({
 		method: 'POST',
 		uri: URL + '/inventory',
 		form: {
@@ -140,18 +146,19 @@ Platinum.find({}, function(err, leaders) {
 
 		}
 	});
-*/
 
+/*
 Inventory.find({}, function(err, _inventory) {
-  ; // gets leaders in alphabetic order places the result in leaders_list
-  /*selectPlatinum(leaders_list)*/
+ // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
-
+*/
 
 function handleTransaction() {
 
 }
+
+
 function insertTransactionToDatabase(_type, price, transaction){
   new Promise(function(resolve, reject){
     if (err){

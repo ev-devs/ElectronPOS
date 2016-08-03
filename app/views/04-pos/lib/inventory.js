@@ -33,9 +33,6 @@ $("#search").on( 'jpress', function(event , key){
 							}
 						}
 					});
-					/*
-					i_i = -1;
-					inventory_query = inventory_query.filter(inventory_item);*/
 					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
 				}
 			}
