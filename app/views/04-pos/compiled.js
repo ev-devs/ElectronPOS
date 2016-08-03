@@ -28,22 +28,19 @@ var PlatinumConnection = mongoose.connect('mongodb://localhost/platinums', funct
 
     }
 });
-/*
-var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
+
+var InventoryConnection = mongoose.connect('mongodb://localhost/inventory', function(err){
     if (err){
         console.log(err)
-        Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
+        //Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
     }
     else {
         console.log('we are connected to mongodb://localhost/inventory')
     }
-})
-*/
-var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
-//var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
-Platinum.find({}, function(err, leader) {
-  a_list.push(leader);
 });
+
+var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
+var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -95,7 +92,7 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 
 var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
 
-request({
+/*request({
 	method: 'POST',
 	uri: URL + '/evleaders',
   form: {
@@ -106,7 +103,6 @@ request({
 				var leaders = [];  // container for the leaders object
 				leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
 				alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
-				/*selectPlatinum(leaders_list)*/
 				$('#platinums-list').show()
 				$('.loading').remove()
 			} else if (error) {
@@ -115,9 +111,16 @@ request({
 				console.log(body);
 			}
 });
+*/
+Platinum.find({}, function(err, leaders) {
+  alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
+  /*selectPlatinum(leaders_list)*/
+  $('#platinums-list').show()
+  $('.loading').remove()
+});
 
 /*Inventory*/
-request({
+/*request({
 		method: 'POST',
 		uri: URL + '/inventory',
 		form: {
@@ -134,26 +137,29 @@ request({
 		} else if (error) {
 			console.log(error);
 		} else {
-			//console.log(body);
+
 		}
 	});
+*/
+
+Inventory.find({}, function(err, _inventory) {
+  ; // gets leaders in alphabetic order places the result in leaders_list
+  /*selectPlatinum(leaders_list)*/
+  inventory = _inventory;
+});
+
 
 function handleTransaction() {
 
 }
-function insertInventoryToDatabase(_type, price, transaction){
+function insertTransactionToDatabase(_type, price, transaction){
   new Promise(function(resolve, reject){
     if (err){
         console.log( "There was an error finding an item " + err)
     }
     else {
       new Inventory({
-        /*  id          : item._id,
-          barcode     : item.barcode,
-          isTicket    : item.isTicket,
-          prefix      : item.prefix,
-          price       : item.price,
-          title       : item.title, */
+
           _type          : _type,
           price          : price,
           transId        : transaction.transId,
@@ -416,7 +422,6 @@ $("#confirm").click(function() {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
-		console.log(a_list);
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/

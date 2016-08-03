@@ -37,7 +37,7 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     else {
         console.log('we are connected to mongodb://localhost/inventory')
     }
-})
+});
 
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
