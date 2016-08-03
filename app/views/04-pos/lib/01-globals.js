@@ -48,6 +48,7 @@ var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
+
 var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
     if (err){
         console.log(err)

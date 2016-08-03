@@ -1,6 +1,38 @@
+<!-- Modal Structure for the password input. Will need to either scrap OR interface with the digital keyboard.-->
+<div id="modal1" class="modal">
+  <div class="modal-content-pw">
+  <!--Text area to enter the password-->
+    <h4 id="con_pw">Enter password</h4>
+    <input id="keyboard" type="text">
+    <script type="text/javascript">
+      $('#keyboard').jboard('standard');
+      $('#keyboard').on( 'jpress', function(event, key){
+          console.log(key)
+      })
+    </script>
+  </div>
+
+  <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
+  <div class="modal-footer">
+    <a href="#!" class=" modal-action modal-close waves-effect btn-flat" id="accept">Accept</a>
+  </div>
+</div>
+
+<div id="failModal" class="modal">
+  <div class="modal-content-pw">
+  <!--Text area to enter the password-->
+    <h4 id="con_pw">Connection failed!</h4>
+    <p>The connection failed. Please choose another connection or re-input the password.</p>
+  </div>
+
+  <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
+  <div class="modal-footer">
+    <a href="#!" class=" modal-action modal-close waves-effect btn-flat">Ok</a>
+  </div>
+</div>
 <br>
 <% if (output) { %>
-            <div class="container">
+            <div class="container animated fadeIn">
                 <div class="row">
                     <div class="col s12 left">
                         <!-- Helps show the current wifi connection. If there aren'y then it will appear as "none"-->
@@ -9,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="container leftr" id="connection_holder">
+            <div class="container leftr animated fadeIn" id="connection_holder">
                 <div class="chip" id="cur_con">
                     Wi-Fi: <%= output[output.length - 1] %>
                     <!---THIS IS FOR TESTING ON MY MAC--->
@@ -20,41 +52,7 @@
 
             <br>
 
-
-            <!-- Modal Structure for the password input. Will need to either scrap OR interface with the digital keyboard.-->
-            <div id="modal1" class="modal">
-              <div class="modal-content-pw">
-              <!--Text area to enter the password-->
-                <h4 id="con_pw">Enter password</h4>
-                <input id="keyboard" type="text">
-                <script type="text/javascript">
-                  $('#keyboard').jboard('standard');
-                  $('#keyboard').on( 'jpress', function(event, key){
-                      console.log(key)
-                  })
-                </script>
-              </div>
-
-              <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
-              <div class="modal-footer">
-                <a href="#!" class=" modal-action modal-close waves-effect btn-flat" id="accept">Accept</a>
-              </div>
-            </div>
-
-            <div id="failModal" class="modal">
-              <div class="modal-content-pw">
-              <!--Text area to enter the password-->
-                <h4 id="con_pw">Connection failed!</h4>
-                <p>The connection failed. Please choose another connection or re-input the password.</p>
-              </div>
-
-              <!--Used to solidify the connection. When the "accept" button is pressed then the wifi and essid are sent to the script in the index.js file-->
-              <div class="modal-footer">
-                <a href="#!" class=" modal-action modal-close waves-effect btn-flat">Ok</a>
-              </div>
-            </div>
-
-            <div class="container center">
+            <div class="container center animated fadeIn">
                 <ul class="collection wifi_holder">
                   <!--Traverse the length of the array that holds the wifi info-->
                   <%for(var i = 0; i < output.length - 1; i++) { %>
@@ -73,7 +71,7 @@
             </div>
             <% } else {%>
 
-    <div class="container">
+    <div class="container animated fadeIn">
         <h1>We curently cannot detect any internet connections</h1>
         <br>
         <a class="waves-effect waves-light btn">Continue with cash only/a>

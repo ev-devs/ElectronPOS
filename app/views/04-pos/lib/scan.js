@@ -1,5 +1,9 @@
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
+$(document).on("input", "#barcode", function()  {
+  console.log("TEST");
+});
+
 $("#scan_sim").click(function()  {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();

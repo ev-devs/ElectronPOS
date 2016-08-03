@@ -52,10 +52,12 @@ var global_interval = 0;
 
 
 /*THIS RENDERS THE LIST OF INTERNET CONNECTIONS*/
-$('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.html', 'utf-8') , {
-    output      : internet.list_connections(),
+
+/*$('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/connectlist.html', 'utf-8') , {
+    output      : internet.list_connections_S(),
     anything    : "goes here"
-}))
+})) */
+internet.list_connections_A()
 
 // THIS WILL READ FROM THE SERVER AND STORE INTO THE DATABASE AND THEN
 // MOVE INTO THE NEXT VIEW

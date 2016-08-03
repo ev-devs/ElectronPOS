@@ -25,18 +25,21 @@ function alphabetize(list){
 
 
 
-
-var leader = function(leader) {
-	var user_input = $("#enter-platinum").val();
-	var name = new RegExp(user_input.toString(), "i");
-	if(user_input != ""){
-		if(leader.search(name) != -1){
+var criteria = function(item, check) {
+	if(check!= ""){
+		if(item.search(check) != -1){
 			return true
 		}
 	}
 	else
 		return false;
-}
+};
+
+
+var leader = function(leader) {
+	var name = new RegExp($("#enter-platinum").val(), "i");
+	return criteria(leader, name);
+};
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {
@@ -68,8 +71,8 @@ $(document).on("click", ".platinum", function() {
 	scan_flag = 1;
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
+	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-	//$("#current-platinum").attr("placeholder", current_platinum.replace(/1/g, " ").replace(/2/g, ","));
 });
 
 $("#platinum").click(function() {
