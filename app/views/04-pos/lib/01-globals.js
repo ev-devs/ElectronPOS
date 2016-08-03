@@ -18,7 +18,7 @@ var mongoose = require('mongoose');
 
 /***********THIS IS OUR LOGIC**********************/
 
-var PlatinumConnection = mongoose.connect('mongodb://localhost/platinums', function(err){
+var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
         console.log(err)
     //    Materialize.toast('Error connecting to Platinums MongoDB. Please start up mongod', 1000000000000, 'rounded')
@@ -29,7 +29,7 @@ var PlatinumConnection = mongoose.connect('mongodb://localhost/platinums', funct
     }
 });
 
-var InventoryConnection = mongoose.connect('mongodb://localhost/inventory', function(err){
+var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
     if (err){
         console.log(err)
         //Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
