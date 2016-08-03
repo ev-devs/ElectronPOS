@@ -57,7 +57,7 @@ function createWindow(window) {
 app.on('ready', () => {
 
     createWindow(win)
-    
+
     /* globalShortcut.register('CommandOrControl+J+K+M', () => {
         app.quit()
     });*/
@@ -75,8 +75,6 @@ app.on('ready', () => {
             });
         });
     })
-
-    createWindow(win)
 });
 
 // Quit when all windows are closed.
