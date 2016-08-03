@@ -131,7 +131,6 @@ function render_connections() {
   return new Promise(function(resolve, reject) {
     exec( __dirname + '/../../dixonconnect/wifi_script.sh', (error, stdout, stderr) => {
       resolve(stdout);
-      console.log(stdout);
     });
   });
 }

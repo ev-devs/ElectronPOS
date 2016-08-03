@@ -11,6 +11,39 @@ var inventory_query = [];
 var URL = process.env.EQ_URL.toString();
 var leaders_list = [];
 var list_names = [];
+var a_list = [];
+
+var mongoose = require('mongoose');
+
+
+/***********THIS IS OUR LOGIC**********************/
+
+var PlatinumConnection = mongoose.connect('mongodb://localhost/platinums', function(err){
+    if (err){
+        console.log(err)
+    //    Materialize.toast('Error connecting to Platinums MongoDB. Please start up mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/platinums')
+
+    }
+});
+/*
+var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
+    if (err){
+        console.log(err)
+        Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/inventory')
+    }
+})
+*/
+var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
+//var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
+Platinum.find({}, function(err, leader) {
+  a_list.push(leader);
+});
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
