@@ -65,11 +65,11 @@ app.on('ready', () => {
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
-        window.webContents.openDevTools();
-        window.webContents.on('devtools-opened', () => {
+        win.webContents.openDevTools();
+        win.webContents.on('devtools-opened', () => {
             setImmediate(() => {
             // do whatever you want to do after dev tool completely opened here
-                window.focus();
+                win.focus();
             });
         });
     })
