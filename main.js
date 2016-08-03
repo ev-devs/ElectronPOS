@@ -64,6 +64,16 @@ app.on('ready', () => {
         app.quit()
     })
 
+    globalShortcut.register('CommandOrControl+D', () => {
+        window.webContents.openDevTools();
+        window.webContents.on('devtools-opened', () => {
+            setImmediate(() => {
+            // do whatever you want to do after dev tool completely opened here
+                window.focus();
+            });
+        });
+    })
+
     createWindow(win)
 });
 
