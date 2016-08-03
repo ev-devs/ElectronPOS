@@ -15,7 +15,7 @@ var inventory_item = function(item) {
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
-			if (key == "enter" || key=="shift" || key == "123" || key == "ABC"){
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
 				var query = $(this).val();
 				if(scan_flag == 1) {
 					query = new RegExp(query, "i");
