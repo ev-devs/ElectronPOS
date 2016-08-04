@@ -9,12 +9,10 @@ var _ = require("underscore");
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL.toString();
+var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-
-
 
 /***********THIS IS OUR LOGIC**********************/
 
@@ -50,7 +48,7 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
     }
 });
 
-
+/*This needs to be declared after we connect to the databases*/
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
 var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
@@ -153,7 +151,7 @@ function insertTransactionToDatabase(_type, price, transaction){
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
+		name = list[i].lastname + ", " + list[i].firstname;
 		leaders_list.push(name);
 	}
 	leaders_list.sort();
@@ -178,7 +176,6 @@ var criteria = function(item, check) {
 		return false;
 };
 
-
 var leader = function(leader) {
 	var name = new RegExp($("#enter-platinum").val(), "i");
 	return criteria(leader, name);
@@ -199,10 +196,10 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 function display_list(list){
 	var name = "";
 	$("#platinums-list").empty();
-		for(var i = 0; i < list.length; i++){
-		  var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
-			name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
-			$("#platinums-list").append(name);
+	for(var i = 0; i < list.length; i++){
+	  var id_name = list[i].replace(/ /g, "1").replace(/,/g, "2");
+		name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i] + "</a>";
+		$("#platinums-list").append(name);
 	}
 }
 

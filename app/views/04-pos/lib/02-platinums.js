@@ -10,7 +10,7 @@
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
+		name = list[i].lastname + ", " + list[i].firstname;
 		leaders_list.push(name);
 	}
 	leaders_list.sort();
@@ -35,7 +35,6 @@ var criteria = function(item, check) {
 		return false;
 };
 
-
 var leader = function(leader) {
 	var name = new RegExp($("#enter-platinum").val(), "i");
 	return criteria(leader, name);
@@ -56,10 +55,10 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 function display_list(list){
 	var name = "";
 	$("#platinums-list").empty();
-		for(var i = 0; i < list.length; i++){
-		  var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
-			name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
-			$("#platinums-list").append(name);
+	for(var i = 0; i < list.length; i++){
+	  var id_name = list[i].replace(/ /g, "1").replace(/,/g, "2");
+		name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i] + "</a>";
+		$("#platinums-list").append(name);
 	}
 }
 

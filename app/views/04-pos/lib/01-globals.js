@@ -9,12 +9,10 @@ var _ = require("underscore");
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL.toString();
+var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-
-
 
 /***********THIS IS OUR LOGIC**********************/
 
@@ -50,7 +48,7 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
     }
 });
 
-
+/*This needs to be declared after we connect to the databases*/
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
 var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
