@@ -325,6 +325,7 @@ function insertInventoryToDatabase(inventory){
 
 $('#retry').click(function(event){
     //$( "#proceed" ).trigger( "click" );
+    console.log('we are here')
     var ping = execSync('ping google.com')
     console.log(ping)
 });
