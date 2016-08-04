@@ -1,10 +1,11 @@
 var request = require('request');
-//TO be removed once connected to views
+var mongoose = require('mongoose');
 var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
-var mongoose = require('mongoose');
 var _ = require("underscore");
+
+
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -13,7 +14,6 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 
-var mongoose = require('mongoose');
 
 
 /***********THIS IS OUR LOGIC**********************/
@@ -39,8 +39,21 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     }
 });
 
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+    if (err){
+        console.log(err)
+        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/transactions')
+
+    }
+});
+
+
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
+var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -78,46 +91,6 @@ var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
-
-var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
-    if (err){
-        console.log(err)
-        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
-    }
-    else {
-        console.log('we are connected to mongodb://localhost/transactions')
-
-    }
-});
-
-var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
-
-/*request({
-	method: 'POST',
-	uri: URL + '/evleaders',
-  form: {
-    token: process.env.EQ_TOKEN.toString()
-  }
-	}, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				var leaders = [];  // container for the leaders object
-				leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
-
-
-
-
-
-
-				alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
-				$('#platinums-list').show()
-				$('.loading').remove()
-			} else if (error) {
-				console.log(error);
-			} else {
-				console.log(body);
-			}
-});
-*/
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
   /*selectPlatinum(leaders_list)*/
@@ -125,30 +98,7 @@ Platinum.find({}, function(err, leaders) {
   $('.loading').remove()
 });
 
-/*Inventory*/
-/*
-request({
-		method: 'POST',
-		uri: URL + '/inventory',
-		form: {
-			token: process.env.EQ_TOKEN.toString()
-		}
-	}, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			var resp = JSON.parse(body);
 
-			var ordItems = _.sortBy(resp.items, function (item) {
-				return item.title;
-			})
-			inventory = ordItems;
-		} else if (error) {
-			console.log(error);
-		} else {
-
-		}
-	});
-
-*/
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
