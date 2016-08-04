@@ -11,9 +11,6 @@ const {BrowserWindow} = electron
 const ipc = electron.ipcMain
 
 const shellEnv = require('shell-env');
-
-console.log(shellEnv.sync());
-
 process.env = shellEnv.sync()
 
 // This is used to update our sessions and products
