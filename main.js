@@ -10,6 +10,10 @@ const {BrowserWindow} = electron
 // Module to communicate between the processes
 const ipc = electron.ipcMain
 
+const shellEnv = require('shell-env');
+
+console.log(shellEnv.sync());
+
 // This is used to update our sessions and products
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')

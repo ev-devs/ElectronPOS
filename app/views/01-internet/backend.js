@@ -9,12 +9,10 @@ var events     = require('../../lib/eventstart.js') /* not sure what the fuck th
 var fs  = require('fs');
 var ejs = require('ejs');
 
-
 var URL = process.env.EQ_URL
 var request = require('request');
 var _ = require("underscore");
 var mongoose = require('mongoose');
-
 
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -324,17 +322,8 @@ function insertInventoryToDatabase(inventory){
 
 $('#retry').click(function(event){
 
-
-    var ping = execSync('ping -c 1 google.com') // this is a single ping 
+    var ping = execSync('ping -c 1 google.com') // this is a single ping
     console.log(ping)
-
     $( "#proceed" ).trigger( "click" );
-
-    /*
-    setTimeout(function(){
-        window.location.assign('.')
-    }, 100000)
-    */
-
 
 });
