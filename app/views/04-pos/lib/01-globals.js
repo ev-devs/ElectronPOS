@@ -126,6 +126,7 @@ Platinum.find({}, function(err, leaders) {
 });
 
 /*Inventory*/
+/*
 request({
 		method: 'POST',
 		uri: URL + '/inventory',
@@ -147,12 +148,13 @@ request({
 		}
 	});
 
-/*
+*/
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
+  console.log(inventory);
 });
-*/
+
 
 function handleTransaction() {
 

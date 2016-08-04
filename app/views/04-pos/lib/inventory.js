@@ -26,7 +26,7 @@ $("#search").on( 'jpress', function(event , key){
 						i++;
 						if(e.barcode != null) {
 							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = Object.assign({}, e)
+								var item = e;/*Object.assign({}, e)*/
 								inventory_query.push(item);
 								item.title+=("-_" + i);
 								console.log(item);
