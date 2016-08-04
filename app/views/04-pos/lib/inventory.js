@@ -26,10 +26,11 @@ $("#search").on( 'jpress', function(event , key){
 						i++;
 						if(e.barcode != null) {
 							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = e;/*Object.assign({}, e)*/
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
 								inventory_query.push(item);
-								item.title+=("-_" + i);
-								console.log(item);
 							}
 						}
 					});
