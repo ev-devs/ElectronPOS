@@ -325,7 +325,7 @@ function insertInventoryToDatabase(inventory){
 $('#retry').click(function(event){
 
 
-    var ping = execSync('ping -c 1 google.com')
+    var ping = execSync('ping -c 1 google.com') // this is a single ping 
     console.log(ping)
 
     $( "#proceed" ).trigger( "click" );
@@ -338,6 +338,3 @@ $('#retry').click(function(event){
 
 
 });
-
-/*This simulates a button click*/
-//$( "#proceed" ).trigger( "click" );
