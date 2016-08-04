@@ -13,7 +13,6 @@ var ejs = require('ejs');
 var URL = process.env.EQ_URL
 var request = require('request');
 var _ = require("underscore");
-
 var mongoose = require('mongoose');
 
 
@@ -57,11 +56,11 @@ var global_interval = 0;
     output      : internet.list_connections_S(),
     anything    : "goes here"
 })) */
+
 internet.list_connections_A()
 
 // THIS WILL READ FROM THE SERVER AND STORE INTO THE DATABASE AND THEN
 // MOVE INTO THE NEXT VIEW
-
 
 $(document).on('click', '#proceed', function() {
 
@@ -324,7 +323,7 @@ function insertInventoryToDatabase(inventory){
 }
 
 $('#retry').click(function(event){
-    
+
     //$( "#proceed" ).trigger( "click" );
 
     console.log('we are here')
@@ -336,7 +335,6 @@ $('#retry').click(function(event){
     }, 100000)
 
 });
-
 
 /*This simulates a button click*/
 //$( "#proceed" ).trigger( "click" );
