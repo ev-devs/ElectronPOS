@@ -324,15 +324,18 @@ function insertInventoryToDatabase(inventory){
 
 $('#retry').click(function(event){
 
-    //$( "#proceed" ).trigger( "click" );
 
-    console.log('we are here')
-    var ping = execSync('ping google.com')
+    var ping = execSync('ping -c 1 google.com')
     console.log(ping)
 
+    $( "#proceed" ).trigger( "click" );
+
+    /*
     setTimeout(function(){
         window.location.assign('.')
     }, 100000)
+    */
+
 
 });
 
