@@ -13,6 +13,9 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 
+var HashTable = require('hashtable');
+var ticket_table = new HashTable();
+
 var mongoose = require('mongoose');
 
 

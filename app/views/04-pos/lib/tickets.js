@@ -8,8 +8,10 @@ function verify_ticket(barcode) {
 	var i = -1;
 	var ticket = inventory.find(function(e) {
 		i++;
-		if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
-			return true;
+		if(e.barcode != null) {
+			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+				return true;
+		}
 	})
 	if(ticket == undefined)
 		return -1;
@@ -23,6 +25,11 @@ function verify_ticket(barcode) {
 	}
 }
 
+function add_to_table(start, quantity) {
+	for(var i = 0; i < quantity; i++)
+		ticket_table.put((start + i).toString(), true);
+	ticket_table.key();
+}
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {

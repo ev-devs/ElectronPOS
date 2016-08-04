@@ -278,10 +278,11 @@ function insertInventoryToDatabase(inventory){
                         foundItem.id        = item._id;
                         foundItem.barcode   = item.barcode;
                         foundItem.title     = item.title;
-                        foundItem.isTicket  = item.isTicket;
+                        foundItem.isticket  = item.isticket;
                         foundItem.prefix    = item.prefix;
                         foundItem.price     = item.price;
-
+                        foundItem.cust_quantity = 0;
+                        
                         foundItem.save(function(err){
                             if (err){
                                 console.log('ERROR in updating existing item ' + err)

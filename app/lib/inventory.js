@@ -6,8 +6,8 @@ var inventorySchema = new mongoose.Schema({
     barcode     : { type : String  },
     price       : { type : Number  },
     prefix      : { type : String  },
-    isTicket    : { type : Boolean }
-
+    isticket    : { type : Boolean },
+    cust_quantity : { type : Number }
 });
 
 /*now we create an actual model we can use to communicatte with our javascript*/

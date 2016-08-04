@@ -13,6 +13,9 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 
+var HashTable = require('hashtable');
+var ticket_table = new HashTable();
+
 var mongoose = require('mongoose');
 
 
@@ -852,7 +855,7 @@ $("#scan_sim").click(function()  {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
-		console.log("BEGIN EVERYTHING HERE");
+		console.log(barcode);
 		k = verify_ticket(barcode);
 	}
 	var ticket;
@@ -868,8 +871,11 @@ $("#scan_sim").click(function()  {
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
 			if(current_ticket[1] == -1) {
-				ticket = Object.assign({}, inventory[current_ticket[0]])
-				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				//ticket = Object.assign({}, inventory[current_ticket[0]])
+        ticket = inventory[current_ticket[0]];
+				ticket.cust_quantity = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+        /*ADD TO HASHTABLE*/
+        add_to_table(Number(current_ticket[2]), ticket.cust_quantity)
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
@@ -975,8 +981,10 @@ function verify_ticket(barcode) {
 	var i = -1;
 	var ticket = inventory.find(function(e) {
 		i++;
-		if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
-			return true;
+		if(e.barcode != null) {
+			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+				return true;
+		}
 	})
 	if(ticket == undefined)
 		return -1;
@@ -990,6 +998,11 @@ function verify_ticket(barcode) {
 	}
 }
 
+function add_to_table(start, quantity) {
+	for(var i = 0; i < quantity; i++)
+		ticket_table.put((start + i).toString(), true);
+	ticket_table.key();
+}
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
