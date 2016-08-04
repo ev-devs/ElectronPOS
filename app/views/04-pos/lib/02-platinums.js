@@ -24,7 +24,6 @@ function alphabetize(list){
 // change to list to show in the browser
 
 
-
 var criteria = function(item, check) {
 	if(check!= ""){
 		if(item.search(check) != -1){
@@ -49,8 +48,6 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 		}
 	}
 });
-
-
 
 function display_list(list){
 	var name = "";
