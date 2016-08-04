@@ -12,6 +12,7 @@
     <script type="text/javascript">
         window.hammer = require('../../../bower_components/hammerjs/hammer.js')
         window.$ = window.jQuery = require('../../../bower_components/jquery/dist/jquery.js');
+        process.env = require('shell-env').sync()
     </script>
 
     <!---This is for our icons that are hosted locally-->
@@ -45,30 +46,25 @@
           </div>
       </nav
 
-      <!--Body Here (this is for the wifi choosing)--->
-
-      <main class="animated fadeIn">
-        <div class="center" style="margin-top: 200px;">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
+      <!-- Body Here (this is for the wifi choosing)--->
+      <main >
+          <div class="firstLoaderContainer container center animated fadeIn">
+              <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
               </div>
-            </div>
           </div>
-        </div>
-
       </main>
-
 
       <!--Footer Here--->
       <footer></footer>
-
-
 
       <!--THIS IS FOR OUR LOADING LOOKS--->
       <div class="container center animated slideInUp" id="test_connection" style="display: none">

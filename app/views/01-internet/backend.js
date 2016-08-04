@@ -9,13 +9,10 @@ var events     = require('../../lib/eventstart.js') /* not sure what the fuck th
 var fs  = require('fs');
 var ejs = require('ejs');
 
-
 var URL = process.env.EQ_URL
 var request = require('request');
 var _ = require("underscore");
-
 var mongoose = require('mongoose');
-
 
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -57,11 +54,11 @@ var global_interval = 0;
     output      : internet.list_connections_S(),
     anything    : "goes here"
 })) */
+
 internet.list_connections_A()
 
 // THIS WILL READ FROM THE SERVER AND STORE INTO THE DATABASE AND THEN
 // MOVE INTO THE NEXT VIEW
-
 
 $(document).on('click', '#proceed', function() {
 
@@ -325,11 +322,9 @@ function insertInventoryToDatabase(inventory){
 }
 
 $('#retry').click(function(event){
-    //$( "#proceed" ).trigger( "click" );
-    var ping = execSync('ping google.com')
+
+    var ping = execSync('ping -c 1 google.com') // this is a single ping
     console.log(ping)
+    $( "#proceed" ).trigger( "click" );
+
 });
-
-
-/*This simulates a button click*/
-//$( "#proceed" ).trigger( "click" );

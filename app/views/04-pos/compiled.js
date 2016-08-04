@@ -1,17 +1,19 @@
 var request = require('request');
-//TO be removed once connected to views
+var mongoose = require('mongoose');
 var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
-var mongoose = require('mongoose');
 var _ = require("underscore");
+
+
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL.toString();
+var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
+
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
@@ -42,8 +44,21 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     }
 });
 
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+    if (err){
+        console.log(err)
+        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
+    }
+    else {
+        console.log('we are connected to mongodb://localhost/transactions')
+
+    }
+});
+
+/*This needs to be declared after we connect to the databases*/
 var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
+var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -81,46 +96,6 @@ var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
-
-var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
-    if (err){
-        console.log(err)
-        Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
-    }
-    else {
-        console.log('we are connected to mongodb://localhost/transactions')
-
-    }
-});
-
-var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
-
-/*request({
-	method: 'POST',
-	uri: URL + '/evleaders',
-  form: {
-    token: process.env.EQ_TOKEN.toString()
-  }
-	}, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				var leaders = [];  // container for the leaders object
-				leaders = JSON.parse(body).evleaders; // gets list of leaders and puts it in container called leaders
-
-
-
-
-
-
-				alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
-				$('#platinums-list').show()
-				$('.loading').remove()
-			} else if (error) {
-				console.log(error);
-			} else {
-				console.log(body);
-			}
-});
-*/
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
   /*selectPlatinum(leaders_list)*/
@@ -128,30 +103,7 @@ Platinum.find({}, function(err, leaders) {
   $('.loading').remove()
 });
 
-/*Inventory*/
-/*
-request({
-		method: 'POST',
-		uri: URL + '/inventory',
-		form: {
-			token: process.env.EQ_TOKEN.toString()
-		}
-	}, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			var resp = JSON.parse(body);
 
-			var ordItems = _.sortBy(resp.items, function (item) {
-				return item.title;
-			})
-			inventory = ordItems;
-		} else if (error) {
-			console.log(error);
-		} else {
-
-		}
-	});
-
-*/
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
@@ -206,7 +158,7 @@ function insertTransactionToDatabase(_type, price, transaction){
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname.toString()  + ", " + list[i].firstname.toString();
+		name = list[i].lastname + ", " + list[i].firstname;
 		leaders_list.push(name);
 	}
 	leaders_list.sort();
@@ -220,7 +172,6 @@ function alphabetize(list){
 // change to list to show in the browser
 
 
-
 var criteria = function(item, check) {
 	if(check!= ""){
 		if(item.search(check) != -1){
@@ -230,7 +181,6 @@ var criteria = function(item, check) {
 	else
 		return false;
 };
-
 
 var leader = function(leader) {
 	var name = new RegExp($("#enter-platinum").val(), "i");
@@ -247,15 +197,13 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 	}
 });
 
-
-
 function display_list(list){
 	var name = "";
 	$("#platinums-list").empty();
-		for(var i = 0; i < list.length; i++){
-		  var id_name = list[i].toString().replace(/ /g, "1").replace(/,/g, "2");
-			name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i].toString() + "</a>";
-			$("#platinums-list").append(name);
+	for(var i = 0; i < list.length; i++){
+	  var id_name = list[i].replace(/ /g, "1").replace(/,/g, "2");
+		name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i] + "</a>";
+		$("#platinums-list").append(name);
 	}
 }
 
@@ -479,6 +427,113 @@ $("#confirm").click(function() {
 	console.log("CUR:" + current_page);
 });
 
+const ipc = require('electron').ipcRenderer
+
+$('#end-session').click(function(event){
+
+    if ( transactionIsInProgress() ){
+        // do error handling
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+
+})
+
+/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/*var i_i = -1;
+
+var inventory_item = function(item) {
+	i_i++;
+	if(item.barcode != null) {
+		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
+			var item = Object.assign({}, item)
+			inventory_query.push(item);
+			item.title+=("-_" + i_i);
+		}
+	}
+}
+*/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
+});
+
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
+$(document).on("click",  "#cancel_item_selection", function() {
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
@@ -593,64 +648,140 @@ $("#n_delete").click(function() {
   refocus();
 });
 
-const ipc = require('electron').ipcRenderer
+/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
+/*When the #scan_sim button is click carry out the following callback*/
+/*$(document).on("input", "#barcode", function()  {
 
-$('#end-session').click(function(event){
-
-    if ( transactionIsInProgress() ){
-        // do error handling
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-
-})
-
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
+  $('#modal7').openModal({
+    dismissible: false, // Modal can be dismissed by clicking outside of the modal
+    opacity: .5, // Opacity of modal background
+    in_duration: 300, // Transition in duration
+    out_duration: 200, // Transition out duration
+  });
 });
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
+*/
+$("#TEST").click(function() {
   refocus();
-	/*Render platinums list FIX*/
+
+})
+$("#scan_sim").click(function()  {
+  /*Grab the barcode from the text area about*/
+  var barcode = $("#barcode").val();
+  /*Pass into  this function, which is defined below. See the function to know what it does.*/
+	var k = -1;
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+		console.log("BEGIN EVERYTHING HERE");
+		k = verify_ticket(barcode);
+	}
+	var ticket;
+
+	/*BRANCH which handles ticket transactions*/
+	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
+		if(ticket_flag == 0) {
+				ticket_flag = 1;
+				confirm_flag = 0;
+				cancel_flag = 0;
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+		}
+		/*Add <= 50 functionality here*/
+		else if(ticket_flag == 1) {
+			if(current_ticket[1] == -1) {
+				ticket = Object.assign({}, inventory[current_ticket[0]])
+				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				item_list.push(ticket);
+				current_ticket[1] = item_list.length - 1;
+				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+			}
+			else if(current_ticket[1] != -1) {
+				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+			}
+			ticket_flag = 0;
+			confirm_flag = 1;
+			cancel_flag = 1;
+			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+	}
+	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
+		ticket_flag = 0;
+		error_in_used();
+	}
+	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
+		$("#errors").text("Error! Please scan a ticket!");
+	}
+	/*END TICKET HANDLING CODE*/
+
+
+	/*Handles transactions other than tickets*/
+	else if(k == -1 && current_platinum != "NONE"){
+	  var i;
+	  var places = [];
+	  if(current_platinum != "NONE" && scan_flag == 1)
+	    places = determine_item_status(item_list, inventory, barcode);
+	  i = places[1]; //item_list_index
+		j = places[0]; //inventory_list_index
+	  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
+	  with the code below.*/
+	  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
+			add_item(i, j, 1, 0);
+		}
+	  $("#barcode").focus();
+	}
+	else {
+		error_platinum();
+	}
+});
+
+/*Finds the specified item in the list, returns -1 if not found.*/
+function find_in_customer_list(key, query) {
+	var i = -1;
+	console.log("QUERY: " + query);
+	cus_result = item_list.find(function(e) {
+		/*This i will keep track of where it is in the list*/
+		i++;
+		return e[key] == query;
+	});
+	if(cus_result == undefined)
+		return -1;
+	else
+		return i;
 }
 
+/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
+in the customers list. If so the increment the counter and if not then add to list.
+@return: index of the item in the item_list
+@param: item_list, inventory, and barcode*/
+function determine_item_status(item_list, inventory, barcode) {
+  var places = [-1, -1];
+  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
+  var inv_result = inventory.find(function(e) {
+		places[0] += 1;
+    return e.barcode == barcode;
+  });
 
- $(".button-collapse").sideNav();
+  /*If it's in the inventory go here*/
+  if(inv_result != undefined) {
+    /*Check the customers current list to see if they already have it in their choices*/
+    var flag = 0;
+		places[1] = find_in_customer_list("barcode", barcode);
+    /*If the customer already has one then just increment the quantity counter*/
+    if(places[1] != -1) {
+      item_list[places[1]].cust_quantity+=1;
+    }
+    /*If not then increment the counter to one and add to the customer's list called item_list*/
+    else {
+      inv_result['cust_quantity'] = 1;
+      item_list.push(inv_result);
+      places[1] = item_list.length - 1;
+    }
+    /*return the place of the item in the list for future use*/
+    return places;
+  }
+  else {
+    return -1;
+  }
+};
 
 /*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
 function update_price(operation, quantity, placement, confirmed) {
@@ -731,88 +862,40 @@ function error_in_used() {
     });
 }
 
-/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
-/*var i_i = -1;
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
 
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
 }
-*/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				}
-			}
-		}
-		else {
-			error_platinum();
-		}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
 });
 
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
 });
 
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
-			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
-			}
-		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
 
-$(document).on("click",  "#cancel_item_selection", function() {
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
+
+ $(".button-collapse").sideNav();
 
 function jboardify(id, type) {
     $('#' + id).jboard(type)
@@ -833,6 +916,7 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
+<<<<<<< HEAD
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
 /*$(document).on("input", "#barcode", function()  {
@@ -971,6 +1055,8 @@ function determine_item_status(item_list, inventory, barcode) {
   }
 };
 
+=======
+>>>>>>> e1787f8d99b06a5b4863edfa385afef17d5da036
 /*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {

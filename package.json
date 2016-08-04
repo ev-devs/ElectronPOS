@@ -25,6 +25,7 @@
     "hashtable": "^2.0.1",
     "mongoose": "^4.5.5",
     "request": "^2.73.0",
+    "shell-env": "^0.2.0",
     "underscore": "^1.8.3",
     "wifi-control": "^2.0.0"
   },

@@ -10,6 +10,9 @@ const {BrowserWindow} = electron
 // Module to communicate between the processes
 const ipc = electron.ipcMain
 
+const shellEnv = require('shell-env');
+process.env = shellEnv.sync()
+
 // This is used to update our sessions and products
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')
@@ -37,7 +40,7 @@ function createWindow(window) {
   window.setMenu(null);
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
+  window.loadURL(`file://${__dirname}/app/index.html`);
 
   // Open the DevTools.
   window.webContents.openDevTools();
