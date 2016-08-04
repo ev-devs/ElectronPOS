@@ -14,6 +14,11 @@ const shellEnv = require('shell-env');
 
 console.log(shellEnv.sync());
 
+/*
+process.env = shellEnv.sync()
+
+*/
+
 // This is used to update our sessions and products
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')
