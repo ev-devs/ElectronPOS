@@ -24,11 +24,19 @@ function verify_ticket(barcode) {
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
 }
-
+/*21610 1  027067   3*/
 function add_to_table(start, quantity) {
-	for(var i = 0; i < quantity; i++)
-		ticket_table.put((start + i).toString(), true);
-	ticket_table.key();
+	for(var i = 0; i < quantity; i++) {
+		var tck_cnt = Number(start.substring(6, 12));
+		tck_cnt+=i;
+		if(start[6] == "0")
+		tck_cnt = "0" + tck_cnt.toString();
+		console.log(tck_cnt);
+		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
+		console.log("A");
+	}
+	console.log("TABLE");
+	console.log(ticket_table.keys());
 }
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {

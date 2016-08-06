@@ -20,7 +20,6 @@ var ticket_table = new HashTable();
 
 var mongoose = require('mongoose');
 
-
 /***********THIS IS OUR LOGIC**********************/
 
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -427,113 +426,6 @@ $("#confirm").click(function() {
 	console.log("CUR:" + current_page);
 });
 
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if ( transactionIsInProgress() ){
-        // do error handling
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-
-})
-
-/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
-/*var i_i = -1;
-
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				}
-			}
-		}
-		else {
-			error_platinum();
-		}
-});
-
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
-});
-
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
-			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
-			}
-		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
-
-$(document).on("click",  "#cancel_item_selection", function() {
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
-
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
@@ -648,140 +540,64 @@ $("#n_delete").click(function() {
   refocus();
 });
 
-/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
-/*When the #scan_sim button is click carry out the following callback*/
-/*$(document).on("input", "#barcode", function()  {
+const ipc = require('electron').ipcRenderer
 
-  $('#modal7').openModal({
-    dismissible: false, // Modal can be dismissed by clicking outside of the modal
-    opacity: .5, // Opacity of modal background
-    in_duration: 300, // Transition in duration
-    out_duration: 200, // Transition out duration
-  });
-});
-*/
-$("#TEST").click(function() {
-  refocus();
+$('#end-session').click(function(event){
+
+    if ( transactionIsInProgress() ){
+        // do error handling
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
 
 })
-$("#scan_sim").click(function()  {
-  /*Grab the barcode from the text area about*/
-  var barcode = $("#barcode").val();
-  /*Pass into  this function, which is defined below. See the function to know what it does.*/
-	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
-		console.log("BEGIN EVERYTHING HERE");
-		k = verify_ticket(barcode);
-	}
-	var ticket;
 
-	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
-		if(ticket_flag == 0) {
-				ticket_flag = 1;
-				confirm_flag = 0;
-				cancel_flag = 0;
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
-		}
-		/*Add <= 50 functionality here*/
-		else if(ticket_flag == 1) {
-			if(current_ticket[1] == -1) {
-				ticket = Object.assign({}, inventory[current_ticket[0]])
-				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
-				item_list.push(ticket);
-				current_ticket[1] = item_list.length - 1;
-				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
-			}
-			else if(current_ticket[1] != -1) {
-				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
-				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
-			}
-			ticket_flag = 0;
-			confirm_flag = 1;
-			cancel_flag = 1;
-			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-		}
-	}
-	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
-		ticket_flag = 0;
-		error_in_used();
-	}
-	else if(k == -1 && ticket_flag == 1 && current_platinum != "NONE") {
-		$("#errors").text("Error! Please scan a ticket!");
-	}
-	/*END TICKET HANDLING CODE*/
-
-
-	/*Handles transactions other than tickets*/
-	else if(k == -1 && current_platinum != "NONE"){
-	  var i;
-	  var places = [];
-	  if(current_platinum != "NONE" && scan_flag == 1)
-	    places = determine_item_status(item_list, inventory, barcode);
-	  i = places[1]; //item_list_index
-		j = places[0]; //inventory_list_index
-	  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
-	  with the code below.*/
-	  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
-			add_item(i, j, 1, 0);
-		}
-	  $("#barcode").focus();
-	}
-	else {
-		error_platinum();
-	}
-});
-
-/*Finds the specified item in the list, returns -1 if not found.*/
-function find_in_customer_list(key, query) {
-	var i = -1;
-	console.log("QUERY: " + query);
-	cus_result = item_list.find(function(e) {
-		/*This i will keep track of where it is in the list*/
-		i++;
-		return e[key] == query;
-	});
-	if(cus_result == undefined)
-		return -1;
-	else
-		return i;
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
 }
 
-/*This function merely searches the inventory by barcode to see if it exists. If so then see if the item is already
-in the customers list. If so the increment the counter and if not then add to list.
-@return: index of the item in the item_list
-@param: item_list, inventory, and barcode*/
-function determine_item_status(item_list, inventory, barcode) {
-  var places = [-1, -1];
-  /*Check the inventory by bar code(which as we wrote right now has two entries) and store the result*/
-  var inv_result = inventory.find(function(e) {
-		places[0] += 1;
-    return e.barcode == barcode;
-  });
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
 
-  /*If it's in the inventory go here*/
-  if(inv_result != undefined) {
-    /*Check the customers current list to see if they already have it in their choices*/
-    var flag = 0;
-		places[1] = find_in_customer_list("barcode", barcode);
-    /*If the customer already has one then just increment the quantity counter*/
-    if(places[1] != -1) {
-      item_list[places[1]].cust_quantity+=1;
-    }
-    /*If not then increment the counter to one and add to the customer's list called item_list*/
-    else {
-      inv_result['cust_quantity'] = 1;
-      item_list.push(inv_result);
-      places[1] = item_list.length - 1;
-    }
-    /*return the place of the item in the list for future use*/
-    return places;
+})
+
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
   }
-  else {
-    return -1;
-  }
-};
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
 
 /*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
 function update_price(operation, quantity, placement, confirmed) {
@@ -862,40 +678,88 @@ function error_in_used() {
     });
 }
 
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
+/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/*var i_i = -1;
 
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
+var inventory_item = function(item) {
+	i_i++;
+	if(item.barcode != null) {
+		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
+			var item = Object.assign({}, item)
+			inventory_query.push(item);
+			item.title+=("-_" + i_i);
+		}
+	}
 }
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
+*/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
 });
 
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
 });
 
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
 
-
- $(".button-collapse").sideNav();
+$(document).on("click",  "#cancel_item_selection", function() {
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
 
 function jboardify(id, type) {
     $('#' + id).jboard(type)
@@ -916,7 +780,6 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
-<<<<<<< HEAD
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
 /*$(document).on("input", "#barcode", function()  {
@@ -939,43 +802,46 @@ $("#scan_sim").click(function()  {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
-		console.log(barcode);
 		k = verify_ticket(barcode);
 	}
 	var ticket;
-
+  console.log(ticket_table.get(barcode))
 	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
+	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined/*previous_ticket < Number(barcode.substring(6, barcode.length - 1))*/) {
+    console.log("ENTERED");
 		if(ticket_flag == 0) {
+        console.log("A");
 				ticket_flag = 1;
 				confirm_flag = 0;
 				cancel_flag = 0;
+        previous_ticket = barcode;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
+      console.log("B");
 			if(current_ticket[1] == -1) {
 				//ticket = Object.assign({}, inventory[current_ticket[0]])
         ticket = inventory[current_ticket[0]];
 				ticket.cust_quantity = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
         /*ADD TO HASHTABLE*/
-        add_to_table(Number(current_ticket[2]), ticket.cust_quantity)
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+        add_to_table(previous_ticket, ticket.cust_quantity);
 			}
 			else if(current_ticket[1] != -1) {
 				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+        add_to_table(previous_ticket, Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 			}
 			ticket_flag = 0;
 			confirm_flag = 1;
 			cancel_flag = 1;
-			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 	}
-	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
+	else if(ticket_table.get(barcode) != undefined) {
 		ticket_flag = 0;
 		error_in_used();
 	}
@@ -1055,8 +921,6 @@ function determine_item_status(item_list, inventory, barcode) {
   }
 };
 
-=======
->>>>>>> e1787f8d99b06a5b4863edfa385afef17d5da036
 /*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
@@ -1083,11 +947,19 @@ function verify_ticket(barcode) {
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
 }
-
+/*21610 1  027067   3*/
 function add_to_table(start, quantity) {
-	for(var i = 0; i < quantity; i++)
-		ticket_table.put((start + i).toString(), true);
-	ticket_table.key();
+	for(var i = 0; i < quantity; i++) {
+		var tck_cnt = Number(start.substring(6, 12));
+		tck_cnt+=i;
+		if(start[6] == "0")
+		tck_cnt = "0" + tck_cnt.toString();
+		console.log(tck_cnt);
+		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
+		console.log("A");
+	}
+	console.log("TABLE");
+	console.log(ticket_table.keys());
 }
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {

@@ -14,15 +14,12 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 
-<<<<<<< HEAD
+
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
 
 var mongoose = require('mongoose');
 
-
-=======
->>>>>>> e1787f8d99b06a5b4863edfa385afef17d5da036
 /***********THIS IS OUR LOGIC**********************/
 
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){

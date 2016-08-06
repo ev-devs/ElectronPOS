@@ -20,43 +20,46 @@ $("#scan_sim").click(function()  {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
 	var k = -1;
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
-		console.log(barcode);
 		k = verify_ticket(barcode);
 	}
 	var ticket;
-
+  console.log(ticket_table.get(barcode))
 	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && previous_ticket < Number(barcode.substring(6, barcode.length - 1))) {
+	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined/*previous_ticket < Number(barcode.substring(6, barcode.length - 1))*/) {
+    console.log("ENTERED");
 		if(ticket_flag == 0) {
+        console.log("A");
 				ticket_flag = 1;
 				confirm_flag = 0;
 				cancel_flag = 0;
+        previous_ticket = barcode;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
+      console.log("B");
 			if(current_ticket[1] == -1) {
 				//ticket = Object.assign({}, inventory[current_ticket[0]])
         ticket = inventory[current_ticket[0]];
-				ticket['cust_quantity'] = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				ticket.cust_quantity = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
         /*ADD TO HASHTABLE*/
-        add_to_table(Number(current_ticket[2]), ticket.cust_quantity)
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+        add_to_table(previous_ticket, ticket.cust_quantity);
 			}
 			else if(current_ticket[1] != -1) {
 				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+        add_to_table(previous_ticket, Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
 			}
 			ticket_flag = 0;
 			confirm_flag = 1;
 			cancel_flag = 1;
-			previous_ticket = Number(barcode.substring(6, barcode.length - 1));
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 	}
-	else if(previous_ticket >= Number(barcode.substring(6, barcode.length - 1)) && k != -1) {
+	else if(ticket_table.get(barcode) != undefined) {
 		ticket_flag = 0;
 		error_in_used();
 	}
