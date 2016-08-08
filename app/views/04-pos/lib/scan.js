@@ -39,7 +39,12 @@ $("#scan_sim").click(function()  {
       console.log("B");
       var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
       if(itm_qnt > 50) {
-        console.log("TOO MUCH FAM");
+        $('#modal7').openModal({
+          dismissible: false, // Modal can be dismissed by clicking outside of the modal
+          opacity: .5, // Opacity of modal background
+          in_duration: 300, // Transition in duration
+          out_duration: 200, // Transition out duration
+        });
       }
 			else if(current_ticket[1] == -1) {
 				//ticket = Object.assign({}, inventory[current_ticket[0]])
@@ -50,16 +55,17 @@ $("#scan_sim").click(function()  {
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
         add_to_table(previous_ticket, ticket.cust_quantity);
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 			}
 			else if(current_ticket[1] != -1) {
 				item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
         add_to_table(previous_ticket, itm_qnt);
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 			}
 			ticket_flag = 0;
 			confirm_flag = 1;
 			cancel_flag = 1;
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 	}
 	else if(ticket_table.get(barcode) != undefined) {
