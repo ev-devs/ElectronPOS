@@ -26,7 +26,6 @@ $("#scan_sim").click(function()  {
   console.log(ticket_table.get(barcode))
 	/*BRANCH which handles ticket transactions*/
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined/*previous_ticket < Number(barcode.substring(6, barcode.length - 1))*/) {
-    console.log("ENTERED");
 		if(ticket_flag == 0) {
         console.log("A");
 				ticket_flag = 1;
@@ -38,10 +37,14 @@ $("#scan_sim").click(function()  {
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
       console.log("B");
-			if(current_ticket[1] == -1) {
+      var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
+      if(itm_qnt > 50) {
+        console.log("TOO MUCH FAM");
+      }
+			else if(current_ticket[1] == -1) {
 				//ticket = Object.assign({}, inventory[current_ticket[0]])
         ticket = inventory[current_ticket[0]];
-				ticket.cust_quantity = (Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				ticket.cust_quantity = (itm_qnt);
         /*ADD TO HASHTABLE*/
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
@@ -49,9 +52,9 @@ $("#scan_sim").click(function()  {
         add_to_table(previous_ticket, ticket.cust_quantity);
 			}
 			else if(current_ticket[1] != -1) {
-				item_list[current_ticket[1]].cust_quantity+=(Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+				item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
 				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
-        add_to_table(previous_ticket, Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1);
+        add_to_table(previous_ticket, itm_qnt);
 			}
 			ticket_flag = 0;
 			confirm_flag = 1;
