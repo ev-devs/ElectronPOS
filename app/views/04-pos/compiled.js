@@ -325,8 +325,9 @@ $(document).on("click", "#swipe_sim", function() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
 			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				void_order(1);
-			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+				//void_order(1);
+			  //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 			}
 			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				card_flag = 0;
@@ -346,8 +347,9 @@ $(document).on("click", "#swipe_sim", function() {
 });
 
 $("#yes-cash").click(function () {
-	void_order(1);
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -357,8 +359,6 @@ $(document).on("click", "#cash", function () {
 	previous_page = "pay_choice.html";
 	current_page = "cash.html"
 	colorfy();
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -422,8 +422,6 @@ $("#confirm").click(function() {
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 });
 
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
@@ -995,3 +993,13 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
+
+$("#yes-receipt").click(function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+})
+
+$("#no-receipt").click(function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+})

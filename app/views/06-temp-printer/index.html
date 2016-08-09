@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!--This makes device rendering scale--->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <!--We are includeing jquery for our everyday javascript needs-->
+  <script type="text/javascript">
+      window.hammer = require('../../../bower_components/hammerjs/hammer.js')
+      window.$ = window.jQuery = require('../../../bower_components/jquery/dist/jquery.js');
+      process.env = require('shell-env').sync()
+  </script>
+
+  <!---This is for our icons that are hosted locally-->
+  <link rel='stylesheet' href='../../../bower_components/typicons.font/src/font/typicons.min.css' />
+  <!-- we are including our material design CSS for our everday GUI needs-->
+  <link rel="stylesheet" href="../../../bower_components/Materialize/bin/materialize.css" media="screen" title="no title" charset="utf-8">
+  <!--We are inlcuding our material design js for our everyday GUI needs-->
+  <script src="../../../bower_components/Materialize/bin/materialize.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="../../../bower_components/animate.css/animate.css" media="screen" title="no title" charset="utf-8">
+
+  <!--THIS IS FOR THE CUSTOM JBOARD-->
+  <script src="../../../jboard/bin/jboard.js" charset="utf-8"></script>
+
+  <link rel="stylesheet" href="../../../jboard/bin/jboard.css"charset="utf-8">
+  <title>POS</title>
+</head>
+
+  <body>
+    <!-- Navbar goes here -->
+    <nav style="background-color: #125CA0;">
+
+    <div class="container">
+        <div class="nav-wrapper">
+          <a href="#!" class="brand-logo">Equipo Vision</a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul class="right hide-on-med-and-down" id="button-container">
+            <li class="li-nav" id="end-session"><a href="#!" class="nav-link">End session</a></li>
+          </ul>
+          <ul class="side-nav" id="mobile-demo">
+
+          </ul>
+        </div>
+    </div>
+  </nav>
+
+  <main>
+      <div class="row" id="print-container">
+          <!--START RIGHT SIDE-->
+          <div class="col s12" id="whole">
+              <div class="row" id="right-header">
+                  <div class="col s6">
+                       <input value="2161010270673" placeholder="Barcode...2161010270673" style="text-align: center;" id="barcode" class="bold-input" type="text">
+                  </div>
+                  <div class="col s6">
+                      <input placeholder="Search inventory by barcode or title..." style="text-align: center;" id="search" class="bold-input" type="text">
+                  </div>
+              </div>
+              <!--STOP TOP RIGHT SIDE-->
+
+              <!--BEGIN MIDDLE RIGHT SIDE--->
+              <div class="row" id="right-middle">
+			        </div>
+              <!--END MIDDLE RIGHT SIDE--->
+
+              <!--BEGIN RIGHT BOTTOM-->
+              <div class="row" id="right-bottom">
+                  <div id="confirm" class="col s6 btn waves-effect waves-light right-bottom-button">
+
+                      Confirm
+                  </div>
+                  <div id="cancel" class="col s6 btn waves-effect waves-light right-bottom-button">
+                      Cancel
+                  </div>
+              </div>
+              <!--END RIGHT BOTTOM-->
+          </div>
+          <!--END RIGHT SIDE-->
+      </div>
+ </main>
+
+
+ <!-- Modal Structure -->
+ <div id="standard-modal-template" class="modal bottom-sheet">
+   <div class="modal-content">
+       <div class="container center standard-jboard-container" id="standard-jboard-container">
+           <div class="row standard-row" id="standard-row-1" style="margin : 0">
+               <div class="jboard-key" id="q" style="display : inline-block">q</div>
+               <div class="jboard-key" id="w" style="display : inline-block">w</div>
+               <div class="jboard-key" id="e" style="display : inline-block">e</div>
+               <div class="jboard-key" id="r" style="display : inline-block">r</div>
+               <div class="jboard-key" id="t" style="display : inline-block">t</div>
+               <div class="jboard-key" id="y" style="display : inline-block">y</div>
+               <div class="jboard-key" id="u" style="display : inline-block">u</div>
+               <div class="jboard-key" id="i" style="display : inline-block">i</div>
+               <div class="jboard-key" id="o" style="display : inline-block">o</div>
+               <div class="jboard-key" id="y" style="display : inline-block">p</div>
+               <div class="jboard-key delete-key" id="delete" style="display : inline-block">delete</div>
+           </div>
+
+           <div class="row  standard-row" id="standard-row-2" style="margin : 0">
+               <div class="jboard-key" id="a" style="display : inline-block">a</div>
+               <div class="jboard-key" id="s" style="display : inline-block">s</div>
+               <div class="jboard-key" id="d" style="display : inline-block">d</div>
+               <div class="jboard-key" id="f" style="display : inline-block">f</div>
+               <div class="jboard-key" id="g" style="display : inline-block">g</div>
+               <div class="jboard-key" id="h" style="display : inline-block">h</div>
+               <div class="jboard-key" id="j" style="display : inline-block">j</div>
+               <div class="jboard-key" id="k" style="display : inline-block">k</div>
+               <div class="jboard-key" id="l" style="display : inline-block">l</div>
+               <div class="jboard-key enter-key" id="enter" style="display : inline-block">enter</div>
+           </div>
+
+           <div class="row standard-row" id="standard-row-3" style="margin : 0">
+               <div class="jboard-key shift-key" id="shift" style="display : inline-block">Shift</div>
+               <div class="jboard-key" id="z" style="display : inline-block">z</div>
+               <div class="jboard-key" id="x" style="display : inline-block">x</div>
+               <div class="jboard-key" id="c" style="display : inline-block">c</div>
+               <div class="jboard-key" id="v" style="display : inline-block">v</div>
+               <div class="jboard-key" id="b" style="display : inline-block">b</div>
+               <div class="jboard-key" id="n" style="display : inline-block">n</div>
+               <div class="jboard-key" id="m" style="display : inline-block">m</div>
+               <div class="jboard-key" id="," style="display : inline-block">,</div>
+               <div class="jboard-key" id="." style="display : inline-block">.</div>
+               <div class="jboard-key" id="@" style="display : inline-block">@</div>
+               <div class="jboard-key extra-key" id="extra-key" style="display: inline-block; display: none">^</div>
+           </div>
+
+           <div class="row standard-row" id="standard-row-4" style="margin : 0">
+               <div class="jboard-key" id="123" style="display : inline-block">123</div>
+               <div class="jboard-key space-key" id="space" style="display : inline-block">Space</div>
+               <!-- <div class="jboard-key" id="#$+" style="display : inline-block">#$+</div> -->
+           </div>
+
+       </div>
+   </div>
+ </div>
+
+
+ <!-- Modal Structure -->
+ <div id="num-modal-template" class="modal bottom-sheet">
+   <div class="modal-content">
+       <div class="container center num-jboard-container" id="num-jboard-container">
+           <div class="row num-row" id="row-1" style="margin : 0">
+               <div class="jboard-key" id="7" style="display : inline-block">7</div>
+               <div class="jboard-key" id="8" style="display : inline-block">8</div>
+               <div class="jboard-key" id="9" style="display : inline-block">9</div>
+               <div class="jboard-key" id="backspace" style="display : inline-block"> ⌫ </div>
+           </div>
+           <div class="row num-row" id="row-2" style="margin : 0">
+               <div class="jboard-key" id="4" style="display : inline-block">4</div>
+               <div class="jboard-key" id="5" style="display : inline-block">5</div>
+               <div class="jboard-key" id="6" style="display : inline-block">6</div>
+               <div class="jboard-key" id="clear" style="display : inline-block"> C </div>
+           </div>
+           <div class="row num-row" id="row-3" style="margin : 0">
+               <div class="jboard-key" id="1" style="display : inline-block">1</div>
+               <div class="jboard-key" id="2" style="display : inline-block">2</div>
+               <div class="jboard-key" id="3" style="display : inline-block">3</div>
+               <div class="jboard-key blank-key" id="blank" style="display : inline-block"> &nbsp</div>
+           </div>
+           <div class="row num-row" id="row-4" style="margin : 0">
+               <div class="jboard-key" id="0" style="display : inline-block">0</div>
+               <div class="jboard-key" id="dot" style="display : inline-block">.</div>
+               <div class="jboard-key" id="accept" style="display : inline-block"> ✓ </div>
+               <div class="jboard-key" id="reject" style="display : inline-block"> ✖ </div>
+           </div>
+       </div>
+   </div>
+ </div>
+
+
+
+
+
+
+    <!--THIS IS OUR CUSTOM STYLESHEET!-->
+    <link rel="stylesheet" href="./pos.css" media="screen"  charset="utf-8">
+    <script src="./compiled.js" charset="utf-8"></script>
+    <!--
+      Software to-do:
+         -Finish integrating barcode scanner with gui (***HIGH PRIORITY)
+           *Figure out how to tell if input is done
+         -Fit other views to the screen. (Juan)
+         -Decide what will be on help tab (All)
+         -Integrate transactions with pos.html (***HIGH PRIORITY)
+         -Fix keyboard bug (***HIGH PRIORITY)
+         -Ticket use handling (50 tix)
+         -Mongod init scripts
+         -Void transactions page
+
+         ONGOING
+         -Bug check Wi-Fi (John)
+         -Bug test red cancel button bug (ongoing, John)
+         -Bug test search inventory
+         -Bug test handling sessions locally (Juan)
+         -Bug testing pos.html (John)
+         -POS workflow updates
+         -Bug test Inventory and Platinum DB
+         -Bug test jboard
+         -Bug test ticket transactions
+         -Bug test fail flags
+         -Bug test gulp
+         -POS workflow update (John)
+    -->
+  </body>
+</html>

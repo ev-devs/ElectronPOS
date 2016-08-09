@@ -29,8 +29,9 @@ $(document).on("click", "#swipe_sim", function() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     setTimeout(function() {
 			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				void_order(1);
-			  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+				//void_order(1);
+			  //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 			}
 			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				card_flag = 0;

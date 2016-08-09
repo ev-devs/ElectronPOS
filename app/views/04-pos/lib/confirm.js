@@ -57,6 +57,4 @@ $("#confirm").click(function() {
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 });

@@ -217,6 +217,14 @@ html {
   font-size: 600%;
 }
 
+.print-buttons {
+  height: 160px;
+}
+
+.print-buttons-text {
+  font-size: 600%;
+}
+
 .error {
   color: red;
 }
