@@ -39,11 +39,13 @@ function createWindow(window) {
 
   window.setMenu(null);
 
-  // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
-
   // Open the DevTools.
   window.webContents.openDevTools();
+
+  // and load the index.html of the app.
+  window.loadURL(`file://${__dirname}/app/index.html`);
+
+
 
   // Emitted when the window is closed.
   window.on('closed', () => {
@@ -51,7 +53,9 @@ function createWindow(window) {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     window = null;
-  });
+   });
+
+   win = window;
 }
 
 // This method will be called when Electron has finished
@@ -70,13 +74,7 @@ app.on('ready', () => {
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
-        win.webContents.openDevTools();
-        win.webContents.on('devtools-opened', () => {
-            setImmediate(() => {
-            // do whatever you want to do after dev tool completely opened here
-                win.focus();
-            });
-        });
+         win.webContents.openDevTools();
     })
 });
 
@@ -90,9 +88,7 @@ app.on('window-all-closed', () => {
   app.quit()
 });
 
-
 app.on('will-quit', () => {
-
   // Unregister all shortcuts.
   globalShortcut.unregisterAll();
 
@@ -102,7 +98,7 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
-    createWindow();
+    createWindow(win);
   }
 
 });
