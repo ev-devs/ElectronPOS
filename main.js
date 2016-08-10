@@ -39,11 +39,13 @@ function createWindow(window) {
 
   window.setMenu(null);
 
+  // Open the DevTools.
+  window.webContents.openDevTools();
+
   // and load the index.html of the app.
   window.loadURL(`file://${__dirname}/app/index.html`);
 
-  // Open the DevTools.
-  window.webContents.openDevTools();
+
 
   // Emitted when the window is closed.
   window.on('closed', () => {
