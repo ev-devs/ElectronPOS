@@ -13,7 +13,7 @@ var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-
+var transactions = [];
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
@@ -55,9 +55,9 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 });
 
 /*This needs to be declared after we connect to the databases*/
-var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
-var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
-var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
+var Platinum = require('../../lib/platinum.js')             /*This will be used to store our platinums*/
+var Inventory = require('../../lib/inventory.js')           /*This will be used to store our inventory*/
+var Transactions = require('../../lib/transactions.js')     /*This will be used to store our inventory*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -113,7 +113,6 @@ Inventory.find({}, function(err, _inventory) {
 function handleTransaction() {
 
 }
-
 
 function insertTransactionToDatabase(_type, price, transaction){
   new Promise(function(resolve, reject){
@@ -323,6 +322,7 @@ $(document).on("click", "#swipe_sim", function() {
 		cancel_flag = 0;
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+		transactions.push("Card-$" + card_amt)
     setTimeout(function() {
 			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				//void_order(1);
@@ -407,6 +407,7 @@ $("#confirm").click(function() {
 			$("#cancel").css("background-color", "red");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
+		transactions.push("Cash-$" + $("#tendered").val().replace(/,/g, ""))
   }
 	else if(card_flag) {
 		if(card_amt != 0) {
@@ -994,12 +995,14 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-$("#yes-receipt").click(function() {
+$(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  console.log(transactions);
   void_order(1);
-})
+});
 
-$("#no-receipt").click(function() {
+$(document).on("click", "#no-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  console.log(transactions);
   void_order(1);
-})
+});

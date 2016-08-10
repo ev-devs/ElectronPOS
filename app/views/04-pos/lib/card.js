@@ -27,6 +27,7 @@ $(document).on("click", "#swipe_sim", function() {
 		cancel_flag = 0;
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+		transactions.push("Card-$" + card_amt)
     setTimeout(function() {
 			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 				//void_order(1);

@@ -58,7 +58,7 @@
                   <%for(var i = 0; i < output.length - 1; i++) { %>
                       <!--If there is a wifi password on then render this html-->
                        <% if(output[i].psk == "on") { %>
-                         <a href="#modal1" class="collection-item wifi_option modal-trigger" id="<%= output[i].essid%>"><%= output[i].essid%>
+                         <a href="#!" class="collection-item wifi_option" id="<%= output[i].essid%>"><%= output[i].essid%>
                          <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
                       <!--If not then render this -->
                        <%} else if (output[i].psk == "off") { %>
