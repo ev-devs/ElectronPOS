@@ -279,7 +279,7 @@ function insertInventoryToDatabase(inventory){
                         foundItem.prefix    = item.prefix;
                         foundItem.price     = item.price;
                         foundItem.cust_quantity = 0;
-                        
+
                         foundItem.save(function(err){
                             if (err){
                                 console.log('ERROR in updating existing item ' + err)

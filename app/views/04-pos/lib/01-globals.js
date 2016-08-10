@@ -55,9 +55,9 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 });
 
 /*This needs to be declared after we connect to the databases*/
-var Platinum = require('../../lib/platinum.js')     /*This will be used to store our platinums*/
-var Inventory = require('../../lib/inventory.js')   /*This will be used to store our inventory*/
-var Transactions = require('../../lib/transactions.js')   /*This will be used to store our inventory*/
+var Platinum = require('../../lib/platinum.js')             /*This will be used to store our platinums*/
+var Inventory = require('../../lib/inventory.js')           /*This will be used to store our inventory*/
+var Transactions = require('../../lib/transactions.js')     /*This will be used to store our inventory*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -113,7 +113,6 @@ Inventory.find({}, function(err, _inventory) {
 function handleTransaction() {
 
 }
-
 
 function insertTransactionToDatabase(_type, price, transaction){
   new Promise(function(resolve, reject){
