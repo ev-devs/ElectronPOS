@@ -147,6 +147,8 @@ function bashify(word) {
 
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
+
+  $('#modal1').openModal();
   ap_name = $(this).attr('id');
   $("#remove").remove();
   $("#proceed").remove();
