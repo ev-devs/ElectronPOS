@@ -70,13 +70,7 @@ app.on('ready', () => {
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
-        win.webContents.openDevTools();
-        win.webContents.on('devtools-opened', () => {
-            setImmediate(() => {
-            // do whatever you want to do after dev tool completely opened here
-                win.focus();
-            });
-        });
+         win.webContents.openDevTools();
     })
 });
 
@@ -90,9 +84,7 @@ app.on('window-all-closed', () => {
   app.quit()
 });
 
-
 app.on('will-quit', () => {
-
   // Unregister all shortcuts.
   globalShortcut.unregisterAll();
 
