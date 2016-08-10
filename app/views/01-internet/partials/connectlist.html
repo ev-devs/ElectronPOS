@@ -80,28 +80,28 @@
 
 <!--jQuery for event listeners that are bonded to this html page-->
 <script type="text/javascript">
-/*Creates the custom event from the transition between the internet connection for view transition*/
-/*Grabs the string that displays the current connection which is generated from the script*/
-var status = document.getElementById("cur_con").innerText;
-/*Creates the custom event and passes in the status of the internet*/
-var connected = new CustomEvent('connected', {'detail': status  });
+    /*Creates the custom event from the transition between the internet connection for view transition*/
+    /*Grabs the string that displays the current connection which is generated from the script*/
+    var status = document.getElementById("cur_con").innerText;
+    /*Creates the custom event and passes in the status of the internet*/
+    var connected = new CustomEvent('connected', {'detail': status  });
 
-/*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
-(from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
-You can think of this as the section of code which defines what our event DOES after it is created and called.*/
-document.getElementById("cur_con").addEventListener('connected', function(e) {
+    /*Tells the html element with id "cur_con" to listen for the event named connected. If the connected event is registered
+    (from my understanding when "connected" is dispatched by the dispatch event function below). then carry out the anonymous callback function.
+    You can think of this as the section of code which defines what our event DOES after it is created and called.*/
+    document.getElementById("cur_con").addEventListener('connected', function(e) {
 
-    var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
-    var remove  = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
-    var rescan  = "<a class=\"waves-effect waves-light btn red\" id=\"rescan\"><i class=\"material-icons right\">delete</i>Rescan</a>";
+        var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
+        var remove  = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
+        var rescan  = "<a class=\"waves-effect waves-light btn red\" id=\"rescan\"><i class=\"material-icons right\">delete</i>Rescan</a>";
 
-    $("#connection_holder").append(remove);
-    $("#connection_holder").append(proceed);
-    $("#connection_holder").append(rescan);
-    $("#loading").remove();
-    $("#connecting").remove();
-}, false);
-/*Here is where one of our events is dispatched*/
-if(status != "Wi-Fi: none")
-document.getElementById("cur_con").dispatchEvent(connected);
+        $("#connection_holder").append(remove);
+        $("#connection_holder").append(proceed);
+        $("#connection_holder").append(rescan);
+        $("#loading").remove();
+        $("#connecting").remove();
+    }, false);
+    /*Here is where one of our events is dispatched*/
+    if(status != "Wi-Fi: none")
+    document.getElementById("cur_con").dispatchEvent(connected);
 </script>
