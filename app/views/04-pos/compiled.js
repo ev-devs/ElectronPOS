@@ -4,7 +4,49 @@ var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
+var transaction = require('../../lib/create_transaction.js');
 
+var newTrans = new transaction()
+
+newTrans.chargeCreditCard({
+    cardnumber  : "4242424242424242",
+    expdate     : "0220",
+    ccv         : "123",
+    amount      : "199.97"
+}).then(function(obj){
+
+    if (!obj.error){
+        console.log(obj.transMessage)
+        console.log("Trasaction Id:", obj.transId)
+        console.log("Authorization Code:", obj.transAuthCode)
+    }
+    else {
+        console.log(obj.transMessage)
+        console.log("Error Code:", obj.transErrorCode)
+        console.log("Error Text:", obj.transErrorText)
+    }
+    console.log('\n')
+});
+
+
+/*setInterval(function(){
+
+    newTrans.voidTransaction({
+        transId  : newTrans.transId
+    }).then(function(obj){
+        if (!obj.error){
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+        }
+        else {
+            console.log(obj.transMessage)
+            console.log("Error Code:", obj.transErrorCode)
+            console.log("Error Text:", obj.transErrorText)
+        }
+        console.log('\n')
+    })
+
+}, 5000)*/
 
 // Global variables
 var inventory = [];
@@ -779,6 +821,18 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
+$(document).on("click", "#yes-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  console.log(transactions);
+  void_order(1);
+});
+
+$(document).on("click", "#no-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  console.log(transactions);
+  void_order(1);
+});
+
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
 $(document).on("input", "#barcode", function()  {
@@ -994,15 +1048,3 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
-
-$(document).on("click", "#yes-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(transactions);
-  void_order(1);
-});
-
-$(document).on("click", "#no-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(transactions);
-  void_order(1);
-});

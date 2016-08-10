@@ -130,8 +130,8 @@ var transaction = function(){
 }
 
 /****EXAMPLE CODE***/
-var newTrans = new transaction()
-
+//var newTrans = new transaction()
+/*
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
@@ -150,7 +150,7 @@ newTrans.chargeCreditCard({
         console.log("Error Text:", obj.transErrorText)
     }
     console.log('\n')
-})
+});
 
 
 setInterval(function(){
@@ -171,7 +171,7 @@ setInterval(function(){
     })
 
 }, 5000)
-
+*/
 
 
 module.exports = transaction
