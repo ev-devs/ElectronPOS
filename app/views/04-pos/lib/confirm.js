@@ -42,6 +42,7 @@ $("#confirm").click(function() {
 			$("#cancel").css("background-color", "red");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
+		transactions.push("Cash-$" + $("#tendered").val().replace(/,/g, ""))
   }
 	else if(card_flag) {
 		if(card_amt != 0) {

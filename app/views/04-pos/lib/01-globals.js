@@ -13,7 +13,7 @@ var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-
+var transactions = [];
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
