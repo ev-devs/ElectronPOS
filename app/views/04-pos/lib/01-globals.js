@@ -6,8 +6,7 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 
-var newTrans = new transaction()
-
+/*
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
@@ -25,9 +24,9 @@ newTrans.chargeCreditCard({
         console.log("Error Code:", obj.transErrorCode)
         console.log("Error Text:", obj.transErrorText)
     }
-    console.log('\n')
+    console.log('DONE\n')
 });
-
+*/
 
 /*setInterval(function(){
 
@@ -55,7 +54,28 @@ var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-var transactions = [];
+var cur_transaction = {};
+/*
+{transaction : {
+   items : [{ name : 'Coma ganarse a la gente…', qty : 1, price : '14'}],
+   subtotal : 58,
+   tax : 5.25,
+   total : 63.25,
+
+   cashes : [
+     {
+       tendered : 100,
+       change : 36.75
+     }
+   ],
+	 cards : [
+	   {
+	     charged : 36.75,
+	     transId : 60006477986,
+	     authCode: "K525GC"
+	   }
+  ]
+}};*/
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
@@ -148,7 +168,6 @@ Platinum.find({}, function(err, leaders) {
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
-  console.log(inventory);
 });
 
 

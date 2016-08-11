@@ -170,8 +170,4 @@ $(document).on('click', '#rescan', function() {
         output  : connections
     }))
   })
-  execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
-  $("#cur_con").text("Wi-Fi: none");
-  $("#remove").remove();
-  $("#proceed").remove();
 });
