@@ -30,4 +30,22 @@ sudo bower install bower.json --allow-root
 sudo echo "sudo service mongodb start"   >> ~/.config/lxsession/LXSESSION/autostart
 sudo echo "electron /home/pi/ElectronPOS" >> ~/.config/lxsession/LXSESSION/autostart
 
+#this configures the touch screen to have the right aspect ration
+sudo echo "max_usb_current=1" >> ~/boot/config.txt
+sudo echo "hdmi_group=2" >> ~/boot/config.txt
+sudo echo "hdmi_mode=1" >> ~/boot/config.txt
+sudo echo "hdmi_mode=87" >> ~/boot/config.txt
+sudo echo "hdmi_cvt 1024 600 60 6 0 0 0" >> ~/boot/config.txt
+
+#this is for the input calibrator to calibrate the touch screen
+#sudo add-apt-repository ppa:tias/xinput-calibrator-ppa
+#sudo apt-get update
+sudo apt-get install xinput-calibrator
+
+#this should do the calibration
+xinput_calibrator --output-type xorg.conf.d --precalib 61 9846 265 9943
+echo "geany /usr/share/X11/xorg.conf.d/10-evdev.conf"
+echo "Place the above inside that file"
+echo "Option 'Calibration' '96 3914 155 3899'"
+
 sudo reboot
