@@ -58,4 +58,17 @@ cd pyusb*
 python setup.py build
 sudo python setup.py install
 
+#this is needed for qr codes and barcode printing
+git clone https://github.com/lincolnloop/python-qrcode
+cd python-qrcode
+python setup.py build
+sudo python setup.py install
+
+#this is needed cause kevin said so
+git clone https://github.com/manpaz/python-escpos.git
+cd python-escpos
+python setup.py build
+sudo python setup.py install
+
+
 sudo reboot
