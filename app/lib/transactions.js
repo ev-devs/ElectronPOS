@@ -1,4 +1,5 @@
 const guid = require('guid')
+const mongoose = require('mongoose')
 
 // NOTE mongoose IS DIFFERENT THAN TransactionConnection and should not be saved
 
@@ -138,15 +139,11 @@ newTransaction.createCardTransaction(function(transaction){
     newCardTransaction.message  = response.some.path.to.the.message
     newCardTransaction.cardType = functionCallToSeeWhatTypeOfCard();
 
-
     transaction.cards.push(/*a new cash transaction here*/)
-
 
     /*after success+*/
      transaction.payments++
 })
-
-
 
 
 
