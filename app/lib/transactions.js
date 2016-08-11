@@ -122,13 +122,13 @@ newTransaction.populateItems(function(transaction){
 newTransaction.createCashTransaction(function(transaction){
 
     var newCashTransaction  = new CashTransaction()
-    newTransaction.tendered = "Some amount of money"
-    newTransaction.change   = "another amount of money"
+    transaction.tendered = "Some amount of money"
+    transaction.change   = "another amount of money"
 
     transaction.cashes.push(/*a new cash transaction here*/)
 
     /*after success+*/
-     transaction.payments++
+    transaction.payments++
 })
 
 newTransaction.createCardTransaction(function(transaction){
@@ -140,11 +140,11 @@ newTransaction.createCardTransaction(function(transaction){
         // handle errors and display in UI
     }
 
-    newCardTransaction.amount   = "some amount"
-    newCardTransaction.authCode = response.some.path.to.the.authCode
-    newCardTransaction.transId  = response.some.path.to.the.transId
-    newCardTransaction.message  = response.some.path.to.the.message
-    newCardTransaction.cardType = functionCallToSeeWhatTypeOfCard();
+    transaction.amount   = "some amount"
+    transaction.authCode = response.some.path.to.the.authCode
+    transaction.transId  = response.some.path.to.the.transId
+    transaction.message  = response.some.path.to.the.message
+    transaction.cardType = functionCallToSeeWhatTypeOfCard();
 
     transaction.cards.push(/*a new cash transaction here*/)
 
