@@ -80,7 +80,9 @@ transactionSchema.methods.createCardTransaction = function(callback){
 
 var Transaction = TransactionConnection.model('Transaction', transactionSchema);
 
+module.exports = Transaction
 
+/*############################### THIS IS WHERE THE EXAMPLES START*/
 
 var newTransaction = new Transaction();
 newTransaction.createGUID() // this creates the GUID
@@ -155,5 +157,3 @@ newTransaction.createCardTransaction(function(transaction){
     and it is its own seperate database with a dedicated connection
     to ONLY transactions
 */
-
-module.exports = Transaction
