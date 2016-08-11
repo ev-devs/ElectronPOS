@@ -79,6 +79,11 @@ transactionSchema.methods.createCardTransaction = function(callback){
 /*now we create an actual model we can use to communicatte with our javascript*/
 
 var Transaction = TransactionConnection.model('Transaction', transactionSchema);
+/*
+    transaction connection is defined within the backend.js file
+    and it is its own seperate database with a dedicated connection
+    to ONLY transactions
+*/
 
 module.exports = Transaction
 
@@ -111,7 +116,6 @@ newTransaction.populateItems(function(transaction){
         // update tax total
         // update overall total
     }
-
 
 })
 
@@ -147,13 +151,3 @@ newTransaction.createCardTransaction(function(transaction){
     /*after success+*/
      transaction.payments++
 })
-
-
-
-
-
-/*
-    transaction connection is defined within the backend.js file
-    and it is its own seperate database with a dedicated connection
-    to ONLY transactions
-*/
