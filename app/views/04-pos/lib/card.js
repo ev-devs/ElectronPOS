@@ -39,10 +39,13 @@ $(document).on("click", "#swipe_sim", function() {
 	        console.log(obj.transMessage)
 	        console.log("Trasaction Id:", obj.transId)
 	        console.log("Authorization Code:", obj.transAuthCode)
-
+					/*If all the money was on the card then go to the printing option*/
 					if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 						//void_order(1);
 						//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+						$("#cancel").removeAttr("style");
+						$("#confirm").removeAttr("style");
+						previous_flag = 0;
 						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 					}
 					else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {

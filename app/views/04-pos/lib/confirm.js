@@ -14,7 +14,7 @@ $("#confirm").click(function() {
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
 				console.log(cur_transaction);
-				cur_transaction["transaction"] = {
+				cur_transaction = {
 					 items : item_list,
 					 subtotal : subtotal,
 					 tax : tax,
@@ -30,12 +30,12 @@ $("#confirm").click(function() {
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
-		/*Renders the html file necessary to denote the transaction is complete*/
-
-		cur_transaction.transaction.cashes.push[{
+		/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+		cur_transaction.cashes.push({
 			tendered : Number($("#tendered").val().replace(/,/g, "")),
-			change : Number($("#change").val().replace(/,/g, ""))
-		}];
+			change : Number($("#change").text().substring(1, $("#change").text().length).replace(/,/g, ""))
+		});
+		/*Renders the html file necessary to denote the transaction is complete*/
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal

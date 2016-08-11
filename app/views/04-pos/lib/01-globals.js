@@ -5,48 +5,6 @@ var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
-
-/*
-newTrans.chargeCreditCard({
-    cardnumber  : "4242424242424242",
-    expdate     : "0220",
-    ccv         : "123",
-    amount      : "199.97"
-}).then(function(obj){
-
-    if (!obj.error){
-        console.log(obj.transMessage)
-        console.log("Trasaction Id:", obj.transId)
-        console.log("Authorization Code:", obj.transAuthCode)
-    }
-    else {
-        console.log(obj.transMessage)
-        console.log("Error Code:", obj.transErrorCode)
-        console.log("Error Text:", obj.transErrorText)
-    }
-    console.log('DONE\n')
-});
-*/
-
-/*setInterval(function(){
-
-    newTrans.voidTransaction({
-        transId  : newTrans.transId
-    }).then(function(obj){
-        if (!obj.error){
-            console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
-        }
-        else {
-            console.log(obj.transMessage)
-            console.log("Error Code:", obj.transErrorCode)
-            console.log("Error Text:", obj.transErrorText)
-        }
-        console.log('\n')
-    })
-
-}, 5000)*/
-
 // Global variables
 var inventory = [];
 var inventory_query = [];
