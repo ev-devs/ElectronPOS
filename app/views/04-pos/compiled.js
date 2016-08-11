@@ -6,8 +6,7 @@ var accounting = require('accounting-js');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 
-var newTrans = new transaction()
-
+/*
 newTrans.chargeCreditCard({
     cardnumber  : "4242424242424242",
     expdate     : "0220",
@@ -25,9 +24,9 @@ newTrans.chargeCreditCard({
         console.log("Error Code:", obj.transErrorCode)
         console.log("Error Text:", obj.transErrorText)
     }
-    console.log('\n')
+    console.log('DONE\n')
 });
-
+*/
 
 /*setInterval(function(){
 
@@ -55,7 +54,28 @@ var URL = process.env.EQ_URL
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
-var transactions = [];
+var cur_transaction = {};
+/*
+{transaction : {
+   items : [{ name : 'Coma ganarse a la gente…', qty : 1, price : '14'}],
+   subtotal : 58,
+   tax : 5.25,
+   total : 63.25,
+
+   cashes : [
+     {
+       tendered : 100,
+       change : 36.75
+     }
+   ],
+	 cards : [
+	   {
+	     charged : 36.75,
+	     transId : 60006477986,
+	     authCode: "K525GC"
+	   }
+  ]
+}};*/
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
@@ -148,7 +168,6 @@ Platinum.find({}, function(err, leaders) {
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
-  console.log(inventory);
 });
 
 
@@ -343,11 +362,10 @@ $(document).on("click", "#card", function () {
 	previous_page = "pay_choice.html";
 	current_page = "card_amt.html";
 	colorfy();
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
+
 
 
 $(document).on("click", "#swipe_sim", function() {
@@ -365,23 +383,42 @@ $(document).on("click", "#swipe_sim", function() {
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 		transactions.push("Card-$" + card_amt)
-    setTimeout(function() {
-			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				//void_order(1);
-			  //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-			}
-			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				card_flag = 0;
-				confirm_flag = 0;
-				update_price('~', card_amt, 0, 1)
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-				current_page = "pay_choice.html";
-				previous_page = "handle_order.html";
-				previous_flag = 1;
-				$("#cancel").css("background-color", "red");
-			}
-    }, 3000);
+    //setTimeout(function() {
+		var newTrans = new transaction();
+		newTrans.chargeCreditCard({
+		    cardnumber  : "4242424242424242",
+		    expdate     : "0220",
+		    ccv         : "123",
+		    amount      : card_amt.toString()
+			}).then(function(obj){
+				if (!obj.error){
+	        console.log(obj.transMessage)
+	        console.log("Trasaction Id:", obj.transId)
+	        console.log("Authorization Code:", obj.transAuthCode)
+
+					if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+						//void_order(1);
+						//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+					}
+					else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+						card_flag = 0;
+						confirm_flag = 0;
+						update_price('~', card_amt, 0, 1)
+						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+						current_page = "pay_choice.html";
+						previous_page = "handle_order.html";
+						previous_flag = 1;
+						$("#cancel").css("background-color", "red");
+					}
+		    }
+		    else {
+	        console.log(obj.transMessage)
+	        console.log("Error Code:", obj.transErrorCode)
+	        console.log("Error Text:", obj.transErrorText)
+				}
+			})
+    //}, 3000);
   }
 	else if(current_platinum == "NONE") {
 		error_platinum();
@@ -420,6 +457,16 @@ $("#confirm").click(function() {
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
+				console.log(cur_transaction);
+				cur_transaction["transaction"] = {
+					 items : item_list,
+					 subtotal : subtotal,
+					 tax : tax,
+					 total : total,
+					 cashes : [],
+					 cards : []
+				}
+				console.log(cur_transaction);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -429,7 +476,10 @@ $("#confirm").click(function() {
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
 
-
+		cur_transaction.transaction.cashes.push[{
+			tendered : Number($("#tendered").val().replace(/,/g, "")),
+			change : Number($("#change").val().replace(/,/g, ""))
+		}];
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -449,7 +499,7 @@ $("#confirm").click(function() {
 			$("#cancel").css("background-color", "red");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
-		transactions.push("Cash-$" + $("#tendered").val().replace(/,/g, ""))
+		console.log(cur_transaction);
   }
 	else if(card_flag) {
 		if(card_amt != 0) {

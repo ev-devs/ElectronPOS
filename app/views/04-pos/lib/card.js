@@ -6,11 +6,10 @@ $(document).on("click", "#card", function () {
 	previous_page = "pay_choice.html";
 	current_page = "card_amt.html";
 	colorfy();
-	console.log("PREV:" + previous_page);
-	console.log("CUR:" + current_page);
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
+
 
 
 $(document).on("click", "#swipe_sim", function() {
@@ -28,23 +27,42 @@ $(document).on("click", "#swipe_sim", function() {
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 		transactions.push("Card-$" + card_amt)
-    setTimeout(function() {
-			if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				//void_order(1);
-			  //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-			}
-			else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-				card_flag = 0;
-				confirm_flag = 0;
-				update_price('~', card_amt, 0, 1)
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-				current_page = "pay_choice.html";
-				previous_page = "handle_order.html";
-				previous_flag = 1;
-				$("#cancel").css("background-color", "red");
-			}
-    }, 3000);
+    //setTimeout(function() {
+		var newTrans = new transaction();
+		newTrans.chargeCreditCard({
+		    cardnumber  : "4242424242424242",
+		    expdate     : "0220",
+		    ccv         : "123",
+		    amount      : card_amt.toString()
+			}).then(function(obj){
+				if (!obj.error){
+	        console.log(obj.transMessage)
+	        console.log("Trasaction Id:", obj.transId)
+	        console.log("Authorization Code:", obj.transAuthCode)
+
+					if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+						//void_order(1);
+						//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+					}
+					else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+						card_flag = 0;
+						confirm_flag = 0;
+						update_price('~', card_amt, 0, 1)
+						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+						current_page = "pay_choice.html";
+						previous_page = "handle_order.html";
+						previous_flag = 1;
+						$("#cancel").css("background-color", "red");
+					}
+		    }
+		    else {
+	        console.log(obj.transMessage)
+	        console.log("Error Code:", obj.transErrorCode)
+	        console.log("Error Text:", obj.transErrorText)
+				}
+			})
+    //}, 3000);
   }
 	else if(current_platinum == "NONE") {
 		error_platinum();

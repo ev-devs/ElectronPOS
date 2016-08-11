@@ -13,6 +13,16 @@ $("#confirm").click(function() {
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
+				console.log(cur_transaction);
+				cur_transaction["transaction"] = {
+					 items : item_list,
+					 subtotal : subtotal,
+					 tax : tax,
+					 total : total,
+					 cashes : [],
+					 cards : []
+				}
+				console.log(cur_transaction);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -22,7 +32,10 @@ $("#confirm").click(function() {
   else if(cash_flag) {
 		/*Renders the html file necessary to denote the transaction is complete*/
 
-
+		cur_transaction.transaction.cashes.push[{
+			tendered : Number($("#tendered").val().replace(/,/g, "")),
+			change : Number($("#change").val().replace(/,/g, ""))
+		}];
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -42,7 +55,7 @@ $("#confirm").click(function() {
 			$("#cancel").css("background-color", "red");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 		}
-		transactions.push("Cash-$" + $("#tendered").val().replace(/,/g, ""))
+		console.log(cur_transaction);
   }
 	else if(card_flag) {
 		if(card_amt != 0) {
