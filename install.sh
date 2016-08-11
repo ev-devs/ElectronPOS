@@ -46,6 +46,16 @@ sudo apt-get install xinput-calibrator
 xinput_calibrator --output-type xorg.conf.d --precalib 61 9846 265 9943
 echo "geany /usr/share/X11/xorg.conf.d/10-evdev.conf"
 echo "Place the above inside that file"
-echo "Option 'Calibration' '96 3914 155 3899'"
+echo " Option \"Calibration\" \"96 3914 155 3899\" "
+
+#This installs the dependencies for the printing capabilities
+sudo apt-get install python-imaging python-serial python-setuptools
+
+#this downloads the actual driver for printing capabilities
+wget https://sourceforge.net/projects/pyusb/files/PyUSB%201.0/1.0.0/pyusb-1.0.0.zip
+unzip pyusb*.zip
+cd pyusb*
+python setup.py build
+sudo python setup.py install
 
 sudo reboot
