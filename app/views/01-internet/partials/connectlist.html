@@ -47,7 +47,7 @@
                     <!---THIS IS FOR TESTING ON MY MAC--->
                     <!-- <a class="waves-effect waves-light btn" id="proceed"><i class="material-icons right">done</i>Proceed</a> -->
                 </div>
-
+                <a class="waves-effect waves-light btn red" id="rescan"><i class="material-icons right">perm_scan_wifi</i>Rescan</a>
             </div>
 
             <br>
@@ -93,11 +93,11 @@
 
         var proceed = "<a class=\"waves-effect waves-light btn\" id=\"proceed\"><i class=\"material-icons right\">done</i>Proceed</a>";
         var remove  = "<a class=\"waves-effect waves-light btn red\" id=\"remove\"><i class=\"material-icons right\">delete</i>Remove connection</a>";
-        var rescan  = "<a class=\"waves-effect waves-light btn red\" id=\"rescan\"><i class=\"material-icons right\">delete</i>Rescan</a>";
+        var rescan  = "<a class=\"waves-effect waves-light btn red\" id=\"rescan\"><i class=\"material-icons right\">perm_scan_wifi</i>Rescan</a>";
 
         $("#connection_holder").append(remove);
         $("#connection_holder").append(proceed);
-        $("#connection_holder").append(rescan);
+        //$("#connection_holder").append(rescan);
         $("#loading").remove();
         $("#connecting").remove();
     }, false);

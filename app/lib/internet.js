@@ -76,15 +76,14 @@ not happen*/
 $(document).on('click', '#accept', function() {
   psk = $("#keyboard").val();
   psk = bashify(psk);
-  ap_name = bashify(ap_name);
   console.log("NAME: {" + ap_name + "}");
   console.log("PSK: {" + psk + "}");
   var status = "";
-  connect(ap_name, psk).then(function(obj){
+  connect(bashify(ap_name), psk).then(function(obj){
     /*If no connection is made then after running the wifi_cur.sh script again the word "none" will appear*/
     if(obj.toString().search("FAILED") == -1) {
        console.log("CONNECTED");
-       var cur = ap_name.replace("\\", "");
+       var cur = ap_name;
        $("#cur_con").text("Wi-Fi: " + cur);
        status = document.getElementById("cur_con").innerText.toString();
        document.getElementById("cur_con").dispatchEvent(connected);
@@ -156,6 +155,21 @@ $(document).on('click', '.wifi_option', function() {
 
 /*When the remove connection button is pressed then remove the current connection*/
 $(document).on('click', '#remove', function() {
+  execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
+  $("#cur_con").text("Wi-Fi: none");
+  $("#remove").remove();
+  $("#proceed").remove();
+});
+
+$(document).on('click', '#rescan', function() {
+  $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/01-internet/partials/loader.html', 'utf-8') , {}))
+  render_connections().then(function(obj) {
+    var connections = obj.toString().split("\n");
+    connections = JSONify(remove_dup(connections))
+    $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/01-internet/partials/connectlist.html', 'utf-8') , {
+        output  : connections
+    }))
+  })
   execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
   $("#cur_con").text("Wi-Fi: none");
   $("#remove").remove();
