@@ -1,6 +1,9 @@
 $("#yes-cash").click(function () {
 	//void_order(1);
 	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	$("#cancel").removeAttr("style");
+	$("#confirm").removeAttr("style");
+	previous_flag = 0;
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 });
 

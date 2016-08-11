@@ -5,48 +5,6 @@ var fs = require('fs');
 var accounting = require('accounting-js');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
-
-/*
-newTrans.chargeCreditCard({
-    cardnumber  : "4242424242424242",
-    expdate     : "0220",
-    ccv         : "123",
-    amount      : "199.97"
-}).then(function(obj){
-
-    if (!obj.error){
-        console.log(obj.transMessage)
-        console.log("Trasaction Id:", obj.transId)
-        console.log("Authorization Code:", obj.transAuthCode)
-    }
-    else {
-        console.log(obj.transMessage)
-        console.log("Error Code:", obj.transErrorCode)
-        console.log("Error Text:", obj.transErrorText)
-    }
-    console.log('DONE\n')
-});
-*/
-
-/*setInterval(function(){
-
-    newTrans.voidTransaction({
-        transId  : newTrans.transId
-    }).then(function(obj){
-        if (!obj.error){
-            console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
-        }
-        else {
-            console.log(obj.transMessage)
-            console.log("Error Code:", obj.transErrorCode)
-            console.log("Error Text:", obj.transErrorText)
-        }
-        console.log('\n')
-    })
-
-}, 5000)*/
-
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -395,10 +353,13 @@ $(document).on("click", "#swipe_sim", function() {
 	        console.log(obj.transMessage)
 	        console.log("Trasaction Id:", obj.transId)
 	        console.log("Authorization Code:", obj.transAuthCode)
-
+					/*If all the money was on the card then go to the printing option*/
 					if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 						//void_order(1);
 						//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+						$("#cancel").removeAttr("style");
+						$("#confirm").removeAttr("style");
+						previous_flag = 0;
 						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 					}
 					else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
@@ -428,6 +389,9 @@ $(document).on("click", "#swipe_sim", function() {
 $("#yes-cash").click(function () {
 	//void_order(1);
 	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	$("#cancel").removeAttr("style");
+	$("#confirm").removeAttr("style");
+	previous_flag = 0;
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
 });
 
@@ -458,7 +422,7 @@ $("#confirm").click(function() {
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
 				console.log(cur_transaction);
-				cur_transaction["transaction"] = {
+				cur_transaction = {
 					 items : item_list,
 					 subtotal : subtotal,
 					 tax : tax,
@@ -474,12 +438,12 @@ $("#confirm").click(function() {
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
-		/*Renders the html file necessary to denote the transaction is complete*/
-
-		cur_transaction.transaction.cashes.push[{
+		/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+		cur_transaction.cashes.push({
 			tendered : Number($("#tendered").val().replace(/,/g, "")),
-			change : Number($("#change").val().replace(/,/g, ""))
-		}];
+			change : Number($("#change").text().substring(1, $("#change").text().length).replace(/,/g, ""))
+		});
+		/*Renders the html file necessary to denote the transaction is complete*/
 		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 			$('#modal6').openModal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -777,7 +741,7 @@ $(document).on("click", "#yes-receipt", function() {
 
 $(document).on("click", "#no-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(transactions);
+  console.log(cur_transaction);
   void_order(1);
 });
 

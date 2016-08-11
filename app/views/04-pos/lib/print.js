@@ -6,6 +6,6 @@ $(document).on("click", "#yes-receipt", function() {
 
 $(document).on("click", "#no-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(transactions);
+  console.log(cur_transaction);
   void_order(1);
 });

@@ -53,6 +53,7 @@ var transactionSchema = new mongoose.Schema({
     cashes      : [ CashTransaction ],
     cards       : [ CardTransaction ],
     items       : [ ItemContainer ]
+
 });
 
 /*This creates the GUID*/
