@@ -19,8 +19,8 @@ sudo npm install -g bower
 sudo apt-get install mongodb
 
 #This is the actual installation of electron
-git clone https://github.com/ev-devs/ElectronPOS
-cd ElectronPOS
+# git clone https://github.com/ev-devs/ElectronPOS
+# cd ElectronPOS
 git submodule init
 git submodule update
 sudo npm install
