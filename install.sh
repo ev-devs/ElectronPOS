@@ -27,15 +27,15 @@ sudo npm install
 sudo bower install bower.json --allow-root
 
 #setup the kinit scripts
-sudo echo "sudo service mongodb start"   >> ~/.config/lxsession/LXSESSION/autostart
-sudo echo "electron /home/pi/ElectronPOS" >> ~/.config/lxsession/LXSESSION/autostart
+sudo echo "sudo service mongodb start"   >> ~/.config/lxsession/LDXE-pi/autostart
+sudo echo "electron /home/pi/ElectronPOS" >> ~/.config/lxsession/LDXE-pi/autostart
 
 #this configures the touch screen to have the right aspect ration
-sudo echo "max_usb_current=1" >> ~/boot/config.txt
-sudo echo "hdmi_group=2" >> ~/boot/config.txt
-sudo echo "hdmi_mode=1" >> ~/boot/config.txt
-sudo echo "hdmi_mode=87" >> ~/boot/config.txt
-sudo echo "hdmi_cvt 1024 600 60 6 0 0 0" >> ~/boot/config.txt
+sudo echo "max_usb_current=1" >> /boot/config.txt
+sudo echo "hdmi_group=2" >> /boot/config.txt
+sudo echo "hdmi_mode=1" >> /boot/config.txt
+sudo echo "hdmi_mode=87" >> /boot/config.txt
+sudo echo "hdmi_cvt 1024 600 60 6 0 0 0" >> /boot/config.txt
 
 #this is for the input calibrator to calibrate the touch screen
 #sudo add-apt-repository ppa:tias/xinput-calibrator-ppa
@@ -50,6 +50,10 @@ echo " Option \"Calibration\" \"96 3914 155 3899\" "
 
 #This installs the dependencies for the printing capabilities
 sudo apt-get install python-imaging python-serial python-setuptools
+sudo apt-get install build-essential python-dev
+
+#this is so we can read from a mongo database
+sudo python -m pip install pymongo
 
 #this downloads the actual driver for printing capabilities
 wget https://sourceforge.net/projects/pyusb/files/PyUSB%201.0/1.0.0/pyusb-1.0.0.zip
