@@ -69,6 +69,3 @@ git clone https://github.com/manpaz/python-escpos.git
 cd python-escpos
 python setup.py build
 sudo python setup.py install
-
-
-sudo reboot
