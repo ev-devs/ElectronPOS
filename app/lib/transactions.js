@@ -121,8 +121,8 @@ newTransaction.populateItems(function(transaction){
 newTransaction.createCashTransaction(function(transaction){
 
     var newCashTransaction  = new CashTransaction()
-    transaction.tendered = "Some amount of money"
-    transaction.change   = "another amount of money"
+    newCashTransaction.tendered = "Some amount of money"
+    newCashTransaction.change   = "another amount of money"
 
     transaction.cashes.push(/*a new cash transaction here*/)
 
