@@ -8,28 +8,34 @@ $("#confirm").click(function() {
       if(confirm_flag == 1) {
 				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
         confirm_flag = 0;
+
 				scan_flag = 0;
 				previous_flag = 1;
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
 				cur_transaction = new Transaction();
-				cur_transaction.createGUID();
-				cur_transaction.populateItems(function(transaction){
+				cur_transaction.hello()
+
+
+				//cur_transaction.createGUID();
+				//cur_transaction.populateItems(function(transaction){
 				    //transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
-				    transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
-				    transaction.date = new Date();     //=> Using the date.now() methd you should be fine
-				    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-				    transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-				    transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-				    transaction.total = total      //=> this is just adding subtotal and tax together
+				    //transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
+				    //transaction.date = new Date();     //=> Using the date.now() methd you should be fine
+				    //transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+				    //transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
+				    //transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
+				    //transaction.total = total      //=> this is just adding subtotal and tax together
 				    //transaction.payments = 50   //=> the amount of payments that will be made. At least 1
 
 				    /*transaction.cashes      //=> this is an array of cash transaction
 				    transaction.cards       //=> this is an array of card transactions
 				    transaction.items       //=> this is where we need to create the items
 						*/
-				    for (var i = 0; i < item_list.length; i++){
+
+					/*
+					for (var i = 0; i < item_list.length; i++){
 
 							let item = {
 
@@ -55,9 +61,9 @@ $("#confirm").click(function() {
 							item.tax = item_list[i].price * .0875;
 
 							transaction.items.push(item);*/
-				    }
-				})
-				console.log(cur_transaction);
+				    //}
+				//})
+			console.log(cur_transaction);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
