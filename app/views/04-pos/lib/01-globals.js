@@ -59,6 +59,9 @@ var Inventory = require('../../lib/inventory.js');           /*This will be used
 var Trans = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 var {Transaction} = Trans;
 var {ItemContainer} = Trans;
+
+console.log("===================", ItemContainer)
+
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
