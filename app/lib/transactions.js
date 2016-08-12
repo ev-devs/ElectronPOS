@@ -6,23 +6,20 @@ const mongoose = require('mongoose')
 /*second we create a schema of how our data will be modeled*/
 var Cash = new mongoose.Schema({
     guid        : { type : String, required : true }, /*shared*/
-
     tendered    : { type : Number, required : true },
     change      : { type : Number, required : true },
-})
-var CashTransaction = mongoose.model('CashTransaction', Cash);
+
 
 
 var Card = new mongoose.Schema({
     guid        : { type : String, required : true }, /*shared*/
-
     amount      : { type : Number, required : true },
     authCode    : { type : String, required : true },
     transId     : { type : String, required : true },
     message     : { type : String, required : true },
     cardType    : { type : String, required : true }
 })
-var CardTransaction = mongoose.model('CardTransaction', Card);
+
 
 
 var Item =  new mongoose.Schema({
@@ -34,7 +31,7 @@ var Item =  new mongoose.Schema({
     price       : { type : String, required : true },
     tax         : { type : String, required : true }
 });
-var ItemContainer = mongoose.model('ItemContainer', Item);
+
 
 
 /*This is a "master" transaction that contains sub transactions of cash and card*/
@@ -57,6 +54,12 @@ var transactionSchema = new mongoose.Schema({
 });
 
 /*This creates the GUID*/
+
+transactionSchema.methods.hello =  function() {
+    alert('hello')
+    console.log('hello')
+}
+
 transactionSchema.methods.createGUID = function(callback){
     this.guid = guid.raw();
     return this
