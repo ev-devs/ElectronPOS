@@ -1,35 +1,11 @@
 const guid = require('guid')
 const mongoose = require('mongoose')
+const ItemTrans = require('ItemTrans.js')
+const CardTrans = require('CardTrans.js')
+const CashTrans = require('CashTrans.js')
+
 
 // NOTE mongoose IS DIFFERENT THAN TransactionConnection and should not be saved
-
-/*second we create a schema of how our data will be modeled*/
-var Cash = new mongoose.Schema({
-    guid        : { type : String, required : true }, /*shared*/
-    tendered    : { type : Number, required : true },
-    change      : { type : Number, required : true },
-
-})
-
-var Card = new mongoose.Schema({
-    guid        : { type : String, required : true }, /*shared*/
-    amount      : { type : Number, required : true },
-    authCode    : { type : String, required : true },
-    transId     : { type : String, required : true },
-    message     : { type : String, required : true },
-    cardType    : { type : String, required : true }
-})
-
-var Item =  new mongoose.Schema({
-    evid        : { type : String, required : true },
-    barcode     : { type : String, required : true },
-    title       : { type : String, required : true },
-    isticket    : { type : String, required : true },
-    prefix      : { type : String, required : true },
-    price       : { type : String, required : true },
-    tax         : { type : String, required : true }
-});
-
 
 
 /*This is a "master" transaction that contains sub transactions of cash and card*/
@@ -45,9 +21,9 @@ var transactionSchema = new mongoose.Schema({
     payments    : { type : Number, required : true },
 
     /*This is the "body" of some sort*/
-    cashes      : [ Array ],
-    cards       : [ Array ],
-    items       : [ Array ]
+    cashes      : [ CashTrans ],
+    cards       : [ CardTrans ],
+    items       : [ ItemTrans ]
 
 });
 
@@ -75,7 +51,6 @@ transactionSchema.methods.createCardTransaction = function(callback){
     callback(this)
     return this
 }
-
 
 /*now we create an actual model we can use to communicatte with our javascript*/
 
