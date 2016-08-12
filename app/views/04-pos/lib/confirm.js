@@ -45,8 +45,8 @@ $("#confirm").click(function() {
 
 							transaction.items.push(item);
 				    }
-				})
-				console.log(cur_transaction);
+				});
+				//console.log(cur_transaction);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -54,32 +54,7 @@ $("#confirm").click(function() {
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
   else if(cash_flag) {
-		/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-		cur_transaction.cashes.push({
-			tendered : Number($("#tendered").val().replace(/,/g, "")),
-			change : Number($("#change").text().substring(1, $("#change").text().length).replace(/,/g, ""))
-		});
-		/*Renders the html file necessary to denote the transaction is complete*/
-		if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-			$('#modal6').openModal({
-				dismissible: true, // Modal can be dismissed by clicking outside of the modal
-				opacity: .5, // Opacity of modal background
-				in_duration: 300, // Transition in duration
-				out_duration: 200, // Transition out duration
-			});
-		}
-		else {
-			update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-			cash_flag = 0;
-			confirm_flag = 0;
-			$("#cancel").removeAttr("style");
-			$("#confirm").removeAttr("style");
-			current_page = "pay_choice.html";
-			previous_page = "handle_order.html";
-			$("#cancel").css("background-color", "red");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		}
-		console.log(cur_transaction);
+		handle_cash();
   }
 	else if(card_flag) {
 		if(card_amt != 0) {

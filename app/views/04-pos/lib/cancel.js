@@ -30,7 +30,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "cash.html") {
-	
+
 			current_page = "pay_choice.html"
 			previous_page = "handle_order.html"
 			cash_flag = 0;
@@ -38,14 +38,11 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "card.html") {
-			console.log("4");
 			current_page = "card_amt.html"
 			previous_page = "pay_choice.html"
 			$("#confirm").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
-		console.log("PREV:" + previous_page);
-		console.log("CUR:" + current_page);
 	}
 	else if(current_platinum == "NONE"){
 		error_platinum();
