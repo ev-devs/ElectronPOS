@@ -116,7 +116,6 @@ newTransaction.populateItems(function(transaction){
         // update tax total
         // update overall total
     }
-
 })
 
 newTransaction.createCashTransaction(function(transaction){

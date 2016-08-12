@@ -13,27 +13,6 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
-/*
-{transaction : {
-   items : [{ name : 'Coma ganarse a la gente…', qty : 1, price : '14'}],
-   subtotal : 58,
-   tax : 5.25,
-   total : 63.25,
-
-   cashes : [
-     {
-       tendered : 100,
-       change : 36.75
-     }
-   ],
-	 cards : [
-	   {
-	     charged : 36.75,
-	     transId : 60006477986,
-	     authCode: "K525GC"
-	   }
-  ]
-}};*/
 
 var HashTable = require('hashtable');
 var ticket_table = new HashTable();
@@ -133,6 +112,7 @@ function handleTransaction() {
 
 }
 
+/* This isn't needed anymore, but still keeping for future reference
 function insertTransactionToDatabase(_type, price, transaction){
   new Promise(function(resolve, reject){
     if (err){
@@ -162,6 +142,7 @@ function insertTransactionToDatabase(_type, price, transaction){
       currentTransaction++
   })
 }
+*/
 
 /*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
 /*Leaders*/

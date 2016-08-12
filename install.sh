@@ -27,8 +27,8 @@ sudo npm install
 sudo bower install bower.json --allow-root
 
 #setup the kinit scripts
-sudo echo "sudo service mongodb start"   >> ~/.config/lxsession/LDXE-pi/autostart
-sudo echo "electron /home/pi/ElectronPOS" >> ~/.config/lxsession/LDXE-pi/autostart
+sudo echo "sudo service mongodb start"   >>  /home/pi/.config/lxsession/LDXE-pi/autostart
+sudo echo "electron /home/pi/ElectronPOS" >> /home/pi/.config/lxsession/LDXE-pi/autostart
 
 #this configures the touch screen to have the right aspect ration
 sudo echo "max_usb_current=1" >> /boot/config.txt
