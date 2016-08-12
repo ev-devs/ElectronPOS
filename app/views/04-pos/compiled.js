@@ -59,7 +59,7 @@ var Inventory = require('../../lib/inventory.js');           /*This will be used
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
 
-console.log("===================", ItemContainer)
+
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
@@ -190,73 +190,7 @@ $("#platinum").click(function() {
 	}
 })
 
-/*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 
-
-
-$("#cancel").click(function() {
-
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
-    $('#modal2').openModal();
-		console.log("X")
-	}
-  else if(previous_flag) {
-		console.log("Y");
-		if(current_page == "pay_choice.html") {
-			console.log("1");
-			confirm_flag = 1;
-			scan_flag = 1;
-			previous_flag = 0;
-			current_page = "handle_order.html"
-			previous_page = "handle_order.html"
-			$("#cancel").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-		}
-		else if(current_page == "card_amt.html") {
-			console.log("2");
-			current_page = "pay_choice.html";
-			previous_page = "handle_order.html";
-			card_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "cash.html") {
-			console.log("3");
-			current_page = "pay_choice.html"
-			previous_page = "handle_order.html"
-			cash_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "card.html") {
-			console.log("4");
-			current_page = "card_amt.html"
-			previous_page = "pay_choice.html"
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		console.log("PREV:" + previous_page);
-		console.log("CUR:" + current_page);
-	}
-	else if(current_platinum == "NONE"){
-		error_platinum();
-	}
-});
-
-$("#y_cancel").click(function() {
-	/*As long as the length of the list is > 0 then cancellations can happen*/
-  if(item_list.length != 0) {
-		/*Voids the order*/
-    void_order(1);
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		/*Fades out the "thanks" element from the compelte.html file*/
-    setTimeout(fade_out, 1500);
-		void_order(1);
-		/*Refocus the page on the barcode input*/
-    refocus();
-  }
-});
 
 /*********************************************NOTE: BEGIN CARD TRANSACTION CODE*********************************************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -332,26 +266,6 @@ $(document).on("click", "#swipe_sim", function() {
 	}
 });
 
-$("#yes-cash").click(function () {
-	//void_order(1);
-	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	$("#cancel").removeAttr("style");
-	$("#confirm").removeAttr("style");
-	previous_flag = 0;
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-});
-
-/*Renders the necessary partial for completing orders with cash.*/
-$(document).on("click", "#cash", function () {
-	/*Sets the cash flag to true to denote a cash transaction is in process*/
-  cash_flag = 1;
-	previous_page = "pay_choice.html";
-	current_page = "cash.html"
-	colorfy();
-	/*Renders the html file necessary to handle cash transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
 /*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
@@ -372,23 +286,18 @@ $("#confirm").click(function() {
 				cur_transaction.hello()
 
 
-				//cur_transaction.createGUID();
-				//cur_transaction.populateItems(function(transaction){
-				    //transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
-				    //transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
-				    //transaction.date = new Date();     //=> Using the date.now() methd you should be fine
-				    //transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-				    //transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-				    //transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-				    //transaction.total = total      //=> this is just adding subtotal and tax together
-				    //transaction.payments = 50   //=> the amount of payments that will be made. At least 1
+				cur_transaction.createGUID();
+				cur_transaction.populateItems(function(transaction){
+				    transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
+				    transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
+				    transaction.date = new Date();     //=> Using the date.now() methd you should be fine
+				    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+				    transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
+				    transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
+				    transaction.total = total      //=> this is just adding subtotal and tax together
+				    transaction.payments = 50   //=> the amount of payments that will be made. At least 1
 
-				    /*transaction.cashes      //=> this is an array of cash transaction
-				    transaction.cards       //=> this is an array of card transactions
-				    transaction.items       //=> this is where we need to create the items
-						*/
 
-					/*
 					for (var i = 0; i < item_list.length; i++){
 
 							let item = {
@@ -402,22 +311,10 @@ $("#confirm").click(function() {
 								tax			: item_list[i].price * .0875
 							}
 
-							transaction.items.push(item)
-
-							/*
-							var item = new ItemContainer();
-							item.evid = item_list[i].id;
-							item.barcode = item_list[i].barcode;
-							item.title = item_list[i].title;
-							item.isticket = item_list[i].isticket;
-							item.prefix = item_list[i].prefix;
-							item.price = item_list[i].price;
-							item.tax = item_list[i].price * .0875;
-
-							transaction.items.push(item);*/
-				    //}
-				//})
-			console.log(cur_transaction);
+							transaction.items.push(item);
+				    }
+				})
+				console.log(cur_transaction);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -466,6 +363,26 @@ $("#confirm").click(function() {
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
+});
+
+$("#yes-cash").click(function () {
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	$("#cancel").removeAttr("style");
+	$("#confirm").removeAttr("style");
+	previous_flag = 0;
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+});
+
+/*Renders the necessary partial for completing orders with cash.*/
+$(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
+  cash_flag = 1;
+	previous_page = "pay_choice.html";
+	current_page = "cash.html"
+	colorfy();
+	/*Renders the html file necessary to handle cash transactions*/
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
 
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
@@ -803,25 +720,6 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-$('#search').jboard('standard')
-
-$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
   console.log(transactions);
@@ -1050,3 +948,21 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+$('#search').jboard('standard')
+
+$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})

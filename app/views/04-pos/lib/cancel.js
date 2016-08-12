@@ -7,10 +7,10 @@ $("#cancel").click(function() {
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
   if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
     $('#modal2').openModal();
-		console.log("X")
+
 	}
   else if(previous_flag) {
-		console.log("Y");
+
 		if(current_page == "pay_choice.html") {
 			console.log("1");
 			confirm_flag = 1;
@@ -22,7 +22,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
-			console.log("2");
+
 			current_page = "pay_choice.html";
 			previous_page = "handle_order.html";
 			card_flag = 0;
@@ -30,7 +30,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "cash.html") {
-			console.log("3");
+	
 			current_page = "pay_choice.html"
 			previous_page = "handle_order.html"
 			cash_flag = 0;

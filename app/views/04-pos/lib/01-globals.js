@@ -59,7 +59,7 @@ var Inventory = require('../../lib/inventory.js');           /*This will be used
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
 
-console.log("===================", ItemContainer)
+
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/

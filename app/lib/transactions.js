@@ -1,8 +1,8 @@
 const guid = require('guid')
 const mongoose = require('mongoose')
-const ItemTrans = require('ItemTrans.js')
-const CardTrans = require('CardTrans.js')
-const CashTrans = require('CashTrans.js')
+const ItemTrans = require('./ItemTrans.js').schema
+const CardTrans = require('./CardTrans.js').schema
+const CashTrans = require('./CashTrans.js').schema
 
 
 // NOTE mongoose IS DIFFERENT THAN TransactionConnection and should not be saved
