@@ -1,6 +1,6 @@
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/
-$(document).on("input", "#barcode", function()  {
+/*$(document).on("input", "#barcode", function()  {
 
   $('#modal8').openModal({
     dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -9,7 +9,7 @@ $(document).on("input", "#barcode", function()  {
     out_duration: 200, // Transition out duration
   });
 });
-
+*/
 $("#TEST").click(function() {
   refocus();
 

@@ -85,18 +85,20 @@ var Transaction = TransactionConnection.model('Transaction', transactionSchema);
     to ONLY transactions
 */
 
-module.exports = Transaction
-
+module.exports = {
+  Transaction,
+  ItemContainer,
+  CardTransaction,
+  CashTransaction
+}
 /*############################### THIS IS WHERE THE EXAMPLES START*/
-
+/*
 var newTransaction = new Transaction();
 newTransaction.createGUID() // this creates the GUID
 
 newTransaction.populateItems(function(transaction){
     // populate the items right here
     // you also have access to the entire model
-
-    transaction.guid        //=> this is the guid DO NOT MODIFY
     transaction.platinum    //=> Here you should modify the platinum name
     transaction.date        //=> Using the date.now() methd you should be fine
     transaction.location    //=> this can be reached from the main.js process via ipc
@@ -124,12 +126,11 @@ newTransaction.createCashTransaction(function(transaction){
     newCashTransaction.tendered = "Some amount of money"
     newCashTransaction.change   = "another amount of money"
 
-    transaction.cashes.push(/*a new cash transaction here*/)
+    transaction.cashes.push(/*a new cash transaction here)
 
-    /*after success+*/
+    //after success+
     transaction.payments++
 })
-
 newTransaction.createCardTransaction(function(transaction){
 
     var newCardTransaction = new CardTransaction()
@@ -145,8 +146,8 @@ newTransaction.createCardTransaction(function(transaction){
     newCardTransaction.message  = response.some.path.to.the.message
     newCardTransaction.cardType = functionCallToSeeWhatTypeOfCard();
 
-    transaction.cards.push(/*a new cash transaction here*/)
+    transaction.cards.push(/*a new cash transaction here)
 
-    /*after success+*/
+    //after success+
      transaction.payments++
-})
+})*/

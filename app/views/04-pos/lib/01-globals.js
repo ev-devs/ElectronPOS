@@ -3,8 +3,11 @@ var mongoose = require('mongoose');
 var ejs = require('ejs');
 var fs = require('fs');
 var accounting = require('accounting-js');
+var mongoose = require('mongoose');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
+var HashTable = require('hashtable');
+var guid = require("guid");
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -13,11 +16,8 @@ var leaders_list = [];
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
-
-var HashTable = require('hashtable');
 var ticket_table = new HashTable();
 
-var mongoose = require('mongoose');
 
 /***********THIS IS OUR LOGIC**********************/
 
@@ -54,10 +54,11 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 });
 
 /*This needs to be declared after we connect to the databases*/
-var Platinum = require('../../lib/platinum.js')             /*This will be used to store our platinums*/
-var Inventory = require('../../lib/inventory.js')           /*This will be used to store our inventory*/
-var Transactions = require('../../lib/transactions.js')     /*This will be used to store our inventory*/
-
+var Platinum = require('../../lib/platinum.js');             /*This will be used to store our platinums*/
+var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
+var Trans = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
+var {Transaction} = Trans;
+var {ItemContainer} = Trans;
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
@@ -90,7 +91,6 @@ var swipe_flag = 0;
 var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
-var currentTransaction = 0;
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -108,9 +108,6 @@ Inventory.find({}, function(err, _inventory) {
 });
 
 
-function handleTransaction() {
-
-}
 
 /* This isn't needed anymore, but still keeping for future reference
 function insertTransactionToDatabase(_type, price, transaction){
