@@ -86,7 +86,9 @@ var Transaction = TransactionConnection.model('Transaction', transactionSchema);
     to ONLY transactions
 */
 
-module.exports = Transaction 
+module.exports = Transaction
+
+
 /*############################### THIS IS WHERE THE EXAMPLES START*/
 /*
 var newTransaction = new Transaction();
