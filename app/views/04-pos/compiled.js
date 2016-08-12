@@ -59,6 +59,8 @@ var Inventory = require('../../lib/inventory.js');           /*This will be used
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
 
+console.log("===================", ItemContainer)
+
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
@@ -1046,4 +1048,8 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
+}
+
+function parseTrackData(track){
+    // function goes here
 }
