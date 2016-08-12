@@ -30,6 +30,21 @@ $("#confirm").click(function() {
 				    transaction.items       //=> this is where we need to create the items
 						*/
 				    for (var i = 0; i < item_list.length; i++){
+
+							let item = {
+
+								evid 		: item_list[i].id,
+								barcode 	: item_list[i].barcode,
+								title		: item_list[i].title,
+								isticket	: item_list[i].isticket,
+								prefix		: item_list[i].prefix,
+								price		: item_list[i].price,
+								tax			: item_list[i].price * .0875
+							}
+
+							transaction.items.push(item)
+
+							/*
 							var item = new ItemContainer();
 							item.evid = item_list[i].id;
 							item.barcode = item_list[i].barcode;
@@ -38,7 +53,8 @@ $("#confirm").click(function() {
 							item.prefix = item_list[i].prefix;
 							item.price = item_list[i].price;
 							item.tax = item_list[i].price * .0875;
-							transaction.items.push(item);
+
+							transaction.items.push(item);*/
 				    }
 				})
 				console.log(cur_transaction);
