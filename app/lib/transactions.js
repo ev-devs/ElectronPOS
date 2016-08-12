@@ -86,10 +86,7 @@ var Transaction = TransactionConnection.model('Transaction', transactionSchema);
 */
 
 module.exports = {
-  Transaction,
-  ItemContainer,
-  CardTransaction,
-  CashTransaction
+  Transaction
 }
 /*############################### THIS IS WHERE THE EXAMPLES START*/
 /*
