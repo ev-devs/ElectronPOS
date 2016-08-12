@@ -133,17 +133,17 @@ newTransaction.createCashTransaction(function(transaction){
 newTransaction.createCardTransaction(function(transaction){
 
     var newCardTransaction = new CardTransaction()
-    var response = MakeCallToAuthNetAPI()
+    var response = MakeCallToAuthNetAPI() // insert code here
 
     if (response.path.to.error){
         // handle errors and display in UI
     }
 
-    transaction.amount   = "some amount"
-    transaction.authCode = response.some.path.to.the.authCode
-    transaction.transId  = response.some.path.to.the.transId
-    transaction.message  = response.some.path.to.the.message
-    transaction.cardType = functionCallToSeeWhatTypeOfCard();
+    newCardTransaction.amount   = "some amount"
+    newCardTransaction.authCode = response.some.path.to.the.authCode
+    newCardTransaction.transId  = response.some.path.to.the.transId
+    newCardTransaction.message  = response.some.path.to.the.message
+    newCardTransaction.cardType = functionCallToSeeWhatTypeOfCard();
 
     transaction.cards.push(/*a new cash transaction here*/)
 
