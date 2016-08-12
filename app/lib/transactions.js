@@ -9,7 +9,7 @@ var Cash = new mongoose.Schema({
     tendered    : { type : Number, required : true },
     change      : { type : Number, required : true },
 
-
+})
 
 var Card = new mongoose.Schema({
     guid        : { type : String, required : true }, /*shared*/
