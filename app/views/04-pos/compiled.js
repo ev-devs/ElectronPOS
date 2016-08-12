@@ -192,9 +192,6 @@ $("#platinum").click(function() {
 
 
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
-
-
-
 $("#cancel").click(function() {
 
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
@@ -256,7 +253,7 @@ $("#y_cancel").click(function() {
   }
 });
 
-/*********************************************NOTE: BEGIN CARD TRANSACTION CODE*********************************************/
+/***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
 	/*Sets the card flag to true to denote a card transaction is in process*/
@@ -268,14 +265,13 @@ $(document).on("click", "#card", function () {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
-
-
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag && swipe_flag) {
+		card_call_to_auth();
 		$("#cancel").removeAttr("style");
 		$("#confirm").removeAttr("style");
 		confirm_flag = 0;
@@ -284,51 +280,74 @@ $(document).on("click", "#swipe_sim", function() {
 		cancel_flag = 0;
 		previous_flag = 0;
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-		transactions.push("Card-$" + card_amt)
-    //setTimeout(function() {
-		var newTrans = new transaction();
-		newTrans.chargeCreditCard({
-		    cardnumber  : "4242424242424242",
-		    expdate     : "0220",
-		    ccv         : "123",
-		    amount      : card_amt.toString()
-			}).then(function(obj){
-				if (!obj.error){
-	        console.log(obj.transMessage)
-	        console.log("Trasaction Id:", obj.transId)
-	        console.log("Authorization Code:", obj.transAuthCode)
-					/*If all the money was on the card then go to the printing option*/
-					if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-						//void_order(1);
-						//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-						$("#cancel").removeAttr("style");
-						$("#confirm").removeAttr("style");
-						previous_flag = 0;
-						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-					}
-					else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-						card_flag = 0;
-						confirm_flag = 0;
-						update_price('~', card_amt, 0, 1)
-						$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-						current_page = "pay_choice.html";
-						previous_page = "handle_order.html";
-						previous_flag = 1;
-						$("#cancel").css("background-color", "red");
-					}
-		    }
-		    else {
-	        console.log(obj.transMessage)
-	        console.log("Error Code:", obj.transErrorCode)
-	        console.log("Error Text:", obj.transErrorText)
-				}
-			})
-    //}, 3000);
   }
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
 });
+
+function handle_card() {
+	if(card_amt != 0) {
+		current_page = "card.html";
+		previous_page = "card_amt.html";
+		card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
+		swipe_flag = 1;
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+	}
+}
+
+function card_trans(transAuthCode, transId, transMessage) {
+	cur_transaction.createCardTransaction(function(transaction){
+		let CardTrans = {
+			guid     : transaction.guid,
+			amount   : card_amt,
+			authCode : transAuthCode,
+			transId  : transId,
+			message  : transMessage,
+			cardType : "Harambe"
+		}
+		transaction.cards.push(CardTrans);
+		transaction.payments++;
+	});
+	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		//void_order(1);
+		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		print_init();
+	}
+	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		card_flag = 0;
+		confirm_flag = 0;
+		update_price('~', card_amt, 0, 1)
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		previous_flag = 1;
+		$("#cancel").css("background-color", "red");
+	}
+}
+
+function card_call_to_auth() {
+	var newTrans = new transaction();
+	newTrans.chargeCreditCard({
+			cardnumber  : "4242424242424242",
+			expdate     : "0220",
+			ccv         : "123",
+			amount      : card_amt.toString()
+		}).then(function(obj){
+			if (!obj.error){
+				console.log(obj.transMessage)
+				console.log("Trasaction Id:", obj.transId)
+				console.log("Authorization Code:", obj.transAuthCode)
+				/*If all the money was on the card then go to the printing option*/
+				card_trans(obj.transMessage, obj.transId,obj.transAuthCode);
+			}
+			else {
+				console.log(obj.transMessage)
+				console.log("Error Code:", obj.transErrorCode)
+				console.log("Error Text:", obj.transErrorText)
+			}
+		});
+}
 
 /*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
 $("#confirm").click(function() {
@@ -340,45 +359,12 @@ $("#confirm").click(function() {
       if(confirm_flag == 1) {
 				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
         confirm_flag = 0;
-
 				scan_flag = 0;
 				previous_flag = 1;
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
-				cur_transaction = new Transaction();
-				cur_transaction.hello()
-
-
-				cur_transaction.createGUID();
-				cur_transaction.populateItems(function(transaction){
-				    transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
-				    transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
-				    transaction.date = new Date();     //=> Using the date.now() methd you should be fine
-				    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-				    transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-				    transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-				    transaction.total = total      //=> this is just adding subtotal and tax together
-				    transaction.payments = 50   //=> the amount of payments that will be made. At least 1
-
-
-					for (var i = 0; i < item_list.length; i++){
-
-							let item = {
-
-								evid 		: item_list[i].id,
-								barcode 	: item_list[i].barcode,
-								title		: item_list[i].title,
-								isticket	: item_list[i].isticket,
-								prefix		: item_list[i].prefix,
-								price		: item_list[i].price,
-								tax			: item_list[i].price * .0875
-							}
-
-							transaction.items.push(item);
-				    }
-				});
-				//console.log(cur_transaction);
+				init_transaction();
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
@@ -389,29 +375,53 @@ $("#confirm").click(function() {
 		handle_cash();
   }
 	else if(card_flag) {
-		if(card_amt != 0) {
-			current_page = "card.html";
-			previous_page = "card_amt.html";
-			card_amt = Number($("#tendered_card").val().replace(/,/g, ""));
-			console.log(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))
-			console.log(card_amt);
-			swipe_flag = 1;
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
-		}
+		handle_card();
 	}
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
 });
 
+function init_transaction() {
+	cur_transaction = new Transaction();
+	cur_transaction.hello()
+
+
+	cur_transaction.createGUID();
+	cur_transaction.populateItems(function(transaction){
+			transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
+			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
+			transaction.date = new Date();     //=> Using the date.now() methd you should be fine
+			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+			transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
+			transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
+			transaction.total = total      //=> this is just adding subtotal and tax together
+			transaction.payments = 50   //=> the amount of payments that will be made. At least 1
+
+
+		for (var i = 0; i < item_list.length; i++){
+
+				let item = {
+
+					evid 		: item_list[i].id,
+					barcode 	: item_list[i].barcode,
+					title		: item_list[i].title,
+					isticket	: item_list[i].isticket,
+					prefix		: item_list[i].prefix,
+					price		: item_list[i].price,
+					tax			: item_list[i].price * .0875
+				}
+
+				transaction.items.push(item);
+			}
+	});
+}
+
+/***********************CASH.JS***********************/
 $("#yes-cash").click(function () {
 	//void_order(1);
 	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	$("#cancel").removeAttr("style");
-	$("#confirm").removeAttr("style");
-	previous_flag = 0;
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-	console.log(cur_transaction);
+	print_init();
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -427,15 +437,7 @@ $(document).on("click", "#cash", function () {
 
 function handle_cash() {
 	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cur_transaction.createCashTransaction(function(transaction){
-
-			let CashTrans = {
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change : Number($("#change").text().substring(1, $("#change").text().length))
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
-	})
+	cash_trans();
 	/*Renders the html file necessary to denote the transaction is complete*/
 	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 		$('#modal6').openModal({
@@ -456,7 +458,19 @@ function handle_cash() {
 		$("#cancel").css("background-color", "red");
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 	}
-	console.log(cur_transaction);
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length))
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
+	});
 }
 
 /*********************************************NOTE: BEGIN DELETE CODE*********************************************/
@@ -669,20 +683,21 @@ function void_order(full_void) {
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
     if(full_void == 1) {
-    item_list.splice(0, item_list.length);/*Empties the item list*/
-        /*Empties the left side*/
-    $("#sale_list tbody").empty();
-        /*Empties the subtotal and total*/
-        update_price('~', subtotal, 0, 0);
-    $("#cancel").removeAttr("style");
-    $("#confirm").removeAttr("style");
-    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
-    current_platinum = "NONE";
-        previous_page = "1";
-        current_page = "2";
-    setTimeout(function() {
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-    }, 1500);
+      item_list.splice(0, item_list.length);/*Empties the item list*/
+          /*Empties the left side*/
+      $("#sale_list tbody").empty();
+          /*Empties the subtotal and total*/
+      update_price('~', subtotal, 0, 0);
+      $("#cancel").removeAttr("style");
+      $("#confirm").removeAttr("style");
+      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+      current_platinum = "NONE";
+      previous_page = "1";
+      current_page = "2";
+      cur_transaction = {};
+      setTimeout(function() {
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+      }, 1500);
     }
 }
 
@@ -796,15 +811,33 @@ $(document).on("click",  "#cancel_item_selection", function() {
 
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(transactions);
   void_order(1);
 });
 
 $(document).on("click", "#no-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  console.log(cur_transaction);
   void_order(1);
 });
+
+function print_init() {
+  $("#cancel").removeAttr("style");
+  $("#confirm").removeAttr("style");
+  previous_flag = 0;
+  confirm_flag = 0;
+  cancel_flag = 0;
+  cash_flag = 0;
+  card_flag = 0;
+  cur_transaction.save(function(err){
+    if (err){
+      console.log("Error in saving new transaction")
+    }
+    else {
+      console.log("New transaction saved!")
+    }
+  })
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log(cur_transaction);
+}
 
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
 /*When the #scan_sim button is click carry out the following callback*/

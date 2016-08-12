@@ -35,20 +35,21 @@ function void_order(full_void) {
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
     if(full_void == 1) {
-    item_list.splice(0, item_list.length);/*Empties the item list*/
-        /*Empties the left side*/
-    $("#sale_list tbody").empty();
-        /*Empties the subtotal and total*/
-        update_price('~', subtotal, 0, 0);
-    $("#cancel").removeAttr("style");
-    $("#confirm").removeAttr("style");
-    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
-    current_platinum = "NONE";
-        previous_page = "1";
-        current_page = "2";
-    setTimeout(function() {
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-    }, 1500);
+      item_list.splice(0, item_list.length);/*Empties the item list*/
+          /*Empties the left side*/
+      $("#sale_list tbody").empty();
+          /*Empties the subtotal and total*/
+      update_price('~', subtotal, 0, 0);
+      $("#cancel").removeAttr("style");
+      $("#confirm").removeAttr("style");
+      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+      current_platinum = "NONE";
+      previous_page = "1";
+      current_page = "2";
+      cur_transaction = {};
+      setTimeout(function() {
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+      }, 1500);
     }
 }
 

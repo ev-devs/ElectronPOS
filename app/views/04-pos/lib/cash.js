@@ -1,11 +1,8 @@
+/***********************CASH.JS***********************/
 $("#yes-cash").click(function () {
 	//void_order(1);
 	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	$("#cancel").removeAttr("style");
-	$("#confirm").removeAttr("style");
-	previous_flag = 0;
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-	console.log(cur_transaction);
+	print_init();
 });
 
 /*Renders the necessary partial for completing orders with cash.*/
@@ -21,15 +18,7 @@ $(document).on("click", "#cash", function () {
 
 function handle_cash() {
 	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cur_transaction.createCashTransaction(function(transaction){
-
-			let CashTrans = {
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change : Number($("#change").text().substring(1, $("#change").text().length))
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
-	})
+	cash_trans();
 	/*Renders the html file necessary to denote the transaction is complete*/
 	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
 		$('#modal6').openModal({
@@ -50,5 +39,17 @@ function handle_cash() {
 		$("#cancel").css("background-color", "red");
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
 	}
-	console.log(cur_transaction);
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length))
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
+	});
 }
