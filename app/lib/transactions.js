@@ -47,9 +47,9 @@ var transactionSchema = new mongoose.Schema({
     payments    : { type : Number, required : true },
 
     /*This is the "body" of some sort*/
-    cashes      : [ CashTransaction ],
-    cards       : [ CardTransaction ],
-    items       : [ ItemContainer ]
+    cashes      : [ Array ],
+    cards       : [ Array ],
+    items       : [ Array ]
 
 });
 

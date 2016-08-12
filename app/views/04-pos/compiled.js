@@ -109,40 +109,6 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
 });
 
-
-
-/* This isn't needed anymore, but still keeping for future reference
-function insertTransactionToDatabase(_type, price, transaction){
-  new Promise(function(resolve, reject){
-    if (err){
-        console.log( "There was an error finding an item " + err)
-    }
-    else {
-      new Inventory({
-
-          _type          : _type,
-          price          : price,
-          transId        : transaction.transId,
-          message        : transaction.message,
-          authCode       : transaction.authCode
-
-      }).save(function(err){
-          if (err){
-              console.log('Error in creating new transaction item')
-              reject(err)
-          }
-          else {
-              resolve(1)
-              console.log('Successfully created new item!')
-          }
-      })
-    }
-  }).then(function(result){
-      currentTransaction++
-  })
-}
-*/
-
 /*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
 /*Leaders*/
 //Lists leaders in alphabetical order
