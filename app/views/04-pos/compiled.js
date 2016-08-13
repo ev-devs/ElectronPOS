@@ -194,6 +194,7 @@ $("#platinum").click(function() {
 	}
 })
 
+
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
 
@@ -591,6 +592,27 @@ $("#n_delete").click(function() {
 	/*Refocuses the page on the barcode input*/
   refocus();
 });
+
+/*
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+console.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+*/
 
 const ipc = require('electron').ipcRenderer
 
@@ -1085,28 +1107,3 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
-
-
-const HID = require('node-hid');
-var devices = HID.devices() // this lists all the devices
-var usbCardReader = null; // this is going to be our
-
-//nconsole.log(devices)
-
-for (device in devices) {
-
-    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
-        //console.log(devices[device].vendorId)
-        usbCardReader = new HID.HID(  devices[device].path  );
-        return
-    }
-}
-
-usbCardReader.on("data", function(data) {
-    console.log(data)
-});
-
-
-setTimeout(function(){
-    console.log('testst')
-}, 4000)

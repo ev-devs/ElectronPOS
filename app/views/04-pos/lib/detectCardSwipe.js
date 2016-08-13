@@ -1,8 +1,9 @@
+/*
 const HID = require('node-hid');
 var devices = HID.devices() // this lists all the devices
 var usbCardReader = null; // this is going to be our
 
-//nconsole.log(devices)
+console.log(devices)
 
 for (device in devices) {
 
@@ -16,8 +17,4 @@ for (device in devices) {
 usbCardReader.on("data", function(data) {
     console.log(data)
 });
-
-
-setTimeout(function(){
-    console.log('testst')
-}, 4000)
+*/
