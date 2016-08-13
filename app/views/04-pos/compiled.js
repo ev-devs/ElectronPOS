@@ -94,6 +94,10 @@ var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
 
+
+var credit_card_can_be_charged = false;
+
+
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
 Platinum.find({}, function(err, leaders) {
@@ -263,6 +267,11 @@ $(document).on("click", "#card", function () {
 	/*Renders the html file necessary to handle card transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
+
+
+$(document).on('input', function(event){
+	console.log("input in the document")
+})
 
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
@@ -604,7 +613,7 @@ function transactionIsInProgress(){
 ipc.on('ibo-session-end-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
-  window.location.assign('../03-beginsession/index.html')
+  window.location.assign('../03-beginsession/index.htmle')
 
 })
 
@@ -1077,3 +1086,27 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
+
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+//nconsole.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+
+
+setTimeout(function(){
+    console.log('testst')
+}, 4000)

@@ -94,6 +94,10 @@ var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
 
+
+var credit_card_can_be_charged = false;
+
+
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
 Platinum.find({}, function(err, leaders) {

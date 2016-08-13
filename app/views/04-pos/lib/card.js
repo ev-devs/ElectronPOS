@@ -10,6 +10,11 @@ $(document).on("click", "#card", function () {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
+
+$(document).on('input', function(event){
+	console.log("input in the document")
+})
+
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
