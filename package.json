@@ -25,6 +25,7 @@
     "guid": "0.0.12",
     "hashtable": "^2.0.1",
     "mongoose": "^4.5.5",
+    "node-hid": "^0.5.1",
     "request": "^2.73.0",
     "shell-env": "^0.2.0",
     "underscore": "^1.8.3",
