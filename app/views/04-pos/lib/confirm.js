@@ -33,9 +33,6 @@ $("#confirm").click(function() {
 
 function init_transaction() {
 	cur_transaction = new Transaction();
-	cur_transaction.hello()
-
-
 	cur_transaction.createGUID();
 	cur_transaction.populateItems(function(transaction){
 			transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY

@@ -16,6 +16,8 @@ function print_init() {
   cancel_flag = 0;
   cash_flag = 0;
   card_flag = 0;
+  console.log("===============BEFORE:");
+  console.log(cur_transaction);
   cur_transaction.save(function(err){
     if (err){
       console.log("Error in saving new transaction")
@@ -25,5 +27,9 @@ function print_init() {
     }
   })
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log("===============AFTER:");
   console.log(cur_transaction);
+  Transaction.find({}, function(err, _transactions) {
+    console.log(_transactions);
+  });
 }
