@@ -49,7 +49,7 @@ function void_order(full_void) {
       cur_transaction = {};
       setTimeout(function() {
           $('enter-platinum').remove()
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
       }, 1500);
     }
 }

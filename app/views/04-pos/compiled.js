@@ -194,6 +194,7 @@ $("#platinum").click(function() {
 	}
 })
 
+
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
 
@@ -724,7 +725,7 @@ function void_order(full_void) {
       cur_transaction = {};
       setTimeout(function() {
           $('enter-platinum').remove()
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
       }, 1500);
     }
 }
@@ -1108,4 +1109,3 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
-
