@@ -1,3 +1,4 @@
+/***********************ENDSESSION.JS***********************/
 const ipc = require('electron').ipcRenderer
 
 $('#end-session').click(function(event){

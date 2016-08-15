@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
+/***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
         /*Update the global quantities of subtotal, tax, and total*/

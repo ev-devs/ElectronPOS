@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
+/***********************PLATINUMS.JS***********************/
 /*Leaders*/
 //Lists leaders in alphabetical order
 // appends html element to display all the names
