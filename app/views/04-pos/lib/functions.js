@@ -8,15 +8,15 @@ function update_price(operation, quantity, placement, confirmed) {
             subtotal-=((item_list[placement].price * quantity));
         else if(operation == '~')
             subtotal-=quantity;
-        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
+        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
         tax = subtotal * .075;
-        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
         total = subtotal + tax;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
     else if(confirmed) {
         total-=quantity;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
 }
 
