@@ -876,7 +876,7 @@ function print_init() {
   card_flag = 0;
   console.log("===============BEFORE:");
   console.log(cur_transaction);
- *cur_transaction.save(function(err){
+ cur_transaction.save(function(err){
     if (err){
       console.log("Error in saving new transaction")
     }
@@ -1107,4 +1107,3 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
-
