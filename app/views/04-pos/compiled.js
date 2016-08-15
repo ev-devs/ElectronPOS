@@ -193,11 +193,9 @@ $("#platinum").click(function() {
 
 		$('#enter-platinum').remove()
 		$('#enter-platinum-modal').remove()
-
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })
-
 
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
@@ -270,7 +268,10 @@ $(document).on("click", "#card", function () {
 	current_page = "card_amt.html";
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
+
+
+	$('#tendered_card-modal').remove()
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
 
@@ -352,7 +353,7 @@ function card_call_to_auth() {
 				console.log("Trasaction Id:", obj.transId)
 				console.log("Authorization Code:", obj.transAuthCode)
 				/*If all the money was on the card then go to the printing option*/
-				card_trans(obj.transMessage, obj.transId,obj.transAuthCode);
+				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
 			}
 			else {
 				console.log(obj.transMessage)
@@ -376,6 +377,7 @@ $(document).on("click", "#cash", function () {
 	previous_page = "pay_choice.html";
 	current_page = "cash.html"
 	colorfy();
+	$('#tendered-modal').remove()
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -643,41 +645,6 @@ ipc.on('ibo-session-end-reply', function (event, arg) {
 
 })
 
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
-
-
- $(".button-collapse").sideNav();
-
 /*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
@@ -758,6 +725,97 @@ function error_in_used() {
         out_duration: 200, // Transition out duration
     });
 }
+
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+
+$('#search').jboard('standard')
+
+//$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$(document).on("click", "#yes-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+$(document).on("click", "#no-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+function print_init() {
+  $("#cancel").removeAttr("style");
+  $("#confirm").removeAttr("style");
+  previous_flag = 0;
+  confirm_flag = 0;
+  cancel_flag = 0;
+  cash_flag = 0;
+  card_flag = 0;
+  console.log("===============BEFORE:");
+  console.log(cur_transaction);
+  cur_transaction.save(function(err){
+    if (err){
+      console.log("Error in saving new transaction")
+    }
+    else {
+      console.log("New transaction saved!")
+    }
+  })
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log("===============AFTER:");
+  console.log(cur_transaction);
+  Transaction.find({}, function(err, _transactions) {
+    console.log(_transactions);
+  });
+}
+
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
 
 /**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
 /*var i_i = -1;
@@ -842,60 +900,70 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
+/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
+/*Function that verifies tif the current scanned item is a ticket. */
+function verify_ticket(barcode) {
+	var scan_prefix = barcode.substring(0, 6);
+	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
+	console.log(scan_prefix);
+	var places = [];
+	var i = -1;
+	var ticket = inventory.find(function(e) {
+		i++;
+		if(e.barcode != null) {
+			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+				return true;
+		}
+	})
+	if(ticket == undefined)
+		return -1;
+	else if(ticket_flag != 1){
+		current_ticket[0] = i;
+		var title = inventory[i].title;
+		var j = find_in_customer_list("title", title);
+		console.log("J " + j);
+		current_ticket[1] = j;
+		current_ticket[2] = barcode.substring(6, barcode.length - 1);
+	}
 }
-
-
-
-$('#search').jboard('standard')
-
-//$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$(document).on("click", "#yes-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-$(document).on("click", "#no-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-function print_init() {
-  $("#cancel").removeAttr("style");
-  $("#confirm").removeAttr("style");
-  previous_flag = 0;
-  confirm_flag = 0;
-  cancel_flag = 0;
-  cash_flag = 0;
-  card_flag = 0;
-  console.log("===============BEFORE:");
-  console.log(cur_transaction);
-  cur_transaction.save(function(err){
-    if (err){
-      console.log("Error in saving new transaction")
-    }
-    else {
-      console.log("New transaction saved!")
-    }
-  })
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-  console.log("===============AFTER:");
-  console.log(cur_transaction);
-  Transaction.find({}, function(err, _transactions) {
-    console.log(_transactions);
-  });
+/*21610 1  027067   3*/
+function add_to_table(start, quantity) {
+	for(var i = 0; i < quantity; i++) {
+		var tck_cnt = Number(start.substring(6, 12));
+		tck_cnt+=i;
+		if(start[6] == "0")
+		tck_cnt = "0" + tck_cnt.toString();
+		console.log(tck_cnt);
+		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
+		console.log("A");
+	}
+	console.log("TABLE");
+	console.log(ticket_table.keys());
+}
+/*Adds items to the customers item list and does necessary updates, used twice within the code*/
+function add_item(item_list_index, inventory_list_index, quantity, manual) {
+	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
+		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+		values as the text values of the td tags.*/
+		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
+		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
+		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
+		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
+		</tr>"
+		/*Append to the table that holds the items*/
+		$("#sale_list tbody").append(item);
+	}
+	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
+	else {
+		var item = $("#inv-item" + inventory_list_index).text().trim();
+		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
+		$("#inv-item" + inventory_list_index).text(item);
+	}
+	cancel_flag = 1;
+	/*Update the global quantities of subtotal, tax, and total*/
+	update_price('+', quantity, item_list_index, 0);
 }
 
 /*********************************************NOTE: BEGIN SCAN CODE*********************************************/
@@ -1047,69 +1115,3 @@ function determine_item_status(item_list, inventory, barcode) {
     return -1;
   }
 };
-
-/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
-/*Function that verifies tif the current scanned item is a ticket. */
-function verify_ticket(barcode) {
-	var scan_prefix = barcode.substring(0, 6);
-	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
-	var places = [];
-	var i = -1;
-	var ticket = inventory.find(function(e) {
-		i++;
-		if(e.barcode != null) {
-			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
-				return true;
-		}
-	})
-	if(ticket == undefined)
-		return -1;
-	else if(ticket_flag != 1){
-		current_ticket[0] = i;
-		var title = inventory[i].title;
-		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
-		current_ticket[1] = j;
-		current_ticket[2] = barcode.substring(6, barcode.length - 1);
-	}
-}
-/*21610 1  027067   3*/
-function add_to_table(start, quantity) {
-	for(var i = 0; i < quantity; i++) {
-		var tck_cnt = Number(start.substring(6, 12));
-		tck_cnt+=i;
-		if(start[6] == "0")
-		tck_cnt = "0" + tck_cnt.toString();
-		console.log(tck_cnt);
-		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
-		console.log("A");
-	}
-	console.log("TABLE");
-	console.log(ticket_table.keys());
-}
-/*Adds items to the customers item list and does necessary updates, used twice within the code*/
-function add_item(item_list_index, inventory_list_index, quantity, manual) {
-	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
-		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
-		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
-		values as the text values of the td tags.*/
-		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
-		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
-		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
-		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
-		</tr>"
-		/*Append to the table that holds the items*/
-		$("#sale_list tbody").append(item);
-	}
-	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
-	else {
-		var item = $("#inv-item" + inventory_list_index).text().trim();
-		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
-		$("#inv-item" + inventory_list_index).text(item);
-	}
-	cancel_flag = 1;
-	/*Update the global quantities of subtotal, tax, and total*/
-	update_price('+', quantity, item_list_index, 0);
-}

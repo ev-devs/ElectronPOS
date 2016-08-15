@@ -12,6 +12,7 @@ $(document).on("click", "#cash", function () {
 	previous_page = "pay_choice.html";
 	current_page = "cash.html"
 	colorfy();
+	$('#tendered-modal').remove()
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
