@@ -92,7 +92,7 @@ function card_call_to_auth() {
 				console.log("Trasaction Id:", obj.transId)
 				console.log("Authorization Code:", obj.transAuthCode)
 				/*If all the money was on the card then go to the printing option*/
-				card_trans(obj.transMessage, obj.transId,obj.transAuthCode);
+				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
 			}
 			else {
 				console.log(obj.transMessage)
