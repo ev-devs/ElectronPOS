@@ -45,8 +45,6 @@ function createWindow(window) {
   // and load the index.html of the app.
   window.loadURL(`file://${__dirname}/app/index.html`);
 
-
-
   // Emitted when the window is closed.
   window.on('closed', () => {
     // Dereference the window object, usually you would store windows

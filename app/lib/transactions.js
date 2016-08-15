@@ -1,5 +1,5 @@
-const guid = require('node-uuid')
-const mongoose = require('mongoose')
+const guid      = require('node-uuid')
+const mongoose  = require('mongoose')
 const ItemTrans = require('./ItemTrans.js').schema
 const CardTrans = require('./CardTrans.js').schema
 const CashTrans = require('./CashTrans.js').schema
@@ -33,7 +33,7 @@ transactionSchema.methods.hello =  function() {
     console.log('hello')
 }
 transactionSchema.methods.createGUID = function(){
-    this.guid = uuid.v4();
+    this.guid = guid.v4();
     return this
 }
 transactionSchema.methods.getGUID = function(){
