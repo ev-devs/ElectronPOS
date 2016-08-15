@@ -194,6 +194,7 @@ $("#platinum").click(function() {
 	}
 })
 
+
 /*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
 $("#cancel").click(function() {
 
@@ -694,7 +695,6 @@ function update_price(operation, quantity, placement, confirmed) {
         $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
     }
 }
-
 
 /*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
