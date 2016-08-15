@@ -5,14 +5,13 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ev-devs/ElectronPOS.git"
   },
-  "author": "EV Interns",
-  "license": "UNLICENSED",
+  "authors": "Juan G Ruelas, John Dixon, Kevin Ortega",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ev-devs/ElectronPOS/issues"
   },
