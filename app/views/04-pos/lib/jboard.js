@@ -3,9 +3,10 @@ function jboardify(id, type) {
 }
 
 
+
 $('#search').jboard('standard')
 
-$('#barcode').jboard('standard')
+//$('#barcode').jboard('standard')
 
 //$('#enter-platinum').jboard('standard')
 
