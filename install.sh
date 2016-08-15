@@ -40,7 +40,7 @@ sudo echo "hdmi_cvt 1024 600 60 6 0 0 0" >> /boot/config.txt
 #this is for the input calibrator to calibrate the touch screen
 #sudo add-apt-repository ppa:tias/xinput-calibrator-ppa
 #sudo apt-get update
-sudo apt-get install xinput-calibrator
+sudo apt-get install xinput-calibrators
 
 #this should do the calibration
 xinput_calibrator --output-type xorg.conf.d --precalib 61 9846 265 9943

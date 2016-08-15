@@ -33,16 +33,17 @@ transactionSchema.methods.hello =  function() {
     alert('hello')
     console.log('hello')
 }
-
 transactionSchema.methods.createGUID = function(callback){
     this.guid = guid.raw();
     return this
+}
+transactionSchema.methods.getGUID = function(){
+    return this.guid
 }
 transactionSchema.methods.populateItems = function(callback){
     callback(this)
     return this
 }
-
 transactionSchema.methods.createCashTransaction = function(callback){
     callback(this)
     return this
