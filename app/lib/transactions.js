@@ -5,8 +5,7 @@ const CardTrans = require('./CardTrans.js').schema
 const CashTrans = require('./CashTrans.js').schema
 
 
-// NOTE mongoose IS DIFFERENT THAN TransactionConnection and should not be saved
-
+// NOTE mongoose IS DIFFERENT THAN TransactionConnection and should not be saved anywhere
 
 /*This is a "master" transaction that contains sub transactions of cash and card*/
 var transactionSchema = new mongoose.Schema({
