@@ -78,7 +78,6 @@ $("#platinum").click(function() {
 
 		$('#enter-platinum').remove()
 		$('#enter-platinum-modal').remove()
-
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })

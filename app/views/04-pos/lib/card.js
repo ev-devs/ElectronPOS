@@ -7,7 +7,10 @@ $(document).on("click", "#card", function () {
 	current_page = "card_amt.html";
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
+
+
+	$('#tendered_card-modal').remove()
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
 

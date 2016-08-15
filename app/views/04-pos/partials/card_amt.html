@@ -5,10 +5,13 @@
     <h4 class="no-space">How much on the card?</h4>
   </div>
   <div class="row">
+
+      <span style="font-size:300%;">$&nbsp;</span>
       <div class="col s12 m12 l12 center black-text">
-        <span style="font-size:300%;">$&nbsp;</span>
-        <input style="width: 80%; height: 50%; text-align: center; font-size:300%;" value="<%=total%>" id="tendered_card" class="keyboard grey lighten-4" type="text">
+
+            <input style="width: 80%; height: 50%; text-align: center; font-size:300%;" value="<%=total%>" id="tendered_card" class="keyboard grey lighten-4" type="text">
       </div>
+
   </div>
   <br />
   <br />
@@ -16,5 +19,5 @@
 
 
 <script type="text/javascript">
-    $('#enter-platinum').jboard('num')
+    $('#tendered_card').jboard('num')
 </script>
