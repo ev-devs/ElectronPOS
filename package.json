@@ -4,13 +4,13 @@
   "description": "A point of sale system made on top of Electron",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ev-devs/ElectronPOS.git"
   },
-  "authors": "Juan G Ruelas, John Dixon, Kevin Ortega",
+  "author": "Juan G Ruelas John Dixon Kevin Ortega",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ev-devs/ElectronPOS/issues"

@@ -32,7 +32,7 @@ transactionSchema.methods.hello =  function() {
     alert('hello')
     console.log('hello')
 }
-transactionSchema.methods.createGUID = function(callback){
+transactionSchema.methods.createGUID = function(){
     this.guid = uuid.v4();
     return this
 }
