@@ -727,6 +727,7 @@ function error_in_used() {
     });
 }
 
+/***********************JBOARD.JS***********************/
 function jboardify(id, type) {
     $('#' + id).jboard(type)
 }
@@ -747,6 +748,7 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
+/***********************PRINT.JS***********************/
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
   void_order(1);
@@ -901,7 +903,7 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
-/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
+/***********************TICKET.JS***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
@@ -967,7 +969,7 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
+/***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
 /*$(document).on("input", "#barcode", function()  {
 

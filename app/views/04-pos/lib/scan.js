@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
+/***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
 /*$(document).on("input", "#barcode", function()  {
 

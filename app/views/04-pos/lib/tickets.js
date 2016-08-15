@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
+/***********************TICKET.JS***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
