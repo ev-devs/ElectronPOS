@@ -48,7 +48,7 @@ function void_order(full_void) {
       current_page = "2";
       cur_transaction = {};
       setTimeout(function() {
-          $('enter-platinum').remove()
+          $('#enter-platinum').remove()
           $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
       }, 1500);
     }
