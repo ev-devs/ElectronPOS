@@ -23,6 +23,7 @@ function update_price(operation, quantity, placement, confirmed) {
 /*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order(full_void) {
+    can_end_session = 1;
     confirm_flag = 0;
     cancel_flag = 0;
     /*Cash flag is set to 0 to denote the end of a cash transaction*/
