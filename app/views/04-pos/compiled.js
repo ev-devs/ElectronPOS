@@ -301,10 +301,6 @@ $(document).on("click", "#swipe_sim", function() {
 });
 
 
-$(document).on('input', '#track-data', function(data) {
-	console.log(data)
-})
-
 function handle_card() {
 	if(card_amt != 0) {
 		current_page = "card.html";
@@ -646,7 +642,7 @@ function transactionIsInProgress(){
 ipc.on('ibo-session-end-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
-  window.location.assign('../03-beginsession/index.htmle')
+  window.location.assign('../03-beginsession/index.html')
 
 })
 

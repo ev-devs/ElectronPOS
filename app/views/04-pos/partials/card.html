@@ -15,9 +15,22 @@
       </div>
     </a>
 
-    <div id="credit-card-swipe-container" style="visibility: hidden; ">
+    <div id="credit-card-swipe-container">
         <input type="text" name="cc" value="" id="track-data">
     </div>
 
   </div>
 </div>
+
+
+<script type="text/javascript">
+
+
+    $( "#track-data" ).focus(function() {
+
+    });
+
+    $(document).on('input', '#track-data', function(data) {
+        console.log(data)
+    })
+</script>

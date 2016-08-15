@@ -40,10 +40,6 @@ $(document).on("click", "#swipe_sim", function() {
 });
 
 
-$(document).on('input', '#track-data', function(data) {
-	console.log(data)
-})
-
 function handle_card() {
 	if(card_amt != 0) {
 		current_page = "card.html";
