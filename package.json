@@ -22,15 +22,12 @@
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "graceful-fs": "^4.1.5",
-    "guid": "0.0.12",
-    "hashtable": "^2.0.1",
     "mongoose": "^4.5.5",
-    "node-hid": "^0.5.1",
+    "node-uuid": "^1.4.7",
     "request": "^2.73.0",
     "shell-env": "^0.2.0",
     "trackparser": "0.0.1",
-    "underscore": "^1.8.3",
-    "wifi-control": "^2.0.0"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
