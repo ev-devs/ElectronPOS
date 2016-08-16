@@ -1131,6 +1131,9 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 
 $("#prev-transactions").click(function() {
   if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    console.log(confirm_flag);
     Transaction.find({}, function(err, _transactions) {
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , {transactions : _transactions}));
     });
@@ -1144,7 +1147,34 @@ $("#prev-transactions").click(function() {
     });
   }
 });
-
+var transId;
 $(document).on("click", ".transaction", function() {
+   transId = $(this).attr("id");
+   $('#voidModal3').openModal({
+     dismissible: true, // Modal can be dismissed by clicking outside of the modal
+     opacity: .5, // Opacity of modal background
+     in_duration: 300, // Transition in duration
+     out_duration: 200, // Transition out duration
+   });
+});
 
+$(document).on("click", "#confirm-void", function() {
+  current_platinum = "NONE";
+  confirm_flag = 0;
+  /*newTrans.voidTransaction({
+      transId  : newTrans.transId
+  }).then(function(obj){
+      if (!obj.error){
+          console.log(obj.transMessage)
+          console.log("Transaction Id:", obj.transId)
+      }
+      else {
+          console.log(obj.transMessage)
+          console.log("Error Code:", obj.transErrorCode)
+          console.log("Error Text:", obj.transErrorText)
+      }
+      console.log('\n')
+  })
+
+}*/
 });
