@@ -1,18 +1,24 @@
 <div class="row">
   <div class="col s12">
     <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll">
-      <div class="collection" id=transaction-list" >
+      <div class="collection" id="transaction-list" >
 
 
 
-
-
-        <a href="#!" class="collection-item item">
-          <span id="">
-          </span>-$
-          <span id="">
-          </span>
-          </a>
+        <% for(var i = 0; i < transactions.length; i++) { %>
+              <%for(var j = 0; j < 1; j++) {%>
+            <a href="#!" class="collection-item transaction" id="<%=transactions[i].transId%>">
+              <p><%var result = transactions[i].items.map(function(a) {return a.title;});%>
+                ID: <%=transactions[i].guid%><br />
+                Subtotal: $<%=transactions[i].subtotal%><br />
+                Tax: $<%=transactions[i].tax%><br />
+                Total: $<%=transactions[i].total%><br />
+                Charged: $<%=transactions[i].cards[j].amount%> <br />
+                Items: <%=result%>
+              </p>
+            </a>
+            <%}%>
+        <%}%>
 
 
 
