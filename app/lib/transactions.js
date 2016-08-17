@@ -12,7 +12,7 @@ var transactionSchema = new mongoose.Schema({
     /*Think of this as a "Header" of sorts*/
     guid        : { type : String, required : true },
     platinum    : { type : String, required : true },
-    date        : { type : Date  , required : true },
+    dateCreated        : { type : Date  , required : true },
     location    : { type : String, required : true },
     subtotal    : { type : Number, required : true },
     tax         : { type : Number, required : true },
