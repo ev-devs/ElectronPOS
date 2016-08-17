@@ -67,7 +67,7 @@ app.on('ready', () => {
         app.quit()
     });*/
 
-    globalShortcut.register('CommandOrControl+C', () => {
+    globalShortcut.register('CommandOrControl+Q', () => {
         app.quit()
     })
 
