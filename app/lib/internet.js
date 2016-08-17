@@ -1,6 +1,3 @@
-
-
-
 var execSync = require('child_process').execSync
 var exec = require('child_process').exec
 var internet = {

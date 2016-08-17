@@ -33,9 +33,9 @@ $("#confirm").click(function() {
 
 function init_transaction() {
 	cur_transaction = new Transaction();
-	cur_transaction.createGUID();
+	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
 	cur_transaction.populateItems(function(transaction){
-			//transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
+			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
 			transaction.date = new Date();     //=> Using the date.now() methd you should be fine
 			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
