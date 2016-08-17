@@ -49,7 +49,7 @@ function handle_card() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 	}
 }
-
+var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
 	cur_transaction.createCardTransaction(function(transaction){
 		let CardTrans = {
@@ -58,7 +58,8 @@ function card_trans(transAuthCode, transId, transMessage) {
 			authCode : transAuthCode,
 			transId  : transId,
 			message  : transMessage,
-			cardType : "Harambe"
+			cardType : "Harambe",
+			dateCreated : new Date()
 		}
 		transaction.cards.push(CardTrans);
 		transaction.payments++;

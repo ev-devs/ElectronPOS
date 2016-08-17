@@ -48,7 +48,8 @@ function cash_trans(){
 			let CashTrans = {
 				guid 			: transaction.guid,
 				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length))
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
 			}
 			transaction.cashes.push(CashTrans);
 			transaction.payments++;

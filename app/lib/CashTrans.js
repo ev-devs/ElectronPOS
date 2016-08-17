@@ -8,7 +8,6 @@ var Cash = new mongoose.Schema({
     tendered    : { type : Number, required : true },
     change      : { type : Number, required : true },
     dateCreated : { type : Date  , required : true }
-
 })
 
 var CashTrans = TransactionConnection.model('CashTrans', Cash);

@@ -1,10 +1,11 @@
+var transactions = [];
 $("#prev-transactions").click(function() {
   if(can_end_session == 1) {
     current_platinum = "NON";
     confirm_flag = 1;
-    console.log(confirm_flag);
     Transaction.find({}, function(err, _transactions) {
-       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , {transactions : _transactions}));
+       var transactions = _transactions;
+       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
   }
   else {
@@ -16,6 +17,8 @@ $("#prev-transactions").click(function() {
     });
   }
 });
+
+
 var trans_Id;
 $(document).on("click", ".transaction", function() {
    trans_Id = $(this).attr("id");
@@ -35,6 +38,7 @@ $(document).on("click", "#confirm-void", function() {
   newTrans.voidTransaction({
       transId  : trans_Id
   }).then(function(obj){
+      $("#" + trans_Id).remove();
       if (!obj.error){
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
