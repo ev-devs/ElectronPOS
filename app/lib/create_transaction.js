@@ -115,7 +115,7 @@ var transaction = function(){
         }
         else {
             console.error('Not enough paramters fam')
-            thisObj.error = "Not enough paramters fam"
+            thisObj.error = "Not enough paramters fam to even send the request"
             return thisObj
         }
     }
