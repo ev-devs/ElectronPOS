@@ -38,10 +38,11 @@ $(document).on("click", "#confirm-void", function() {
   newTrans.voidTransaction({
       transId  : trans_Id
   }).then(function(obj){
-      $("#" + trans_Id).remove();
+
       if (!obj.error){
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
+          $("#" + trans_Id).remove();
       }
       else {
           console.log(obj.transMessage)
@@ -51,3 +52,9 @@ $(document).on("click", "#confirm-void", function() {
       console.log('\n')
   })
 });
+
+function update_transaction_db(transactions_) {
+  for(var i = 0; i < transactions_.length; i++) {
+    
+  }
+}

@@ -1149,10 +1149,11 @@ $(document).on("click", "#confirm-void", function() {
   newTrans.voidTransaction({
       transId  : trans_Id
   }).then(function(obj){
-      $("#" + trans_Id).remove();
+
       if (!obj.error){
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
+          $("#" + trans_Id).remove();
       }
       else {
           console.log(obj.transMessage)

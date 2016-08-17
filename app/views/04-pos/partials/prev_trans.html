@@ -8,7 +8,8 @@
         <% for(var i = 0; i < transactions.length; i++) { %>
               <%for(var j = 0; j < transactions[i].cards.length; j++) {%>
             <a href="#!" class="collection-item transaction" id="<%=transactions[i].cards[j].transId%>">
-              <p><%var result = transactions[i].items.map(function(a) {return a.title;});%>
+              <p>
+                <%var result = transactions[i].items.map(function(a) {return a.title;});%>
                 ID: <%=transactions[i].guid%><br />
                 Subtotal: $<%=transactions[i].subtotal%><br />
                 Tax: $<%=transactions[i].tax%><br />
