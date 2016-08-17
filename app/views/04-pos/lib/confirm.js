@@ -48,7 +48,7 @@ function init_transaction() {
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {
-
+					guid : cur_transaction.guid,
 					evid 		: item_list[i].id,
 					barcode 	: item_list[i].barcode,
 					title		: item_list[i].title,

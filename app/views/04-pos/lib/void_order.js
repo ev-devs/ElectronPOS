@@ -16,9 +16,9 @@ $("#prev-transactions").click(function() {
     });
   }
 });
-var transId;
+var trans_Id;
 $(document).on("click", ".transaction", function() {
-   transId = $(this).attr("id");
+   trans_Id = $(this).attr("id");
    $('#voidModal3').openModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
      opacity: .5, // Opacity of modal background
@@ -30,8 +30,10 @@ $(document).on("click", ".transaction", function() {
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
-  /*newTrans.voidTransaction({
-      transId  : newTrans.transId
+  var newTrans = new transaction();
+  //newTrans.transId = trans_Id;
+  newTrans.voidTransaction({
+      transId  : trans_Id
   }).then(function(obj){
       if (!obj.error){
           console.log(obj.transMessage)
@@ -44,6 +46,4 @@ $(document).on("click", "#confirm-void", function() {
       }
       console.log('\n')
   })
-
-}*/
 });
