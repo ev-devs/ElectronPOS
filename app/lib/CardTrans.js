@@ -6,7 +6,8 @@ var Card = new mongoose.Schema({
     authCode    : { type : String, required : true },
     transId     : { type : String, required : true },
     message     : { type : String, required : true },
-    cardType    : { type : String, required : true }
+    cardType    : { type : String, required : true },
+    dateCreated : { type : String, required : true }
 })
 
 
