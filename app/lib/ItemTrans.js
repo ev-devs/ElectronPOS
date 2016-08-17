@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 var Item =  new mongoose.Schema({
+    guid        : { type : String, required : true },
     evid        : { type : String, required : true },
     barcode     : { type : String, required : true },
     title       : { type : String, required : true },
