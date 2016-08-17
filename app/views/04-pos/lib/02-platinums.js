@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
+/***********************PLATINUMS.JS***********************/
 /*Leaders*/
 //Lists leaders in alphabetical order
 // appends html element to display all the names
@@ -68,6 +68,7 @@ $(document).on("click", ".platinum", function() {
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
+	can_end_session = 0;
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 

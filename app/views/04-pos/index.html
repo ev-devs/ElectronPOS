@@ -41,6 +41,7 @@
           <ul class="right hide-on-med-and-down" id="button-container">
             <li class="li-nav" id="end-session"><a href="#!" class="nav-link">End session</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="platinum">Platinums</a></li>
+            <li class="li-nav"><a href="#!" class="nav-link" id="prev-transactions">Previous transactions</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="scan_sim">Scan sim</a></li>
             <li class="li-nav"><a href="#!" class="nav-link" id="swipe_sim">Swipe sim</a></li>
           </ul>
@@ -159,11 +160,9 @@
                 <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Ok</a>
               </div>
             </div>
-            <!--OVERLAPPING/ALREADY USED MODAL-->
+            <!--PROCEED WITH CASH ORDER MODAL-->
             <div id="modal6" class="modal">
               <div class="modal-content">
-                <h4></h4>
-                <i class="medium error material-icons">report_problem</i>
                 <p>Are you sure you want to proceed?</p>
               </div>
               <div class="modal-footer">
@@ -171,22 +170,34 @@
                 <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">No</a>
               </div>
             </div>
+            <!--TOO MANY TICKETS ERROR MODAL-->
             <div id="modal7" class="modal">
               <div class="modal-content">
+                <i class="medium error material-icons">report_problem</i>
                 <h4>Error! Too many tickets registered!</h4>
-
               </div>
               <div class="modal-footer">
-                <a href="#!" id="TEST" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
               </div>
             </div>
+            <!--CANNOT DISPLAY TRANSACTIONS MODAL-->
             <div id="modal8" class="modal">
               <div class="modal-content">
-                <h4>Input registered!</h4>
+                <i class="medium error material-icons">report_problem</i>
+                <h4>Error! Cannot display transactions! Please complete current transaction.</h4>
+              </div>
+              <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
+              </div>
+            </div>
+            <!--CANNOT END SESSION MODAL-->
+            <div id="modal9" class="modal">
+              <div class="modal-content">
+                <h4>Error! Cannot end session!</h4>
 
               </div>
               <div class="modal-footer">
-                <a href="#!" id="TEST" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
               </div>
             </div>
               <!--START TOP RIGHT SIDE-->

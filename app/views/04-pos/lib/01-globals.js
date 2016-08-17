@@ -1,3 +1,4 @@
+/***********************GLOBALS.JS***********************/
 var request = require('request');
 var mongoose = require('mongoose');
 var ejs = require('ejs');
@@ -93,7 +94,7 @@ var swipe_flag = 0;
 var card_amt = 1;
 var previous_page = "1";
 var current_page = "2";
-
+var can_end_session = 1;
 
 var credit_card_can_be_charged = false;
 

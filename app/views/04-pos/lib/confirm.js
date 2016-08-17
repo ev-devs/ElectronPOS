@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
+/***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1) {

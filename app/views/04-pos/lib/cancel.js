@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
+/***********************CANCEL.JS***********************/
 $("#cancel").click(function() {
 
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/

@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col s12">
+    <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll">
+      <div class="collection" id="transaction-list" >
+
+
+
+        <% for(var i = 0; i < transactions.length; i++) { %>
+              <%for(var j = 0; j < 1; j++) {%>
+            <a href="#!" class="collection-item transaction" id="<%=transactions[i].transId%>">
+              <p><%var result = transactions[i].items.map(function(a) {return a.title;});%>
+                ID: <%=transactions[i].guid%><br />
+                Subtotal: $<%=transactions[i].subtotal%><br />
+                Tax: $<%=transactions[i].tax%><br />
+                Total: $<%=transactions[i].total%><br />
+                Charged: $<%=transactions[i].cards[j].amount%> <br />
+                Items: <%=result%>
+              </p>
+            </a>
+            <%}%>
+        <%}%>
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="voidModal3" class="modal">
+  <div class="modal-content">
+    <h4 id="inventory_place">Are you sure you want to void<span id="voided_item" class=""></span>?</h4>
+    <input placeholder="Enter item quantity" id="selected_item_qnt" type="text" class="validate">
+  </div>
+  <div class="modal-footer">
+    <a href="#!" id="confirm-void" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    <a href="#!" id="cancel-void" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+  </div>
+</div>
