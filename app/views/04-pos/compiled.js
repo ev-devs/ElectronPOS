@@ -345,11 +345,6 @@ function card_trans(transAuthCode, transId, transMessage) {
 	}
 }
 
-function listenForCard(){
-	console.log('we are listening for the card')
-	return cardCapture(function(trackdata){ return trackdata })
-}
-
 function card_call_to_auth() {
 	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
