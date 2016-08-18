@@ -61,7 +61,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 			transId  : transId,
 			message  : transMessage,
 			cardType : "Harambe",
-			dateCreated : new Date()
+			dateCreated : new Date(),
 			voidable : true,
 			voided   : false
 		}

@@ -67,15 +67,12 @@ function update_transaction_db(transactions_) {
           }
           else {
             trans.cards[j].voidable = false;
-            //if (trans){
             trans.save(function(err){
                 if (err){
-                    console.log("Error in updating platinum " + err)
-                    reject(err)
+                    console.log("Error in updating Trans " + err)
                 }
                 else {
                     console.log("Updated Existing Trans")
-                    resolve(1)
                 }
             })
             console.log("FOUND");
