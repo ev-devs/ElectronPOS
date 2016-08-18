@@ -8,6 +8,10 @@ var mongoose = require('mongoose');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 var HashTable = require('hashtable');
+var cardCapture = require('node-card-capture')
+var trackParser = require('trackparser')
+
+
 // Global variables
 var inventory = [];
 var inventory_query = [];

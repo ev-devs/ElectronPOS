@@ -1,4 +1,4 @@
-var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
+//var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/

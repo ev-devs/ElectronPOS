@@ -20,7 +20,18 @@
 
 
 <script type="text/javascript">
+
     cardCapture(function(trackdata){
-        console.log(trackdata)
+        console.log("RAW DATA ", trackdata)
+        var cardInfo = new trackParser(trackdata)
+        if (cardInfo.hasTrack1){
+            console.log(cardInfo.lastName)
+            console.log(cardInfo.firstName)
+            console.log(cardInfo.account)
+            console.log(cardInfo.expMonth)
+            console.log(cardInfo.expYear)
+        }
+
     })
+
 </script>

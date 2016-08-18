@@ -8,6 +8,10 @@ var mongoose = require('mongoose');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 var HashTable = require('hashtable');
+var cardCapture = require('node-card-capture')
+var trackParser = require('trackparser')
+
+
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -260,7 +264,7 @@ $("#y_cancel").click(function() {
   }
 });
 
-var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
+//var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
