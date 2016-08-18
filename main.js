@@ -43,7 +43,7 @@ function createWindow(window) {
   window.webContents.openDevTools();
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
+  window.loadURL(`file://${__dirname}/app/index.html`);
 
   // Emitted when the window is closed.
   window.on('closed', () => {
@@ -69,6 +69,10 @@ app.on('ready', () => {
 
     globalShortcut.register('CommandOrControl+Q', () => {
         app.quit()
+    })
+
+    globalShortcut.register('CommandOrControl+R', () => {
+        win.relaod()
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
