@@ -7,7 +7,6 @@ $("#cancel").click(function() {
 
 	}
   else if(previous_flag) {
-
 		if(current_page == "pay_choice.html") {
 			console.log("1");
 			confirm_flag = 1;
@@ -19,7 +18,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
-
+      console.log("2");
 			current_page = "pay_choice.html";
 			previous_page = "handle_order.html";
 			card_flag = 0;
@@ -27,7 +26,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "cash.html") {
-
+      console.log("3");
 			current_page = "pay_choice.html"
 			previous_page = "handle_order.html"
 			cash_flag = 0;
@@ -35,9 +34,10 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "card.html") {
+      console.log("4");
 			current_page = "card_amt.html"
 			previous_page = "pay_choice.html"
-			$("#confirm").removeAttr("style");
+			//$("#confirm").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 	}
