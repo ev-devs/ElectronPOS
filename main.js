@@ -9,11 +9,13 @@ const {app, globalShortcut } = electron
 const {BrowserWindow} = electron
 // Module to communicate between the processes
 const ipc = electron.ipcMain
-
+// captures envoiirnment variables
 const shellEnv = require('shell-env');
+
+/* When electron is not started by bash, evnironment variables need to be loaded manually*/
 process.env = shellEnv.sync()
 
-// This is used to update our sessions and products
+// This is used to update our sessions
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')
 
@@ -100,9 +102,8 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
-    createWindow(win);
+      createWindow(win);
   }
-
 });
 
 // In this file you can include the rest of your app's specific main process

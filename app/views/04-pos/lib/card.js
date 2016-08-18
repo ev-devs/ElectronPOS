@@ -1,3 +1,5 @@
+var cardCapture = require('node-card-capture')
+
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
@@ -79,6 +81,11 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
 	}
+}
+
+function listenForCard(){
+	console.log('we are listening for the card')
+	return cardCapture(function(trackdata){ return trackdata })
 }
 
 function card_call_to_auth() {
