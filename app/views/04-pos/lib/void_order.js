@@ -55,6 +55,7 @@ $(document).on("click", "#confirm-void", function() {
 
 function update_transaction_db(transactions_) {
   for(var i = 0; i < transactions_.length; i++) {
-    
+    var cur_date = new Date();
+    cur_date = cur_date.getHours();
   }
 }

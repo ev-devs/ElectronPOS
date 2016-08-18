@@ -7,7 +7,8 @@ var Card = new mongoose.Schema({
     transId     : { type : String, required : true },
     message     : { type : String, required : true },
     cardType    : { type : String, required : true },
-    dateCreated : { type : Date,   required : true }
+    dateCreated : { type : Date,   required : true },
+    voidable    : { type : String, required : true }
 })
 
 

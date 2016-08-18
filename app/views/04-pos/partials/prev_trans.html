@@ -15,7 +15,8 @@
                 Tax: $<%=transactions[i].tax%><br />
                 Total: $<%=transactions[i].total%><br />
                 Charged: $<%=transactions[i].cards[j].amount%> <br />
-                Items: <%=result%>
+                Items: <%=result%> <br />
+                Date: <%=transactions[i].cards[j].dateCreated.getHours()%>
               </p>
             </a>
             <%}%>
