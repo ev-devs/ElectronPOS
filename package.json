@@ -23,7 +23,7 @@
     "graceful-fs": "^4.1.5",
     "hashtable": "^2.0.2",
     "mongoose": "^4.5.5",
-    "node-card-capture": "0.0.2",
+    "node-card-capture": "0.0.5",
     "node-uuid": "^1.4.7",
     "request": "^2.73.0",
     "shell-env": "^0.2.0",
