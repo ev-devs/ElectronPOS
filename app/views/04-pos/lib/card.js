@@ -60,6 +60,8 @@ function card_trans(transAuthCode, transId, transMessage) {
 			message  : transMessage,
 			cardType : "Harambe",
 			dateCreated : new Date()
+			voidable : true,
+			voided   : false
 		}
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
