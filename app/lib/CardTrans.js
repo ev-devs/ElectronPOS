@@ -8,7 +8,8 @@ var Card = new mongoose.Schema({
     message     : { type : String, required : true },
     cardType    : { type : String, required : true },
     dateCreated : { type : Date,   required : true },
-    voidable    : { type : String, required : true }
+    voidable    : { type : Boolean, required : true },
+    voided      : { type : Boolean, required : true }
 })
 
 

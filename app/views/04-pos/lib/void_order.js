@@ -5,6 +5,7 @@ $("#prev-transactions").click(function() {
     confirm_flag = 1;
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
+       update_transaction_db(_transactions);
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
   }
@@ -54,8 +55,35 @@ $(document).on("click", "#confirm-void", function() {
 });
 
 function update_transaction_db(transactions_) {
+  var cur_date = new Date();
+  cur_date = cur_date.getHours();
   for(var i = 0; i < transactions_.length; i++) {
-    var cur_date = new Date();
-    cur_date = cur_date.getHours();
+    for(var j = 0; j < transactions_[i].cards.length; j++) {
+      if(cur_date - transactions_[i].cards[j].dateCreated.getHours() != 0) {
+        /*Begin transaction search*/
+        Transaction.findOne( { guid : transactions_[i].cards[j].guid }, function(err, trans){
+          if (err){
+              console.log( "Error in finding a transaction " +  err)
+          }
+          else {
+            trans.cards[j].voidable = false;
+            //if (trans){
+            trans.save(function(err){
+                if (err){
+                    console.log("Error in updating platinum " + err)
+                    reject(err)
+                }
+                else {
+                    console.log("Updated Existing Trans")
+                    resolve(1)
+                }
+            })
+            console.log("FOUND");
+            //}
+          }
+        })
+        /*End Transaction search*/
+      }
+    }
   }
 }
