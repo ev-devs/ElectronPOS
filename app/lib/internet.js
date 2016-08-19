@@ -144,7 +144,14 @@ function bashify(word) {
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
 
-  $('#modal1').openModal();
+
+    $('#modal1').openModal({
+        opacity : 0
+    });
+    $('#keyboard-modal').openModal({
+        opacity : 0
+    });
+
   ap_name = $(this).attr('id');
   $("#remove").remove();
   $("#proceed").remove();
@@ -163,6 +170,7 @@ $(document).on('click', '#rescan', function() {
   render_connections().then(function(obj) {
     var connections = obj.toString().split("\n");
     connections = JSONify(remove_dup(connections))
+    $('#keyboard-modal').remove()
     $('main').html(ejs.render(fs.readFileSync( __dirname + '/../views/01-internet/partials/connectlist.html', 'utf-8') , {
         output  : connections
     }))

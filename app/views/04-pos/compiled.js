@@ -8,6 +8,10 @@ var mongoose = require('mongoose');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 var HashTable = require('hashtable');
+var cardCapture = require('node-card-capture').cardCapture
+var trackParser = require('trackparser')
+
+
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -319,7 +323,7 @@ $("#y_cancel").click(function() {
   }
 });
 
-var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
+//var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -689,36 +693,6 @@ usbCardReader.on("data", function(data) {
 });
 */
 
-/***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if (can_end_session == 0){
-      $('#modal9').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-      });
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-  window.location.assign('../03-beginsession/index.html')
-})
-
 /***********************FRONTEND.JS***********************/
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
@@ -754,6 +728,36 @@ function fade_out() {
 
 
  $(".button-collapse").sideNav();
+
+/***********************ENDSESSION.JS***********************/
+const ipc = require('electron').ipcRenderer
+
+$('#end-session').click(function(event){
+
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+  window.location.assign('../03-beginsession/index.html')
+})
 
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {

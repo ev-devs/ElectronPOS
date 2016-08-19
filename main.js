@@ -74,7 +74,7 @@ app.on('ready', () => {
     })
 
     globalShortcut.register('CommandOrControl+R', () => {
-        win.relaod()
+        win.reload()
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
