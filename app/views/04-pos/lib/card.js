@@ -1,4 +1,4 @@
-//var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
+var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -26,7 +26,7 @@ $(document).on("click", "#swipe_sim", function() {
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag && swipe_flag) {
-		card_call_to_auth();
+		//card_call_to_auth();
 		$("#cancel").removeAttr("style");
 		$("#confirm").removeAttr("style");
 		confirm_flag = 0;
@@ -68,7 +68,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
-	/*
+
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		//void_order(1);
 		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -83,28 +83,9 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_page = "handle_order.html";
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
-	}*/
+	}
 }
 
-function card_call_to_auth() {
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-			cardnumber  : "4242424242424242",
-			expdate     : "0220",
-			ccv         : "123",
-			amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option*/
-				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		});
-}
+/*function card_call_to_auth() {
+
+}*/

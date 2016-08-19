@@ -323,7 +323,7 @@ $("#y_cancel").click(function() {
   }
 });
 
-//var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
+var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -351,7 +351,7 @@ $(document).on("click", "#swipe_sim", function() {
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag && swipe_flag) {
-		card_call_to_auth();
+		//card_call_to_auth();
 		$("#cancel").removeAttr("style");
 		$("#confirm").removeAttr("style");
 		confirm_flag = 0;
@@ -393,7 +393,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
-	/*
+
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		//void_order(1);
 		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -408,31 +408,12 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_page = "handle_order.html";
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
-	}*/
+	}
 }
 
-function card_call_to_auth() {
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-			cardnumber  : "4242424242424242",
-			expdate     : "0220",
-			ccv         : "123",
-			amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option*/
-				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		});
-}
+/*function card_call_to_auth() {
+
+}*/
 
 /***********************CASH.JS***********************/
 $("#yes-cash").click(function () {
@@ -693,6 +674,36 @@ usbCardReader.on("data", function(data) {
 });
 */
 
+/***********************ENDSESSION.JS***********************/
+const ipc = require('electron').ipcRenderer
+
+$('#end-session').click(function(event){
+
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+  window.location.assign('../03-beginsession/index.html')
+})
+
 /***********************FRONTEND.JS***********************/
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
@@ -728,36 +739,6 @@ function fade_out() {
 
 
  $(".button-collapse").sideNav();
-
-/***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if (can_end_session == 0){
-      $('#modal9').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-      });
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-  window.location.assign('../03-beginsession/index.html')
-})
 
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
