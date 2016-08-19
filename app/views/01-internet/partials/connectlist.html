@@ -2,8 +2,12 @@
 <div id="modal1" class="modal">
   <div class="modal-content-pw">
   <!--Text area to enter the password-->
-    <h4 id="con_pw">Enter password</h4>
-    <input id="keyboard" type="text">
+    <div class="container center">
+        <br>
+        <h4 id="con_pw">Enter password</h4>
+        <input id="keyboard" type="text">
+    </div>
+
     <script type="text/javascript">
       $('#keyboard').jboard('standard');
       $('#keyboard').on( 'jpress', function(event, key){
