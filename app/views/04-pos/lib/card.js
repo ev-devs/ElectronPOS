@@ -16,10 +16,6 @@ $(document).on("click", "#card", function () {
 });
 
 
-$(document).on('input', function(event){
-	console.log("input in the document")
-})
-
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
   cancel_flag = 0;
@@ -51,6 +47,7 @@ function handle_card() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 	}
 }
+/*
 var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
 	cur_transaction.createCardTransaction(function(transaction){
@@ -85,7 +82,26 @@ function card_trans(transAuthCode, transId, transMessage) {
 		$("#cancel").css("background-color", "red");
 	}
 }
-
+*/
 /*function card_call_to_auth() {
-
+var newTrans = new transaction();
+newTrans.chargeCreditCard({
+		cardnumber  : "4242424242424242",
+		expdate     : "0220",
+		ccv         : "123",
+		amount      : card_amt.toString()
+	}).then(function(obj){
+		if (!obj.error){
+			console.log(obj.transMessage)
+			console.log("Trasaction Id:", obj.transId)
+			console.log("Authorization Code:", obj.transAuthCode)
+			/*If all the money was on the card then go to the printing option
+			card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+		}
+		else {
+			console.log(obj.transMessage)
+			console.log("Error Code:", obj.transErrorCode)
+			console.log("Error Text:", obj.transErrorText)
+		}
+	});
 }*/
