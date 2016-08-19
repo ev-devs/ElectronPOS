@@ -20,9 +20,9 @@ $("#prev-transactions").click(function() {
 });
 
 
-var trans_Id;
+var elem_id;
 $(document).on("click", ".transaction", function() {
-   trans_Id = $(this).attr("id");
+   elem_id = $(this).attr("id");
    $('#voidModal3').openModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
      opacity: .5, // Opacity of modal background
@@ -34,16 +34,38 @@ $(document).on("click", ".transaction", function() {
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
+  var trans_id = elem_id.substring(0, elem_id.search("_"));
+  var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)
+  console.log(trans_guid);
   var newTrans = new transaction();
-  //newTrans.transId = trans_Id;
   newTrans.voidTransaction({
-      transId  : trans_Id
+      transId  : trans_id
   }).then(function(obj){
 
       if (!obj.error){
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
-          $("#" + trans_Id).remove();
+          $("#" + elem_id).remove();
+          /*Begin transaction search*/
+          Transaction.findOne( { guid : trans_guid }, function(err, trans){
+            if (err){
+                console.log( "Error in finding a transaction " +  err)
+            }
+            else {
+              console.log(trans)
+              trans.cards[0].voidable = false;
+              trans.cards[0].voided = true;
+              trans.save(function(err){
+                  if (err){
+                      console.log("Error in updating Trans " + err)
+                  }
+                  else {
+                      console.log("Updated Existing Trans")
+                  }
+              })
+            }
+          });
+          /*End Transaction search*/
       }
       else {
           console.log(obj.transMessage)
@@ -55,18 +77,22 @@ $(document).on("click", "#confirm-void", function() {
 });
 
 function update_transaction_db(transactions_) {
-  var cur_date = new Date();
-  cur_date = cur_date.getHours();
+  var cur_date = Date.parse(new Date());
   for(var i = 0; i < transactions_.length; i++) {
     for(var j = 0; j < transactions_[i].cards.length; j++) {
-      if(cur_date - transactions_[i].cards[j].dateCreated.getHours() != 0) {
+      //var past_date = transactions_[i].cards[j].dateCreated.parse();
+      //console.log(cur_date - past_date);
+      var deadline = transactions_[i].cards[j].dateCreated;
+      deadline = deadline.setDate(deadline.getDate() + 1);
+      if(cur_date >= deadline) {
         /*Begin transaction search*/
         Transaction.findOne( { guid : transactions_[i].cards[j].guid }, function(err, trans){
           if (err){
               console.log( "Error in finding a transaction " +  err)
           }
           else {
-            trans.cards[j].voidable = false;
+            console.log(trans)
+            trans.cards[0].voidable = false;
             trans.save(function(err){
                 if (err){
                     console.log("Error in updating Trans " + err)
@@ -76,9 +102,8 @@ function update_transaction_db(transactions_) {
                 }
             })
             console.log("FOUND");
-            //}
           }
-        })
+        });
         /*End Transaction search*/
       }
     }

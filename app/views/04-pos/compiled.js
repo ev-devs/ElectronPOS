@@ -18,9 +18,7 @@ var a_list = [];
 var cur_transaction = {};
 var ticket_table = new HashTable();
 
-
 /***********THIS IS OUR LOGIC**********************/
-
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
         console.log(err)
@@ -58,7 +56,67 @@ var Platinum = require('../../lib/platinum.js');             /*This will be used
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
+/***FOR TESTING PURPOSES***/
+function force_transaction() {
+cur_transaction = new Transaction();
+cur_transaction.createGUID();
+cur_transaction.populateItems(function(transaction){
+    // transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
+    transaction.platinum  = "HARAMBE";  //=> Here you should modify the platinum name
+    transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
+    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+    transaction.subtotal = 69   //=> this is the raw subtotal without taxes
+    transaction.tax = 10    //=> this can be calculated via a function with the data we get from the event
+    transaction.total = 420      //=> this is just adding subtotal and tax together
+    transaction.payments = 0   //=> the amount of payments that will be made. At least 1
 
+
+  for (var i = 0; i < 1; i++){
+
+      let item = {
+        guid : cur_transaction.guid,
+        evid 		: 69,
+        barcode 	: 69,
+        title		: "TESTI",
+        isticket	: false,
+        prefix		: 69,
+        price		: 12,
+        tax			:1
+      }
+    }
+});
+
+var newTrans = new transaction();
+newTrans.chargeCreditCard({
+    cardnumber  : "4242424242424242",
+    expdate     : "0220",
+    ccv         : "123",
+    amount      : 80000
+  }).then(function(obj){
+    if (!obj.error){
+      console.log(obj.transMessage)
+      console.log("Trasaction Id:", obj.transId)
+      console.log("Authorization Code:", obj.transAuthCode)
+      /*If all the money was on the card then go to the printing option*/
+      card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+
+      cur_transaction.save(function(err){
+        if (err){
+          console.log("Error in saving new transaction")
+        }
+        else {
+          console.log("New transaction saved!")
+        }
+      });
+    }
+    else {
+      console.log(obj.transMessage)
+      console.log("Error Code:", obj.transErrorCode)
+      console.log("Error Text:", obj.transErrorText)
+    }
+  });
+}
+/***FOR TESTING PURPOSES***/
 
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
@@ -184,6 +242,7 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
+	force_transaction();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -330,6 +389,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
+	/*
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		//void_order(1);
 		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -344,7 +404,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_page = "handle_order.html";
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
-	}
+	}*/
 }
 
 function card_call_to_auth() {
@@ -901,7 +961,6 @@ function print_init() {
   cash_flag = 0;
   card_flag = 0;
   console.log("===============BEFORE:");
-  console.log(cur_transaction);
   cur_transaction.save(function(err){
     if (err){
       console.log("Error in saving new transaction")
@@ -909,7 +968,7 @@ function print_init() {
     else {
       console.log("New transaction saved!")
     }
-  })
+  });
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
   console.log("===============AFTER:");
   console.log(cur_transaction);
@@ -1156,9 +1215,9 @@ $("#prev-transactions").click(function() {
 });
 
 
-var trans_Id;
+var elem_id;
 $(document).on("click", ".transaction", function() {
-   trans_Id = $(this).attr("id");
+   elem_id = $(this).attr("id");
    $('#voidModal3').openModal({
      dismissible: true, // Modal can be dismissed by clicking outside of the modal
      opacity: .5, // Opacity of modal background
@@ -1170,16 +1229,38 @@ $(document).on("click", ".transaction", function() {
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
+  var trans_id = elem_id.substring(0, elem_id.search("_"));
+  var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)
+  console.log(trans_guid);
   var newTrans = new transaction();
-  //newTrans.transId = trans_Id;
   newTrans.voidTransaction({
-      transId  : trans_Id
+      transId  : trans_id
   }).then(function(obj){
 
       if (!obj.error){
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
-          $("#" + trans_Id).remove();
+          $("#" + elem_id).remove();
+          /*Begin transaction search*/
+          Transaction.findOne( { guid : trans_guid }, function(err, trans){
+            if (err){
+                console.log( "Error in finding a transaction " +  err)
+            }
+            else {
+              console.log(trans)
+              trans.cards[0].voidable = false;
+              trans.cards[0].voided = true;
+              trans.save(function(err){
+                  if (err){
+                      console.log("Error in updating Trans " + err)
+                  }
+                  else {
+                      console.log("Updated Existing Trans")
+                  }
+              })
+            }
+          });
+          /*End Transaction search*/
       }
       else {
           console.log(obj.transMessage)
@@ -1191,18 +1272,22 @@ $(document).on("click", "#confirm-void", function() {
 });
 
 function update_transaction_db(transactions_) {
-  var cur_date = new Date();
-  cur_date = cur_date.getHours();
+  var cur_date = Date.parse(new Date());
   for(var i = 0; i < transactions_.length; i++) {
     for(var j = 0; j < transactions_[i].cards.length; j++) {
-      if(cur_date - transactions_[i].cards[j].dateCreated.getHours() != 0) {
+      //var past_date = transactions_[i].cards[j].dateCreated.parse();
+      //console.log(cur_date - past_date);
+      var deadline = transactions_[i].cards[j].dateCreated;
+      deadline = deadline.setDate(deadline.getDate() + 1);
+      if(cur_date >= deadline) {
         /*Begin transaction search*/
         Transaction.findOne( { guid : transactions_[i].cards[j].guid }, function(err, trans){
           if (err){
               console.log( "Error in finding a transaction " +  err)
           }
           else {
-            trans.cards[j].voidable = false;
+            console.log(trans)
+            trans.cards[0].voidable = false;
             trans.save(function(err){
                 if (err){
                     console.log("Error in updating Trans " + err)
@@ -1212,9 +1297,8 @@ function update_transaction_db(transactions_) {
                 }
             })
             console.log("FOUND");
-            //}
           }
-        })
+        });
         /*End Transaction search*/
       }
     }

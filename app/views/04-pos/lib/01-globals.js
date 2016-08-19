@@ -18,9 +18,7 @@ var a_list = [];
 var cur_transaction = {};
 var ticket_table = new HashTable();
 
-
 /***********THIS IS OUR LOGIC**********************/
-
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
     if (err){
         console.log(err)
@@ -58,7 +56,67 @@ var Platinum = require('../../lib/platinum.js');             /*This will be used
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
+/***FOR TESTING PURPOSES***/
+function force_transaction() {
+cur_transaction = new Transaction();
+cur_transaction.createGUID();
+cur_transaction.populateItems(function(transaction){
+    // transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
+    transaction.platinum  = "HARAMBE";  //=> Here you should modify the platinum name
+    transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
+    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+    transaction.subtotal = 69   //=> this is the raw subtotal without taxes
+    transaction.tax = 10    //=> this can be calculated via a function with the data we get from the event
+    transaction.total = 420      //=> this is just adding subtotal and tax together
+    transaction.payments = 0   //=> the amount of payments that will be made. At least 1
 
+
+  for (var i = 0; i < 1; i++){
+
+      let item = {
+        guid : cur_transaction.guid,
+        evid 		: 69,
+        barcode 	: 69,
+        title		: "TESTI",
+        isticket	: false,
+        prefix		: 69,
+        price		: 12,
+        tax			:1
+      }
+    }
+});
+
+var newTrans = new transaction();
+newTrans.chargeCreditCard({
+    cardnumber  : "4242424242424242",
+    expdate     : "0220",
+    ccv         : "123",
+    amount      : 80000
+  }).then(function(obj){
+    if (!obj.error){
+      console.log(obj.transMessage)
+      console.log("Trasaction Id:", obj.transId)
+      console.log("Authorization Code:", obj.transAuthCode)
+      /*If all the money was on the card then go to the printing option*/
+      card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+
+      cur_transaction.save(function(err){
+        if (err){
+          console.log("Error in saving new transaction")
+        }
+        else {
+          console.log("New transaction saved!")
+        }
+      });
+    }
+    else {
+      console.log(obj.transMessage)
+      console.log("Error Code:", obj.transErrorCode)
+      console.log("Error Text:", obj.transErrorText)
+    }
+  });
+}
+/***FOR TESTING PURPOSES***/
 
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/

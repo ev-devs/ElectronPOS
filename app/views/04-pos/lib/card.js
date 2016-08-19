@@ -68,6 +68,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
+	/*
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		//void_order(1);
 		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -82,7 +83,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_page = "handle_order.html";
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
-	}
+	}*/
 }
 
 function card_call_to_auth() {
