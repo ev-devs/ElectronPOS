@@ -28,27 +28,7 @@ cardCapture(function(trackdata){
 
   var cardInfo = new trackParser(trackdata)
   //if (cardInfo.hasTrack1){
-
-    var newTrans = new transaction();
-  	newTrans.chargeCreditCard({
-            cardnumber  : "4242424242424242",
-            expdate     : "0220",
-            ccv         : "123",
-  			amount      : card_amt.toString()
-  		}).then(function(obj){
-  			if (!obj.error){
-  				console.log(obj.transMessage)
-  				console.log("Trasaction Id:", obj.transId)
-  				console.log("Authorization Code:", obj.transAuthCode)
-  				/*If all the money was on the card then go to the printing option*/
-  				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-  			}
-  			else {
-  				console.log(obj.transMessage)
-  				console.log("Error Code:", obj.transErrorCode)
-  				console.log("Error Text:", obj.transErrorText)
-  			}
-  		});
+    start_transaction(1, 2, 3)
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     confirm_flag = 0;
@@ -58,7 +38,7 @@ cardCapture(function(trackdata){
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
   //}
 });
-
+/*
 var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
 	cur_transaction.createCardTransaction(function(transaction){
@@ -90,5 +70,5 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
 	}
-}
+}*/
 </script>

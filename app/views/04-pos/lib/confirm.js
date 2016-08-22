@@ -24,9 +24,10 @@ $("#confirm").click(function() {
 		handle_cash();
   }
 	else if(card_flag) {
-		if(current_page != "card.html")
+		if(current_page == "card_input.html")
+			start_transaction(1, 2, 3);
+		else if(current_page != "card.html")
 			handle_card();
-		else if(current_page == "card_input.html")
 	}
 	else if(current_platinum == "NONE") {
 		error_platinum();
