@@ -2,12 +2,12 @@
   <div class="row animated fadeIn" id="thanks">
     <div class="col s12 m12 l12 center">
         <div class="container">
-            <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh; margin-top: 20vh" class="center">Please swipe card</p>
+            <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh;" class="center">Please swipe card</p>
         </div>
     </div>
   </div>
   <div class="row animated fadeIn">
-    <a href="#!" style="color: inherit;">
+    <a href="#!" style="color: inherit;" id="card-input">
     <div class="col s12 m12 l12 blue lighten-3 center waves-effect waves-light z-depth-1">
         <h4 class="white-text">
           Input card info
@@ -27,7 +27,7 @@ cardCapture(function(trackdata){
   console.log("RAW DATA ", trackdata)
 
 
-  //var cardInfo = new trackParser(trackdata)
+  var cardInfo = new trackParser(trackdata)
   //if (cardInfo.hasTrack1){
 
     var newTrans = new transaction();
@@ -79,8 +79,6 @@ function card_trans(transAuthCode, transId, transMessage) {
 	});
 
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		//void_order(1);
-		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
 		print_init();
 	}
 	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {

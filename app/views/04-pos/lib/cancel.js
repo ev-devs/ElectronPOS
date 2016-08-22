@@ -37,9 +37,13 @@ $("#cancel").click(function() {
       console.log("4");
 			current_page = "card_amt.html"
 			previous_page = "pay_choice.html"
-			//$("#confirm").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
+    else if(current_page == "card_input.html") {
+      current_page = "card.html";
+      previous_page = "card_amt";
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
 	}
 	else if(current_platinum == "NONE"){
 		error_platinum();

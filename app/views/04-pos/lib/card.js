@@ -10,7 +10,7 @@ $(document).on("click", "#card", function () {
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
 
-
+	console.log("ENTERED");
 	$('#tendered_card-modal').remove()
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
@@ -37,6 +37,11 @@ $(document).on("click", "#swipe_sim", function() {
 	}
 });
 
+$(document).on("click", "#card-input", function() {
+	current_page = "card_input.html";
+	previous_page = "card.html";
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_input.html', 'utf-8') , {}));
+});
 
 function handle_card() {
 	if(card_amt != 0) {
@@ -79,7 +84,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		current_page = "pay_choice.html";
 		previous_page = "handle_order.html";
 		previous_flag = 1;
-		$("#cancel").css("background-color", "red");
+		$("#cancel"%B6010569719163353^11027541/89^25010004000060084713           ?;6010569719163353=25010004000060084713?).css("background-color", "red");
 	}
 }
 */
