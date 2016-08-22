@@ -1,3 +1,4 @@
+<br><br><br>
 <div class="col s12 m12 l12 center">
   <div class="row animated fadeIn" id="thanks">
     <div class="col s12 m12 l12 center">
@@ -19,47 +20,66 @@
 
 
 
+<div id="error-reading-card-modal" class="modal">
+      <div class="modal-content">
+        <i class="medium error material-icons">report_problem</i>
+        <h4>Error! There was an error swiping the card, please try again</h4>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
+      </div>
+    </div>
+
+
 
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
 
 cardCapture(function(trackdata){
-  console.log("RAW DATA ", trackdata)
-  var cardInfo = new trackParser(trackdata)
-  //if (cardInfo.hasTrack1){
-  var newTrans = new transaction();
-  newTrans.chargeCreditCard({
-          cardnumber  : "4242424242424242",
-          expdate     : "0220",
-          ccv         : "123",
-          amount      : card_amt.toString()
-    }).then(function(obj){
-      if (!obj.error){
-        console.log(obj.transMessage)
-        console.log("Trasaction Id:", obj.transId)
-        console.log("Authorization Code:", obj.transAuthCode)
-        /*If all the money was on the card then go to the printing option*/
-        card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-      }
-      else {
-        console.log(obj.transMessage)
-        console.log("Error Code:", obj.transErrorCode)
-        console.log("Error Text:", obj.transErrorText)
-      }
-    });
-    $("#cancel").removeAttr("style");
-    $("#confirm").removeAttr("style");
-    confirm_flag = 0;
-    card_flag = 0;
-    cancel_flag = 0;
-    previous_flag = 0;
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-  //}
-});
+    console.log(trackdata)
+    cardInfo = new trackParser(trackdata)
+    if (cardInfo.hasTrack1){
+
+        var newTrans = new transaction();
+        newTrans.chargeCreditCard({
+                cardnumber  : cardInfo.account, //"4242424242424242",
+                expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+                ccv         : "123",
+                amount      : card_amt.toString()
+          }).then(function(obj){
+            if (!obj.error){
+              console.log(obj.transMessage)
+              console.log("Trasaction Id:", obj.transId)
+              console.log("Authorization Code:", obj.transAuthCode)
+              /*If all the money was on the card then go to the printing option*/
+              card_trans(obj.transAuthCode, obj.transId, obj.transMessage, cardInfo.firstName, cardInfo.lastName);
+            }
+            else {
+              console.log(obj.transMessage)
+              console.log("Error Code:", obj.transErrorCode)
+              console.log("Error Text:", obj.transErrorText)
+            }
+          });
+          $("#cancel").removeAttr("style");
+          $("#confirm").removeAttr("style");
+          confirm_flag = 0;
+          card_flag = 0;
+          cancel_flag = 0;
+          previous_flag = 0;
+          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+
+    }
+    else {
+        console.log("There was an error reading + parsing the card data, try again")
+    }
+})
+
+
+
 
 var card_date;
-function card_trans(transAuthCode, transId, transMessage) {
+function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
 	cur_transaction.createCardTransaction(function(transaction){
 		let CardTrans = {
 			guid     : transaction.guid,
