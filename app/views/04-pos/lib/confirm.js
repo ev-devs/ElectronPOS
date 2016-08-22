@@ -43,9 +43,9 @@ $("#confirm").click(function() {
 							let CardTrans = {
 								guid     : transaction.guid,
 								amount   : card_amt,
-								authCode : transAuthCode,
-								transId  : transId,
-								message  : transMessage,
+								authCode : obj.transAuthCode,
+								transId  : obj.transId,
+								message  : obj.transMessage,
 								cardType : "Harambe",
 								dateCreated : new Date(),
 								voidable : true,
@@ -74,6 +74,7 @@ $("#confirm").click(function() {
 		        console.log("Error Code:", obj.transErrorCode)
 		        console.log("Error Text:", obj.transErrorText)
 		      }
+				})
 					/*GET RID OF BECAUSE TOO MUCH CODE*/
 		}
 		else if(current_page != "card.html")
