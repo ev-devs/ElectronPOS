@@ -12,6 +12,8 @@
                   <p>
                     <%var result = transactions[i].items.map(function(a) {return a.title;});%>
                     ID: <%=transactions[i].guid%><br />
+                    Name on Card: Dude
+                    Platinum: transactions[i].platinum <br />
                     Subtotal: $<%=transactions[i].subtotal%><br />
                     Tax: $<%=transactions[i].tax%><br />
                     Total: $<%=transactions[i].total%><br />
