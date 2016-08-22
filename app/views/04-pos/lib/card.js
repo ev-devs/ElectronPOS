@@ -1,5 +1,3 @@
-var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
-
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
@@ -52,8 +50,13 @@ function handle_card() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 	}
 }
+<<<<<<< HEAD
 /*
 function start_transaction(cardNumber, expDate, ccv) {
+=======
+
+function start_transaction(cardInfo) {
+>>>>>>> f2319ca5e336c6f0157101dc196d620647b9cc5d
 	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
 					cardnumber  : "4242424242424242",
