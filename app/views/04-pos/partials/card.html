@@ -14,7 +14,6 @@
         </h4>
       </div>
     </a>
-
   </div>
 </div>
 
@@ -32,9 +31,9 @@ cardCapture(function(trackdata){
 
     var newTrans = new transaction();
   	newTrans.chargeCreditCard({
-  			cardnumber  : cardInfo.account,
-  			expdate     : cardInfo.expMonth + cardInfo.expYear,
-  			ccv         : "123",
+            cardnumber  : "4242424242424242",
+            expdate     : "0220",
+            ccv         : "123",
   			amount      : card_amt.toString()
   		}).then(function(obj){
   			if (!obj.error){
