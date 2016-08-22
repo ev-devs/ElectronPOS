@@ -1,12 +1,10 @@
-
-
 'use strict'
 
 const electron = require('electron');
 // Module to control application life
-const {app, globalShortcut } = electron
+const { app, globalShortcut } = electron
 // Module to create native browser window.
-const {BrowserWindow} = electron
+const { BrowserWindow } = electron
 // Module to communicate between the processes
 const ipc = electron.ipcMain
 // captures envoiirnment variables
