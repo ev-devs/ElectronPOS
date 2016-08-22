@@ -580,8 +580,59 @@ $("#confirm").click(function() {
 		handle_cash();
   }
 	else if(card_flag) {
-		if(current_page == "card_input.html")
-			start_transaction(1, 2, 3);
+		if(current_page == "card_input.html") {
+			/*GET RID OF BECAUSE TOO MUCH CODE*/
+			var newTrans = new transaction();
+		  newTrans.chargeCreditCard({
+		          cardnumber  : "4242424242424242",
+		          expdate     : "0220",
+		          ccv         : "123",
+		          amount      : card_amt.toString()
+		    }).then(function(obj){
+		      if (!obj.error){
+		        console.log(obj.transMessage)
+		        console.log("Trasaction Id:", obj.transId)
+		        console.log("Authorization Code:", obj.transAuthCode)
+		        /*If all the money was on the card then go to the printing option*/
+		        //card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+						cur_transaction.createCardTransaction(function(transaction){
+							let CardTrans = {
+								guid     : transaction.guid,
+								amount   : card_amt,
+								authCode : obj.transAuthCode,
+								transId  : obj.transId,
+								message  : obj.transMessage,
+								cardType : "Harambe",
+								dateCreated : new Date(),
+								voidable : true,
+								voided   : false
+							}
+							transaction.cards.push(CardTrans);
+							transaction.payments++;
+						});
+
+						if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+							print_init();
+						}
+						else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+							card_flag = 0;
+							confirm_flag = 0;
+							update_price('~', card_amt, 0, 1)
+							$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+							current_page = "pay_choice.html";
+							previous_page = "handle_order.html";
+							previous_flag = 1;
+							$("#cancel").css("background-color", "red");
+						}
+		      }
+		      else {
+		        console.log(obj.transMessage)
+		        console.log("Error Code:", obj.transErrorCode)
+		        console.log("Error Text:", obj.transErrorText)
+		      }
+				})
+					/*GET RID OF BECAUSE TOO MUCH CODE*/
+		}
 		else if(current_page != "card.html")
 			handle_card();
 	}
@@ -621,28 +672,6 @@ function init_transaction() {
 			}
 	});
 }
-
-/***********************DETECTCARDSWIPE.JS***********************/
-/*
-const HID = require('node-hid');
-var devices = HID.devices() // this lists all the devices
-var usbCardReader = null; // this is going to be our
-
-console.log(devices)
-
-for (device in devices) {
-
-    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
-        //console.log(devices[device].vendorId)
-        usbCardReader = new HID.HID(  devices[device].path  );
-        return
-    }
-}
-
-usbCardReader.on("data", function(data) {
-    console.log(data)
-});
-*/
 
 /***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
@@ -758,6 +787,28 @@ $("#n_delete").click(function() {
   refocus();
 });
 
+/***********************DETECTCARDSWIPE.JS***********************/
+/*
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+console.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+*/
+
 /***********************ENDSESSION.JS***********************/
 const ipc = require('electron').ipcRenderer
 
@@ -787,6 +838,42 @@ ipc.on('ibo-session-end-reply', function (event, arg) {
   console.log(message)
   window.location.assign('../03-beginsession/index.html')
 })
+
+/***********************FRONTEND.JS***********************/
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
 
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
@@ -870,42 +957,6 @@ function error_in_used() {
     });
 }
 
-/***********************FRONTEND.JS***********************/
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
-
-
- $(".button-collapse").sideNav();
-
 /***********************INVENTORY.JS***********************/
 /*var i_i = -1;
 
@@ -988,6 +1039,63 @@ $(document).on("click",  "#confirm_item_selection", function() {
 $(document).on("click",  "#cancel_item_selection", function() {
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
+
+/***********************JBOARD.JS***********************/
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+
+$('#search').jboard('standard')
+
+//$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+/***********************PRINT.JS***********************/
+$(document).on("click", "#yes-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+$(document).on("click", "#no-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+function print_init() {
+  $("#cancel").removeAttr("style");
+  $("#confirm").removeAttr("style");
+  previous_flag = 0;
+  confirm_flag = 0;
+  cancel_flag = 0;
+  cash_flag = 0;
+  card_flag = 0;
+  console.log("===============BEFORE:");
+  cur_transaction.save(function(err){
+    if (err){
+      console.log("Error in saving new transaction")
+    }
+    else {
+      console.log("New transaction saved!")
+    }
+  });
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log("===============AFTER:");
+  console.log(cur_transaction);
+  Transaction.find({}, function(err, _transactions) {
+    console.log(_transactions);
+  });
+}
 
 /***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
@@ -1203,63 +1311,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
-}
-
-/***********************JBOARD.JS***********************/
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-
-$('#search').jboard('standard')
-
-//$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-/***********************PRINT.JS***********************/
-$(document).on("click", "#yes-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-$(document).on("click", "#no-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-function print_init() {
-  $("#cancel").removeAttr("style");
-  $("#confirm").removeAttr("style");
-  previous_flag = 0;
-  confirm_flag = 0;
-  cancel_flag = 0;
-  cash_flag = 0;
-  card_flag = 0;
-  console.log("===============BEFORE:");
-  cur_transaction.save(function(err){
-    if (err){
-      console.log("Error in saving new transaction")
-    }
-    else {
-      console.log("New transaction saved!")
-    }
-  });
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-  console.log("===============AFTER:");
-  console.log(cur_transaction);
-  Transaction.find({}, function(err, _transactions) {
-    console.log(_transactions);
-  });
 }
 
 var transactions = [];
