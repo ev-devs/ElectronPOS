@@ -95,7 +95,8 @@ function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
-
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
+/*
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		print_init();
 	}
@@ -108,6 +109,6 @@ function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
 		previous_page = "handle_order.html";
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
-	}
+	}*/
 }
 </script>
