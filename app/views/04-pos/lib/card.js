@@ -52,7 +52,7 @@ function handle_card() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
 	}
 }
-
+/*
 function start_transaction(cardNumber, expDate, ccv) {
 	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
@@ -65,7 +65,7 @@ function start_transaction(cardNumber, expDate, ccv) {
 				console.log(obj.transMessage)
 				console.log("Trasaction Id:", obj.transId)
 				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option*/
+				/*If all the money was on the card then go to the printing option
 				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
 			}
 			else {
@@ -75,7 +75,7 @@ function start_transaction(cardNumber, expDate, ccv) {
 			}
 		});
 }
-
+*//*
 var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
 	cur_transaction.createCardTransaction(function(transaction){
@@ -107,7 +107,7 @@ function card_trans(transAuthCode, transId, transMessage) {
 		previous_flag = 1;
 		$("#cancel").css("background-color", "red");
 	}
-}
+}*/
 /*
 var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
