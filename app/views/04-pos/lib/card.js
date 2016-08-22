@@ -1,5 +1,3 @@
-var cardCapture = require('../../../node_modules/node-card-capture/node-card-capture.js')
-
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
@@ -53,7 +51,7 @@ function handle_card() {
 	}
 }
 
-function start_transaction(cardNumber, expDate, ccv) {
+function start_transaction(cardInfo) {
 	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
 					cardnumber  : "4242424242424242",

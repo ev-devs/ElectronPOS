@@ -1,21 +1,25 @@
-<div class="col s12 m12 l12 center">
-  <div class="row animated fadeIn" id="thanks">
+<div class="container">
     <div class="col s12 m12 l12 center">
-        <div class="container">
-            <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh;" class="center">Please swipe card</p>
+      <div class="row animated fadeIn" id="thanks">
+        <div class="col s12 m12 l12 center">
+            <div class="container">
+                <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh;" class="center">Please swipe card</p>
+            </div>
         </div>
-    </div>
-  </div>
-  <div class="row animated fadeIn">
-    <a href="#!" style="color: inherit;" id="card-input">
-    <div class="col s12 m12 l12 blue lighten-3 center waves-effect waves-light z-depth-1">
-        <h4 class="white-text">
-          Input card info
-        </h4>
       </div>
-    </a>
-  </div>
+      <div class="row animated fadeIn">
+        <a href="#!" style="color: inherit;" id="card-input">
+        <div class="col s12 m12 l12 blue lighten-3 center waves-effect waves-light z-depth-1">
+            <h4 class="white-text">
+              Input card info
+            </h4>
+          </div>
+        </a>
+      </div>
+    </div>
 </div>
+
+
 
 
 <script type="text/javascript">
@@ -24,19 +28,21 @@ var trackParser = require('trackparser')
 
 cardCapture(function(trackdata){
   console.log("RAW DATA ", trackdata)
-
-
   var cardInfo = new trackParser(trackdata)
-  //if (cardInfo.hasTrack1){
-    start_transaction(1, 2, 3)
-    $("#cancel").removeAttr("style");
-    $("#confirm").removeAttr("style");
-    confirm_flag = 0;
-    card_flag = 0;
-    cancel_flag = 0;
-    previous_flag = 0;
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-  //}
+  if (cardInfo.hasTrack1){
+      console.log(cardInfo)
+      start_transaction(cardInfo)
+      $("#cancel").removeAttr("style");
+      $("#confirm").removeAttr("style");
+      confirm_flag = 0;
+      card_flag = 0;
+      cancel_flag = 0;
+      previous_flag = 0;
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+  }
+  else {
+      console.log("ERROR READING CARD, TRY AGAIN")
+  }
 });
 /*
 var card_date;
