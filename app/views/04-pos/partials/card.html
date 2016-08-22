@@ -20,19 +20,16 @@
 
 
 <script type="text/javascript">
+var cardCapture = require('node-card-capture').cardCapture
+var trackParser = require('trackparser')
 
 cardCapture(function(trackdata){
   console.log("RAW DATA ", trackdata)
 
 
-
   //var cardInfo = new trackParser(trackdata)
   //if (cardInfo.hasTrack1){
-    console.log(cardInfo.lastName)
-    console.log(cardInfo.firstName)
-    console.log(cardInfo.account)
-    console.log(cardInfo.expMonth)
-    console.log(cardInfo.expYear)
+
     var newTrans = new transaction();
   	newTrans.chargeCreditCard({
   			cardnumber  : "4242424242424242",
