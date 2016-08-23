@@ -34,8 +34,9 @@ cardCapture(function(trackdata){
 
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
-    if (cardInfo.hasTrack1){
+    console.log(cardInfo)
 
+    if (cardInfo.hasTrack1){
         var newTrans = new transaction();
         newTrans.chargeCreditCard({
                 cardnumber  : cardInfo.account, //"4242424242424242",
@@ -47,6 +48,11 @@ cardCapture(function(trackdata){
                 // catches error from the server
                 if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
                     console.warn("There was an error getting a response from the server")
+
+                    Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
+                    setTimeout(function(){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    }, 3000)
                 }
                 else {
                     console.log(obj.transMessage)
@@ -60,17 +66,32 @@ cardCapture(function(trackdata){
                 // catches error from the server
                 if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
                     console.warn('We did not get a response from the server!')
+
+                    Materialize.toast('There was an error getting a response from the server', 8000)
+                    setTimeout(function(){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    }, 3000)
                 }
                 else {
                     console.log(obj.transMessage)
                     console.log("Error Code:", obj.transErrorCode)
                     console.log("Error Text:", obj.transErrorText)
+
+                    Materialize.toast(obj.transMessage, 8000)
+                    Materialize.toast(obj.transErrorText, 8000)
+                    setTimeout(function(){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    }, 3000)
                 }
             }
           });
     }
     else {
         console.log("There was an error reading + parsing the card data, try again")
+        Materialize.toast('There was an error reading + parsing the card data, try again', 3000)
+        setTimeout(function(){
+            $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+        }, 3000)
     }
 })
 
