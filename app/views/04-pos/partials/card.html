@@ -1,49 +1,37 @@
-<br><br><br>
-<div class="col s12 m12 l12 center">
-  <div class="row animated fadeIn" id="thanks">
-    <div class="col s12 m12 l12 center">
-        <div class="container">
-            <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh;" class="center">Please swipe card</p>
-        </div>
+<br><br>
+<div class="center container">
+  <div class="animated fadeIn" id="thanks">
+        <p style="text-align: center; font-size:200%; width: 100%; height: 10vh;">Please swipe card</p>
     </div>
   </div>
-  <div class="row animated fadeIn">
+  <div class="center animated fadeIn">
     <a href="#!" style="color: inherit;" id="card-input">
-    <div class="col s12 m12 l12 blue lighten-3 center waves-effect waves-light z-depth-1">
-        <h4 class="white-text">
-          Input card info
-        </h4>
-      </div>
+    <div class="blue lighten-3 center waves-effect waves-light z-depth-1">
+        <div class="container">
+            <h4 class="white-text">
+              Or input card info
+            </h4>
+        </div>
+     </div>
     </a>
   </div>
 </div>
 
-<div id="error-reading-card-modal" class="modal">
-      <div class="modal-content">
-        <i class="medium error material-icons">report_problem</i>
-        <h4>Error! There was an error swiping the card, please try again</h4>
-      </div>
-      <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
-      </div>
-</div>
-
-<!-- Modal Structure -->
-<div id="modal-no-response" class="modal bottom-sheet">
-  <div class="modal-content">
-    <h4>Modal Header</h4>
-    <p>A bunch of text</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="no-server-response-next">Okay</a>
-  </div>
-</div>
 
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
 
 cardCapture(function(trackdata){
+
+    $("#cancel").removeAttr("style");
+    $("#confirm").removeAttr("style");
+    confirm_flag = 0;
+    card_flag = 0;
+    cancel_flag = 0;
+    previous_flag = 0;
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
     if (cardInfo.hasTrack1){
@@ -52,17 +40,13 @@ cardCapture(function(trackdata){
         newTrans.chargeCreditCard({
                 cardnumber  : cardInfo.account, //"4242424242424242",
                 expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
-                ccv         : "123",
+                ccv         : "123", // this can be anything since we don't send this to auth net anyways
                 amount      : card_amt.toString()
           }).then(function(obj){
             if (!obj.error){
                 // catches error from the server
                 if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
                     console.warn("There was an error getting a response from the server")
-                    $('#modal-no-response').openModal()
-                    $('#no-server-response-next').click(function(event){
-                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-                    })
                 }
                 else {
                     console.log(obj.transMessage)
@@ -76,10 +60,6 @@ cardCapture(function(trackdata){
                 // catches error from the server
                 if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
                     console.warn('We did not get a response from the server!')
-                    $('#modal-no-response').openModal()
-                    $('#no-server-response-next').click(function(event){
-                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-                    })
                 }
                 else {
                     console.log(obj.transMessage)
@@ -88,14 +68,6 @@ cardCapture(function(trackdata){
                 }
             }
           });
-          $("#cancel").removeAttr("style");
-          $("#confirm").removeAttr("style");
-          confirm_flag = 0;
-          card_flag = 0;
-          cancel_flag = 0;
-          previous_flag = 0;
-          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-
     }
     else {
         console.log("There was an error reading + parsing the card data, try again")
@@ -119,7 +91,7 @@ function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
 /*
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		print_init();
