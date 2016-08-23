@@ -42,7 +42,9 @@
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
-
+$('#no-server-response-next').click(function(event){
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+})
 cardCapture(function(trackdata){
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
@@ -60,9 +62,7 @@ cardCapture(function(trackdata){
                 if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
                     console.warn("There was an error getting a response from the server")
                     $('#modal-no-response').openModal()
-                    $('#no-server-response-next').click(function(event){
-                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-                    })
+
                 }
                 else {
                     console.log(obj.transMessage)
@@ -77,9 +77,9 @@ cardCapture(function(trackdata){
                 if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
                     console.warn('We did not get a response from the server!')
                     $('#modal-no-response').openModal()
-                    $('#no-server-response-next').click(function(event){
+                    /*$('#no-server-response-next').click(function(event){
                         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-                    })
+                    })*/
                 }
                 else {
                     console.log(obj.transMessage)
@@ -94,8 +94,7 @@ cardCapture(function(trackdata){
           card_flag = 0;
           cancel_flag = 0;
           previous_flag = 0;
-          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
-
+          //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
     }
     else {
         console.log("There was an error reading + parsing the card data, try again")
