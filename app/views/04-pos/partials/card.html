@@ -26,8 +26,18 @@
       <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
       </div>
-    </div>
+</div>
 
+<!-- Modal Structure -->
+<div id="modal-no-response" class="modal bottom-sheet">
+  <div class="modal-content">
+    <h4>Modal Header</h4>
+    <p>A bunch of text</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="no-server-response-next">Okay</a>
+  </div>
+</div>
 
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
@@ -46,16 +56,36 @@ cardCapture(function(trackdata){
                 amount      : card_amt.toString()
           }).then(function(obj){
             if (!obj.error){
-              console.log(obj.transMessage)
-              console.log("Trasaction Id:", obj.transId)
-              console.log("Authorization Code:", obj.transAuthCode)
-              /*If all the money was on the card then go to the printing option*/
-              card_trans(obj.transAuthCode, obj.transId, obj.transMessage, cardInfo.firstName, cardInfo.lastName);
+                // catches error from the server
+                if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
+                    console.warn("There was an error getting a response from the server")
+                    $('#modal-no-response').openModal()
+                    $('#no-server-response-next').click(function(event){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    })
+                }
+                else {
+                    console.log(obj.transMessage)
+                    console.log("Trasaction Id:", obj.transId)
+                    console.log("Authorization Code:", obj.transAuthCode)
+                    /*If all the money was on the card then go to the printing option*/
+                    card_trans(obj.transAuthCode, obj.transId, obj.transMessage, cardInfo.firstName, cardInfo.lastName);
+                }
             }
             else {
-              console.log(obj.transMessage)
-              console.log("Error Code:", obj.transErrorCode)
-              console.log("Error Text:", obj.transErrorText)
+                // catches error from the server
+                if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
+                    console.warn('We did not get a response from the server!')
+                    $('#modal-no-response').openModal()
+                    $('#no-server-response-next').click(function(event){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    })
+                }
+                else {
+                    console.log(obj.transMessage)
+                    console.log("Error Code:", obj.transErrorCode)
+                    console.log("Error Text:", obj.transErrorText)
+                }
             }
           });
           $("#cancel").removeAttr("style");

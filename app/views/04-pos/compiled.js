@@ -175,158 +175,6 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
 });
 
-/***********************PLATINUMS.JS***********************/
-/*Leaders*/
-//Lists leaders in alphabetical order
-// appends html element to display all the names
-// if search is changed, takes search input and reduces html elements to display elements with
-// the searched word.
-// if searched word is not found, displays no results notification
-// if search is empty,
-
-function alphabetize(list){
-	var name = "";
-	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname + ", " + list[i].firstname;
-		leaders_list.push(name);
-	}
-	leaders_list.sort();
-}
-
-//take user input .change(function(){})   DONE
-//convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");
-//search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index
-// change to list to show in the browser
-
-
-var criteria = function(item, check) {
-	if(check!= ""){
-		if(item.search(check) != -1){
-			return true
-		}
-	}
-	else
-		return false;
-};
-
-var leader = function(leader) {
-	var name = new RegExp($("#enter-platinum").val(), "i");
-	return criteria(leader, name);
-};
-
-$(document).on( "jpress", "#enter-platinum" , function(event, key){
-   if(key != "shift" && key != "enter" && key != "123") {
-		var user_input = $("#enter-platinum").val();
-		if(user_input != ""){
-			list_names = leaders_list.filter(leader);
-			display_list(list_names);
-		}
-	}
-});
-
-function display_list(list){
-	var name = "";
-	$("#platinums-list").empty();
-	for(var i = 0; i < list.length; i++){
-	  var id_name = list[i].replace(/ /g, "1").replace(/,/g, "2");
-		name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i] + "</a>";
-		$("#platinums-list").append(name);
-	}
-}
-
-$(document).on("click", ".platinum", function() {
-  if(current_platinum != "NONE") {
-    $("#" + current_platinum).removeClass("green");
-  }
-	confirm_flag = 1;
-	scan_flag = 1;
-  current_platinum = $(this).attr("id");
-  $("#" + current_platinum).addClass("green lighten-3");
-	refocus();
-	can_end_session = 0;
-	//force_transaction();
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
-
-$("#platinum").click(function() {
-	if(current_platinum != "NONE" && confirm_flag == 1) {
-		current_platinum = "NONE";
-		confirm_flag = 0;
-
-		$('#enter-platinum').remove()
-		$('#enter-platinum-modal').remove()
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-	}
-})
-
-/***********************CANCEL.JS***********************/
-$("#cancel").click(function() {
-
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
-    $('#modal2').openModal();
-
-	}
-  else if(previous_flag) {
-		if(current_page == "pay_choice.html") {
-			console.log("1");
-			confirm_flag = 1;
-			scan_flag = 1;
-			previous_flag = 0;
-			current_page = "handle_order.html"
-			previous_page = "handle_order.html"
-			$("#cancel").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-		}
-		else if(current_page == "card_amt.html") {
-      console.log("2");
-			current_page = "pay_choice.html";
-			previous_page = "handle_order.html";
-			card_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "cash.html") {
-      console.log("3");
-			current_page = "pay_choice.html"
-			previous_page = "handle_order.html"
-			cash_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "card.html") {
-      console.log("4");
-			current_page = "card_amt.html"
-			previous_page = "pay_choice.html"
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-    else if(current_page == "card_input.html") {
-      current_page = "card.html";
-      previous_page = "card_amt";
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-    }
-	}
-	else if(current_platinum == "NONE"){
-		error_platinum();
-	}
-});
-
-$("#y_cancel").click(function() {
-	/*As long as the length of the list is > 0 then cancellations can happen*/
-  if(item_list.length != 0) {
-		/*Voids the order*/
-    void_order(1);
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		/*Fades out the "thanks" element from the compelte.html file*/
-    setTimeout(fade_out, 1500);
-		void_order(1);
-		/*Refocus the page on the barcode input*/
-    refocus();
-  }
-});
-
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
 $(document).on("click", "#card", function () {
@@ -496,63 +344,157 @@ newTrans.chargeCreditCard({
 	});
 }*/
 
-/***********************CASH.JS***********************/
-$("#yes-cash").click(function () {
-	//void_order(1);
-	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	print_init();
-});
+/***********************PLATINUMS.JS***********************/
+/*Leaders*/
+//Lists leaders in alphabetical order
+// appends html element to display all the names
+// if search is changed, takes search input and reduces html elements to display elements with
+// the searched word.
+// if searched word is not found, displays no results notification
+// if search is empty,
 
-/*Renders the necessary partial for completing orders with cash.*/
-$(document).on("click", "#cash", function () {
-	/*Sets the cash flag to true to denote a cash transaction is in process*/
-  cash_flag = 1;
-	previous_page = "pay_choice.html";
-	current_page = "cash.html"
-	colorfy();
-	$('#tendered-modal').remove()
-	/*Renders the html file necessary to handle cash transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
-function handle_cash() {
-	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cash_trans();
-	/*Renders the html file necessary to denote the transaction is complete*/
-	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-		$('#modal6').openModal({
-			dismissible: true, // Modal can be dismissed by clicking outside of the modal
-			opacity: .5, // Opacity of modal background
-			in_duration: 300, // Transition in duration
-			out_duration: 200, // Transition out duration
-		});
+function alphabetize(list){
+	var name = "";
+	for(var i = 0; i < list.length; i++){
+		name = list[i].lastname + ", " + list[i].firstname;
+		leaders_list.push(name);
 	}
-	else {
-		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-		cash_flag = 0;
+	leaders_list.sort();
+}
+
+//take user input .change(function(){})   DONE
+//convert to string .val()     DONE
+//convert string into regex    var re = new RegExp("a|b", "i");
+//search for regex in each element of the array array[i].search(regex)
+//if regex is found, NOT -1, then get the index
+// change to list to show in the browser
+
+
+var criteria = function(item, check) {
+	if(check!= ""){
+		if(item.search(check) != -1){
+			return true
+		}
+	}
+	else
+		return false;
+};
+
+var leader = function(leader) {
+	var name = new RegExp($("#enter-platinum").val(), "i");
+	return criteria(leader, name);
+};
+
+$(document).on( "jpress", "#enter-platinum" , function(event, key){
+   if(key != "shift" && key != "enter" && key != "123") {
+		var user_input = $("#enter-platinum").val();
+		if(user_input != ""){
+			list_names = leaders_list.filter(leader);
+			display_list(list_names);
+		}
+	}
+});
+
+function display_list(list){
+	var name = "";
+	$("#platinums-list").empty();
+	for(var i = 0; i < list.length; i++){
+	  var id_name = list[i].replace(/ /g, "1").replace(/,/g, "2");
+		name = "<a href=\"#!\" class=\"collection-item platinum\" id=\"" + id_name + "\">" + list[i] + "</a>";
+		$("#platinums-list").append(name);
+	}
+}
+
+$(document).on("click", ".platinum", function() {
+  if(current_platinum != "NONE") {
+    $("#" + current_platinum).removeClass("green");
+  }
+	confirm_flag = 1;
+	scan_flag = 1;
+  current_platinum = $(this).attr("id");
+  $("#" + current_platinum).addClass("green lighten-3");
+	refocus();
+	can_end_session = 0;
+	//force_transaction();
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
+$("#platinum").click(function() {
+	if(current_platinum != "NONE" && confirm_flag == 1) {
+		current_platinum = "NONE";
 		confirm_flag = 0;
-		$("#cancel").removeAttr("style");
-		$("#confirm").removeAttr("style");
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		$("#cancel").css("background-color", "red");
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+
+		$('#enter-platinum').remove()
+		$('#enter-platinum-modal').remove()
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
-}
+})
 
-function cash_trans(){
-	cur_transaction.createCashTransaction(function(transaction){
+/***********************CANCEL.JS***********************/
+$("#cancel").click(function() {
 
-			let CashTrans = {
-				guid 			: transaction.guid,
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
-				dateCreated : new Date()
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
-	});
-}
+  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
+  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
+    $('#modal2').openModal();
+
+	}
+  else if(previous_flag) {
+		if(current_page == "pay_choice.html") {
+			console.log("1");
+			confirm_flag = 1;
+			scan_flag = 1;
+			previous_flag = 0;
+			current_page = "handle_order.html"
+			previous_page = "handle_order.html"
+			$("#cancel").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		else if(current_page == "card_amt.html") {
+      console.log("2");
+			current_page = "pay_choice.html";
+			previous_page = "handle_order.html";
+			card_flag = 0;
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		else if(current_page == "cash.html") {
+      console.log("3");
+			current_page = "pay_choice.html"
+			previous_page = "handle_order.html"
+			cash_flag = 0;
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		else if(current_page == "card.html") {
+      console.log("4");
+			current_page = "card_amt.html"
+			previous_page = "pay_choice.html"
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+    else if(current_page == "card_input.html") {
+      current_page = "card.html";
+      previous_page = "card_amt";
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
+	}
+	else if(current_platinum == "NONE"){
+		error_platinum();
+	}
+});
+
+$("#y_cancel").click(function() {
+	/*As long as the length of the list is > 0 then cancellations can happen*/
+  if(item_list.length != 0) {
+		/*Voids the order*/
+    void_order(1);
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		/*Fades out the "thanks" element from the compelte.html file*/
+    setTimeout(fade_out, 1500);
+		void_order(1);
+		/*Refocus the page on the barcode input*/
+    refocus();
+  }
+});
 
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
@@ -673,6 +615,86 @@ function init_transaction() {
 	});
 }
 
+/***********************CASH.JS***********************/
+$("#yes-cash").click(function () {
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	print_init();
+});
+
+/*Renders the necessary partial for completing orders with cash.*/
+$(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
+  cash_flag = 1;
+	previous_page = "pay_choice.html";
+	current_page = "cash.html"
+	colorfy();
+	$('#tendered-modal').remove()
+	/*Renders the html file necessary to handle cash transactions*/
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+});
+
+function handle_cash() {
+	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+	cash_trans();
+	/*Renders the html file necessary to denote the transaction is complete*/
+	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+		$('#modal6').openModal({
+			dismissible: true, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
+	}
+	else {
+		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+		cash_flag = 0;
+		confirm_flag = 0;
+		$("#cancel").removeAttr("style");
+		$("#confirm").removeAttr("style");
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		$("#cancel").css("background-color", "red");
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+	}
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
+	});
+}
+
+/***********************DETECTCARDSWIPE.JS***********************/
+/*
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+console.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+*/
+
 /***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
@@ -786,28 +808,6 @@ $("#n_delete").click(function() {
 	/*Refocuses the page on the barcode input*/
   refocus();
 });
-
-/***********************DETECTCARDSWIPE.JS***********************/
-/*
-const HID = require('node-hid');
-var devices = HID.devices() // this lists all the devices
-var usbCardReader = null; // this is going to be our
-
-console.log(devices)
-
-for (device in devices) {
-
-    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
-        //console.log(devices[device].vendorId)
-        usbCardReader = new HID.HID(  devices[device].path  );
-        return
-    }
-}
-
-usbCardReader.on("data", function(data) {
-    console.log(data)
-});
-*/
 
 /***********************ENDSESSION.JS***********************/
 const ipc = require('electron').ipcRenderer
@@ -1061,42 +1061,6 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
-/***********************PRINT.JS***********************/
-$(document).on("click", "#yes-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-$(document).on("click", "#no-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-function print_init() {
-  $("#cancel").removeAttr("style");
-  $("#confirm").removeAttr("style");
-  previous_flag = 0;
-  confirm_flag = 0;
-  cancel_flag = 0;
-  cash_flag = 0;
-  card_flag = 0;
-  console.log("===============BEFORE:");
-  cur_transaction.save(function(err){
-    if (err){
-      console.log("Error in saving new transaction")
-    }
-    else {
-      console.log("New transaction saved!")
-    }
-  });
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-  console.log("===============AFTER:");
-  console.log(cur_transaction);
-  Transaction.find({}, function(err, _transactions) {
-    console.log(_transactions);
-  });
-}
-
 /***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
 /*$(document).on("input", "#barcode", function()  {
@@ -1311,6 +1275,42 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
+}
+
+/***********************PRINT.JS***********************/
+$(document).on("click", "#yes-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+$(document).on("click", "#no-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+function print_init() {
+  $("#cancel").removeAttr("style");
+  $("#confirm").removeAttr("style");
+  previous_flag = 0;
+  confirm_flag = 0;
+  cancel_flag = 0;
+  cash_flag = 0;
+  card_flag = 0;
+  console.log("===============BEFORE:");
+  cur_transaction.save(function(err){
+    if (err){
+      console.log("Error in saving new transaction")
+    }
+    else {
+      console.log("New transaction saved!")
+    }
+  });
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log("===============AFTER:");
+  console.log(cur_transaction);
+  Transaction.find({}, function(err, _transactions) {
+    console.log(_transactions);
+  });
 }
 
 var transactions = [];
