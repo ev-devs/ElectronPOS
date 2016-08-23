@@ -26,7 +26,7 @@ $("#confirm").click(function() {
 	else if(card_flag) {
 		if(current_page == "card_input.html") {
 			/*GET RID OF BECAUSE TOO MUCH CODE*/
-			if($().val() && $().val() && $().val() && $().val()) {
+			if($("#first_name").val() && $("#last_name").val() && $("m_exp").val() && $().val()) {
 			var newTrans = new transaction();
 		  newTrans.chargeCreditCard({
 		          cardnumber  : "4242424242424242",

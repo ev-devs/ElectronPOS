@@ -29,13 +29,13 @@
 </div>
 
 <!-- Modal Structure -->
-<div id="modal-no-response" class="modal bottom-sheet">
+<div id="modal-no-response" class="modal">
   <div class="modal-content">
     <h4>Modal Header</h4>
     <p>A bunch of text</p>
   </div>
   <div class="modal-footer">
-    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" id="no-server-response-next">Okay</a>
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" id="no-server-response-next">Okay</a>
   </div>
 </div>
 
@@ -43,7 +43,8 @@
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
 $('#no-server-response-next').click(function(event){
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+    console.log(__dirname + '/partials/pay_choice.html')
 })
 cardCapture(function(trackdata){
     console.log(trackdata)
@@ -52,8 +53,8 @@ cardCapture(function(trackdata){
 
         var newTrans = new transaction();
         newTrans.chargeCreditCard({
-                cardnumber  : cardInfo.account, //"4242424242424242",
-                expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+                cardnumber  : /*cardInfo.account,*/ "4242424242424242",
+                expdate     : /*cardInfo.expMonth + cardInfo.expYear,*/ "0220",
                 ccv         : "123",
                 amount      : card_amt.toString()
           }).then(function(obj){
@@ -76,7 +77,12 @@ cardCapture(function(trackdata){
                 // catches error from the server
                 if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
                     console.warn('We did not get a response from the server!')
-                    $('#modal-no-response').openModal()
+                    $('#modal-no-response').openModal({
+                          dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    			opacity: .5, // Opacity of modal background
+                    			in_duration: 300, // Transition in duration
+                    			out_duration: 200, // Transition out duration)
+                    })
                     /*$('#no-server-response-next').click(function(event){
                         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
                     })*/

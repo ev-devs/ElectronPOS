@@ -8,8 +8,7 @@ $(document).on("click", "#card", function () {
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
 
-	console.log("ENTERED");
-	$('#tendered_card-modal').remove()
+	$('#tendered_card-modal').remove();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
