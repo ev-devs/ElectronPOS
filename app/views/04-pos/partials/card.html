@@ -17,11 +17,37 @@
   </div>
 </div>
 
+<<<<<<< HEAD
+=======
+<div id="error-reading-card-modal" class="modal">
+      <div class="modal-content">
+        <i class="medium error material-icons">report_problem</i>
+        <h4>Error! There was an error swiping the card, please try again</h4>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Okay</a>
+      </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal-no-response" class="modal">
+  <div class="modal-content">
+    <h4>Modal Header</h4>
+    <p>A bunch of text</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" id="no-server-response-next">Okay</a>
+  </div>
+</div>
+>>>>>>> b7a4a644332f38bca948312bc451353f0baec204
 
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
-
+$('#no-server-response-next').click(function(event){
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+    console.log(__dirname + '/partials/pay_choice.html')
+})
 cardCapture(function(trackdata){
 
     $("#cancel").removeAttr("style");
@@ -39,20 +65,31 @@ cardCapture(function(trackdata){
     if (cardInfo.hasTrack1){
         var newTrans = new transaction();
         newTrans.chargeCreditCard({
+<<<<<<< HEAD
                 cardnumber  : cardInfo.account, //"4242424242424242",
                 expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
                 ccv         : "123", // this can be anything since we don't send this to auth net anyways
+=======
+                cardnumber  : /*cardInfo.account,*/ "4242424242424242",
+                expdate     : /*cardInfo.expMonth + cardInfo.expYear,*/ "0220",
+                ccv         : "123",
+>>>>>>> b7a4a644332f38bca948312bc451353f0baec204
                 amount      : card_amt.toString()
           }).then(function(obj){
             if (!obj.error){
                 // catches error from the server
                 if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
                     console.warn("There was an error getting a response from the server")
+<<<<<<< HEAD
 
                     Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
                     setTimeout(function(){
                         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
                     }, 3000)
+=======
+                    $('#modal-no-response').openModal()
+
+>>>>>>> b7a4a644332f38bca948312bc451353f0baec204
                 }
                 else {
                     console.log(obj.transMessage)
@@ -66,11 +103,23 @@ cardCapture(function(trackdata){
                 // catches error from the server
                 if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
                     console.warn('We did not get a response from the server!')
+<<<<<<< HEAD
 
                     Materialize.toast('There was an error getting a response from the server', 8000)
                     setTimeout(function(){
                         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
                     }, 3000)
+=======
+                    $('#modal-no-response').openModal({
+                          dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    			opacity: .5, // Opacity of modal background
+                    			in_duration: 300, // Transition in duration
+                    			out_duration: 200, // Transition out duration)
+                    })
+                    /*$('#no-server-response-next').click(function(event){
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    })*/
+>>>>>>> b7a4a644332f38bca948312bc451353f0baec204
                 }
                 else {
                     console.log(obj.transMessage)
@@ -85,6 +134,16 @@ cardCapture(function(trackdata){
                 }
             }
           });
+<<<<<<< HEAD
+=======
+          $("#cancel").removeAttr("style");
+          $("#confirm").removeAttr("style");
+          confirm_flag = 0;
+          card_flag = 0;
+          cancel_flag = 0;
+          previous_flag = 0;
+          //$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+>>>>>>> b7a4a644332f38bca948312bc451353f0baec204
     }
     else {
         console.log("There was an error reading + parsing the card data, try again")
