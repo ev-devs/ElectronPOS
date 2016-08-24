@@ -12,8 +12,9 @@ $("#cancel").click(function() {
 			confirm_flag = 1;
 			scan_flag = 1;
 			previous_flag = 0;
-			current_page = "handle_order.html"
-			previous_page = "handle_order.html"
+			current_page = "handle_order.html";
+			previous_page = "handle_order.html";
+      refocus();
 			$("#cancel").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
@@ -43,6 +44,9 @@ $("#cancel").click(function() {
       current_page = "card.html";
       previous_page = "card_amt";
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
+    else if($("#cancel").text() == "Clear") {
+      console.log("We cleared");
     }
 	}
 	else if(current_platinum == "NONE"){

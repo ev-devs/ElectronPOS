@@ -43,17 +43,11 @@ var trackParser = require('trackparser')
 cardCapture(function(trackdata){
 
     $("#cancel").removeAttr("style");
-
     $("#confirm").removeAttr("style");
-
     confirm_flag = 0;
-
     card_flag = 0;
-
     cancel_flag = 0;
-
     previous_flag = 0;
-
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
 
     console.log(trackdata)
@@ -89,7 +83,12 @@ cardCapture(function(trackdata){
                     Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
 
                     setTimeout(function(){
-
+                        $("#cancel").css("background-color", "red");
+                        $("#confirm").css("background-color", "green");
+                        confirm_flag = 0;
+                        card_flag = 1;
+                        cancel_flag = 0;
+                        previous_flag = 1;
                         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 
                     }, 3000)
@@ -123,8 +122,14 @@ cardCapture(function(trackdata){
                     Materialize.toast('There was an error getting a response from the server', 8000)
 
                     setTimeout(function(){
+                      $("#cancel").css("background-color", "red");
+                      $("#confirm").css("background-color", "green");
+                      confirm_flag = 0;
+                      card_flag = 1;
+                      cancel_flag = 0;
+                      previous_flag = 1;
 
-                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 
                     }, 3000)
 
@@ -143,8 +148,13 @@ cardCapture(function(trackdata){
                     Materialize.toast(obj.transErrorText, 8000)
 
                     setTimeout(function(){
-
-                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                      $("#cancel").css("background-color", "red");
+                      $("#confirm").css("background-color", "green");
+                      confirm_flag = 0;
+                      card_flag = 1;
+                      cancel_flag = 0;
+                      previous_flag = 1;
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 
                     }, 3000)
 
@@ -187,27 +197,18 @@ function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
             authCode : transAuthCode,
 
             transId  : transId,
-
             message  : transMessage,
-
             cardType : "Harambe",
-
             dateCreated : new Date(),
-
             voidable : true,
-
             voided   : false
-
         }
-
         transaction.cards.push(CardTrans);
-
         transaction.payments++;
-
     });
-
+    $("#cancel").text("Clear");
+    $("#confirm").text("Accept");
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
-
 /*
 
     if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {

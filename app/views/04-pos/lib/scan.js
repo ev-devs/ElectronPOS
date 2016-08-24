@@ -33,6 +33,7 @@ $("#scan_sim").click(function()  {
 				cancel_flag = 0;
         previous_ticket = barcode;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+        refocus();
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
@@ -66,6 +67,7 @@ $("#scan_sim").click(function()  {
 			ticket_flag = 0;
 			confirm_flag = 1;
 			cancel_flag = 1;
+      refocus();
 		}
 	}
 	else if(ticket_table.get(barcode) != undefined) {

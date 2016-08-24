@@ -275,8 +275,9 @@ $("#cancel").click(function() {
 			confirm_flag = 1;
 			scan_flag = 1;
 			previous_flag = 0;
-			current_page = "handle_order.html"
-			previous_page = "handle_order.html"
+			current_page = "handle_order.html";
+			previous_page = "handle_order.html";
+      refocus();
 			$("#cancel").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
@@ -306,6 +307,9 @@ $("#cancel").click(function() {
       current_page = "card.html";
       previous_page = "card_amt";
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
+    else if($("#cancel").text() == "Clear") {
+      console.log("We cleared");
     }
 	}
 	else if(current_platinum == "NONE"){
@@ -581,7 +585,7 @@ $("#confirm").click(function() {
 	else if(card_flag) {
 		if(current_page == "card_input.html") {
 			/*GET RID OF BECAUSE TOO MUCH CODE*/
-			if($("#first_name").val() && $("#last_name").val() && $("m_exp").val() && $().val()) {
+			if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
 			var newTrans = new transaction();
 		  newTrans.chargeCreditCard({
 		          cardnumber  : "4242424242424242",
@@ -1035,9 +1039,11 @@ $(document).on("click",  "#confirm_item_selection", function() {
 			}
 		}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -1133,6 +1139,7 @@ $("#scan_sim").click(function()  {
 				cancel_flag = 0;
         previous_ticket = barcode;
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+        refocus();
 		}
 		/*Add <= 50 functionality here*/
 		else if(ticket_flag == 1) {
@@ -1166,6 +1173,7 @@ $("#scan_sim").click(function()  {
 			ticket_flag = 0;
 			confirm_flag = 1;
 			cancel_flag = 1;
+      refocus();
 		}
 	}
 	else if(ticket_table.get(barcode) != undefined) {
