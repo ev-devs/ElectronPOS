@@ -43,7 +43,7 @@ function createWindow(window) {
   window.webContents.openDevTools();
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/index.html`);
+  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
 
   // Emitted when the window is closed.
   window.on('closed', () => {
