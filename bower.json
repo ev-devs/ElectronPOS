@@ -21,6 +21,7 @@
     "typicons.font": "typicons#^2.0.7",
     "keyboard": "^1.25.29",
     "animate.css": "^3.5.2",
-    "signature_pad": "^1.5.3"
+    "signature_pad": "^1.5.3",
+    "jquery-ui": "^1.12.0"
   }
 }

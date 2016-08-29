@@ -50,6 +50,7 @@ $("#cancel").click(function() {
 	}
   else if($("#cancel").text() == "Clear") {
     console.log("We cleared");
+    clearSignaturePad()
   }
 	else if(current_platinum == "NONE"){
 		error_platinum();

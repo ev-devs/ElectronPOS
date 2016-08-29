@@ -29,9 +29,9 @@ let win;
 function createWindow(window) {
   // Create the browser window.
   window = new BrowserWindow({
-      //fullscreen : true,
-      height : 600,
-      width : 100000,
+      fullscreen : true,
+      //height : 600,
+      //width : 100000,
       autoHideMenuBar : true,
       scrollBounce : true,
       frame: false
@@ -43,7 +43,7 @@ function createWindow(window) {
   window.webContents.openDevTools();
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
+  window.loadURL(`file://${__dirname}/app/index.html`);
 
   // Emitted when the window is closed.
   window.on('closed', () => {
@@ -63,7 +63,8 @@ app.on('ready', () => {
 
     createWindow(win)
 
-    /* globalShortcut.register('CommandOrControl+J+K+M', () => {
+    // this is for later
+    /*globalShortcut.register('CommandOrControl+J+K+M', () => {
         app.quit()
     });*/
 
@@ -77,6 +78,9 @@ app.on('ready', () => {
 
     globalShortcut.register('CommandOrControl+D', () => {
          win.webContents.openDevTools();
+    })
+    globalShortcut.register('CommandOrControl+M', () => {
+        win.minimize()
     })
 });
 
