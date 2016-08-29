@@ -26,18 +26,14 @@ function clearSignaturePad() {
 
 function acceptSignature() {
     // cannot accept unless there is a signature
-    if (signaturePad.isEmpty){
+    if ( signaturePad.isEmpty() ){
         Materialize.toast('Please sign before proceeding', 5000)
     }
     else {
         console.log ( signaturePad.toDataUrl() )
         //print_init()
     }
-
-
-
 }
-
 
 $("#B").click(function() {
   if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
