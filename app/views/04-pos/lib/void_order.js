@@ -1,11 +1,15 @@
-var transactions = [];
+var ay = [];
 $("#prev-transactions").click(function() {
   if(can_end_session == 1) {
     current_platinum = "NON";
     confirm_flag = 1;
+    current_page = "prev_trans.html";
+    prev_page = "select_platinums.html";
+    $("#cancel").css("background-color", "red");
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
        update_transaction_db(_transactions);
+       ay = transactions;
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
   }
@@ -20,16 +24,29 @@ $("#prev-transactions").click(function() {
 });
 
 
-var elem_id;
+;
 $(document).on("click", ".transaction", function() {
-   elem_id = $(this).attr("id");
-   $('#voidModal3').openModal({
-     dismissible: true, // Modal can be dismissed by clicking outside of the modal
-     opacity: .5, // Opacity of modal background
-     in_duration: 300, // Transition in duration
-     out_duration: 200, // Transition out duration
-   });
+   var elem_id = $(this).attr("id");
+   var i = Number(elem_id.substring(0, elem_id.search("_")));
+   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+   current_page = "indv_trans.html";
+   prev_page = "prev_trans.html";
+   console.log(ay[i].cards[j]);
+   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : ay[i].cards[j] }));
 });
+/*
+$('#voidModal3').openModal({
+  dismissible: true, // Modal can be dismissed by clicking outside of the modal
+  opacity: .5, // Opacity of modal background
+  in_duration: 300, // Transition in duration
+  out_duration: 200, // Transition out duration
+});
+
+*/
+/*var trans_id = elem_id.substring(0, elem_id.search("_"));
+var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)*/
+
+
 
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";
@@ -80,8 +97,6 @@ function update_transaction_db(transactions_) {
   var cur_date = Date.parse(new Date());
   for(var i = 0; i < transactions_.length; i++) {
     for(var j = 0; j < transactions_[i].cards.length; j++) {
-      //var past_date = transactions_[i].cards[j].dateCreated.parse();
-      //console.log(cur_date - past_date);
       var deadline = transactions_[i].cards[j].dateCreated;
       deadline = deadline.setDate(deadline.getDate() + 1);
       if(cur_date >= deadline) {

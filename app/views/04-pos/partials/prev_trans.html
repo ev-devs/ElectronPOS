@@ -8,17 +8,11 @@
         <% for(var i = 0; i < transactions.length; i++) { %>
               <%for(var j = 0; j < transactions[i].cards.length; j++) {%>
               <%if(transactions[i].cards[j].voidable) {%>
-                <a href="#!" class="collection-item transaction" id="<%=transactions[i].cards[j].transId%>_<%=transactions[i].cards[j].guid%>">
+                <a href="#!" class="collection-item transaction" id="<%=i%>_<%=j%>">
                   <p>
-                    <%var result = transactions[i].items.map(function(a) {return a.title;});%>
-                    ID: <%=transactions[i].guid%><br />
-                    Name on Card: Dude
-                    Platinum: transactions[i].platinum <br />
-                    Subtotal: $<%=transactions[i].subtotal%><br />
-                    Tax: $<%=transactions[i].tax%><br />
+                    Name on Card: <%=transactions[i].cards[j].card_holder%><br/>
+                    Platinum: <%=transactions[i].platinum%> <br />
                     Total: $<%=transactions[i].total%><br />
-                    Charged: $<%=transactions[i].cards[j].amount%> <br />
-                    Items: <%=result%> <br />
                     Date: <%=transactions[i].cards[j].dateCreated%>
                   </p>
                 </a>

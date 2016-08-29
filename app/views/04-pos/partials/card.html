@@ -19,6 +19,7 @@
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
+var name = "";
 cardCapture(function(trackdata){
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
@@ -32,6 +33,7 @@ cardCapture(function(trackdata){
     console.log(cardInfo)
     if (cardInfo.hasTrack1){
         var newTrans = new transaction();
+        name = cardInfo.account_name;
         newTrans.chargeCreditCard({
                 cardnumber  : cardInfo.account, //"4242424242424242",
                 expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
@@ -110,6 +112,7 @@ function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
         let CardTrans = {
             guid     : transaction.guid,
             amount   : card_amt,
+            card_holder : name,
             authCode : transAuthCode,
             transId  : transId,
             message  : transMessage,
