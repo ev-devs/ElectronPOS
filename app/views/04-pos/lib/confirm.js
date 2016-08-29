@@ -84,6 +84,7 @@ $("#confirm").click(function() {
 	}
 	else if($("#confirm").text() == "Accept") {
 		console.log("We accepted");
+		acceptSignature()
 	}
 	else if(current_platinum == "NONE") {
 		error_platinum();

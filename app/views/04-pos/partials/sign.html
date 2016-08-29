@@ -20,9 +20,22 @@
 var canvas = document.getElementById("signature-canvas");
 var signaturePad = new SignaturePad(canvas);
 
-
 function clearSignaturePad() {
     signaturePad.clear()
+}
+
+function acceptSignature() {
+    // cannot accept unless there is a signature
+    if (signaturePad.isEmpty){
+        Materialize.toast('Please sign before proceeding', 5000)
+    }
+    else {
+        console.log ( signaturePad.toDataUrl() )
+        //print_init()
+    }
+
+
+
 }
 
 
