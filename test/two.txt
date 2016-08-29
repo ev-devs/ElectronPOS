@@ -1,0 +1,24 @@
+Decimal VendorID=32903 & ProductID=32768
+Hexadecimal VendorID=0x8087 & ProductID=0x8000
+
+Decimal VendorID=7531 & ProductID=2
+Hexadecimal VendorID=0x1d6b & ProductID=0x2
+
+Decimal VendorID=22918 & ProductID=1372
+Hexadecimal VendorID=0x5986 & ProductID=0x55c
+
+Decimal VendorID=32903 & ProductID=2602
+Hexadecimal VendorID=0x8087 & ProductID=0xa2a
+
+Decimal VendorID=32903 & ProductID=32776
+Hexadecimal VendorID=0x8087 & ProductID=0x8008
+
+Decimal VendorID=7531 & ProductID=2
+Hexadecimal VendorID=0x1d6b & ProductID=0x2
+
+Decimal VendorID=7531 & ProductID=3
+Hexadecimal VendorID=0x1d6b & ProductID=0x3
+
+Decimal VendorID=7531 & ProductID=2
+Hexadecimal VendorID=0x1d6b & ProductID=0x2
+

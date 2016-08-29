@@ -22,7 +22,8 @@ function print_init() {
   cur_transaction.save(function(err){
     if (err){
       console.log("Error in saving new transaction", err)
-      Materialize.toast(err, 5000)
+      Materialize.toast(err, 10000)
+      console.log(cur_transaction)
     }
     else {
       console.log("New transaction saved!")
