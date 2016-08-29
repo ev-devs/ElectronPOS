@@ -418,6 +418,9 @@ $("#confirm").click(function() {
 		else if(current_page != "card.html")
 			handle_card();
 	}
+	else if($("#confirm").text() == "Accept") {
+		console.log("We accepted");
+	}
 	else if(current_platinum == "NONE") {
 		error_platinum();
 	}
