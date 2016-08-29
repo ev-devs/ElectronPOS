@@ -20,7 +20,7 @@ function print_init() {
   console.log("===============BEFORE:");
   cur_transaction.save(function(err){
     if (err){
-      console.log("Error in saving new transaction")
+      console.log("Error in saving new transaction", err)
     }
     else {
       console.log("New transaction saved!")
