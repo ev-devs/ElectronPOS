@@ -45,27 +45,46 @@ function printTheOrder(guid){
         }
         else {
 
-                fs.unlink( __dirname + '/../../../kprint/reciept.txt')
+            let stream = fs.createWriteStream( __dirname + '/../../../kprint/reciept.txt', {
+                flags : 'w', encoding : 'utf-8'
+            })
+            stream.on('error', function(error){
+                Materialize.toast(error, 10000)
+            })
 
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.guid + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.dateCreated + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.location + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.subtotal + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.tax + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.total + '\n')
-                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
+            /*This is the header*/
+            stream.write( "date, "      + transaction.dateCreated   + '\n')
+            stream.write( "guid, "      + transaction.guid          + '\n')
 
-                /*we need to iterate through this*/
-                let cashes      = transaction.cashes
-                let cards       = transaction.cards
-                let items       = transaction.items
+            /*This is the lower header*/
+            stream.write( "location, "  + transaction.location      + '\n')
+            stream.write( 'leader, '    + transaction.platinum      + '\n')
 
-                for (let i = 0; i < cashes.length; i++){
-                    console.log(cashes[i].tendered)
-                }
-                for (let i = 0; i < cards.length; i++){
-                    console.log(cards[i].amount)
-                }
+            /*This is the */
+            stream.write( "subtotal, "  + transaction.subtotal      + '\n')
+            stream.write( "tax, "       + transaction.tax           + '\n')
+            stream.write( "total,"      + transaction.total         + '\n')
+            stream.write( "payments, "  + transaction.payments      + '\n')
+            stream.end()
+
+
+            //fs.appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
+
+            /*we need to iterate through this*/
+            let cashes      = transaction.cashes
+            let cards       = transaction.cards
+            let items       = transaction.items
+
+            for (let i = 0; i < cashes.length; i++){
+                console.log(cashes[i].tendered)
+            }
+            for (let i = 0; i < cards.length; i++){
+                console.log(cards[i].amount)
+            }
+            for (let i = 0; i < items.length; i++){
+                console.log(items[i])
+            }
+
         }
     })
 }

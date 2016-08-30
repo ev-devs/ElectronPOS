@@ -8,8 +8,7 @@ var mongoose        = require('mongoose');
 var _               = require("underscore");
 var transaction     = require('../../lib/create_transaction.js');
 var HashTable       = require('hashtable');
-var writeFileSync   = require('fs').appendFileSync
-var unlink          = require('fs').unlink
+var fs              = require('fs')
 
 
 // Global variables
@@ -175,79 +174,6 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
 });
 
-/***********************CANCEL.JS***********************/
-$("#cancel").click(function() {
-
-  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
-  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
-    $('#modal2').openModal();
-    console.log("CANCEL");
-	}
-  else if(previous_flag) {
-    console.log("PREVIOUS");
-		if(current_page == "pay_choice.html") {
-			console.log("1");
-			confirm_flag = 1;
-			scan_flag = 1;
-			previous_flag = 0;
-			current_page = "handle_order.html";
-			previous_page = "handle_order.html";
-      refocus();
-			$("#cancel").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-		}
-		else if(current_page == "card_amt.html") {
-      console.log("2");
-			current_page = "pay_choice.html";
-			previous_page = "handle_order.html";
-			card_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "cash.html") {
-      console.log("3");
-			current_page = "pay_choice.html"
-			previous_page = "handle_order.html"
-			cash_flag = 0;
-			$("#confirm").removeAttr("style");
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-		else if(current_page == "card.html") {
-      console.log("4");
-			current_page = "card_amt.html"
-			previous_page = "pay_choice.html"
-			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-		}
-    else if(current_page == "card_input.html") {
-      console.log("5");
-      current_page = "card.html";
-      previous_page = "card_amt";
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
-    }
-	}
-  else if($("#cancel").text() == "Clear") {
-    console.log("We cleared");
-    clearSignaturePad()
-  }
-	else if(current_platinum == "NONE"){
-		error_platinum();
-	}
-});
-
-$("#y_cancel").click(function() {
-	/*As long as the length of the list is > 0 then cancellations can happen*/
-  if(item_list.length != 0) {
-		/*Voids the order*/
-    void_order(1);
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		/*Fades out the "thanks" element from the compelte.html file*/
-    setTimeout(fade_out, 1500);
-		void_order(1);
-		/*Refocus the page on the barcode input*/
-    refocus();
-  }
-});
-
 /***********************PLATINUMS.JS***********************/
 /*Leaders*/
 //Lists leaders in alphabetical order
@@ -333,6 +259,79 @@ $("#platinum").click(function() {
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })
+
+/***********************CANCEL.JS***********************/
+$("#cancel").click(function() {
+
+  /*Open modal as long as there are items to cancel and the cancel flag is raised*/
+  if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
+    $('#modal2').openModal();
+    console.log("CANCEL");
+	}
+  else if(previous_flag) {
+    console.log("PREVIOUS");
+		if(current_page == "pay_choice.html") {
+			console.log("1");
+			confirm_flag = 1;
+			scan_flag = 1;
+			previous_flag = 0;
+			current_page = "handle_order.html";
+			previous_page = "handle_order.html";
+      refocus();
+			$("#cancel").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		else if(current_page == "card_amt.html") {
+      console.log("2");
+			current_page = "pay_choice.html";
+			previous_page = "handle_order.html";
+			card_flag = 0;
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		else if(current_page == "cash.html") {
+      console.log("3");
+			current_page = "pay_choice.html"
+			previous_page = "handle_order.html"
+			cash_flag = 0;
+			$("#confirm").removeAttr("style");
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+		else if(current_page == "card.html") {
+      console.log("4");
+			current_page = "card_amt.html"
+			previous_page = "pay_choice.html"
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+		}
+    else if(current_page == "card_input.html") {
+      console.log("5");
+      current_page = "card.html";
+      previous_page = "card_amt";
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
+	}
+  else if($("#cancel").text() == "Clear") {
+    console.log("We cleared");
+    clearSignaturePad()
+  }
+	else if(current_platinum == "NONE"){
+		error_platinum();
+	}
+});
+
+$("#y_cancel").click(function() {
+	/*As long as the length of the list is > 0 then cancellations can happen*/
+  if(item_list.length != 0) {
+		/*Voids the order*/
+    void_order(1);
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+		/*Fades out the "thanks" element from the compelte.html file*/
+    setTimeout(fade_out, 1500);
+		void_order(1);
+		/*Refocus the page on the barcode input*/
+    refocus();
+  }
+});
 
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
@@ -458,507 +457,6 @@ if(current_page == "card_input.html") {
 		})
 	}
 	*/
-
-/***********************CASH.JS***********************/
-$("#yes-cash").click(function () {
-	//void_order(1);
-	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	print_init();
-});
-
-/*Renders the necessary partial for completing orders with cash.*/
-$(document).on("click", "#cash", function () {
-	/*Sets the cash flag to true to denote a cash transaction is in process*/
-  cash_flag = 1;
-	previous_page = "pay_choice.html";
-	current_page = "cash.html"
-	colorfy();
-	$('#tendered-modal').remove()
-	/*Renders the html file necessary to handle cash transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
-function handle_cash() {
-	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cash_trans();
-	/*Renders the html file necessary to denote the transaction is complete*/
-	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-		$('#modal6').openModal({
-			dismissible: true, // Modal can be dismissed by clicking outside of the modal
-			opacity: .5, // Opacity of modal background
-			in_duration: 300, // Transition in duration
-			out_duration: 200, // Transition out duration
-		});
-	}
-	else {
-		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-		cash_flag = 0;
-		confirm_flag = 0;
-		$("#cancel").removeAttr("style");
-		$("#confirm").removeAttr("style");
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		$("#cancel").css("background-color", "red");
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-	}
-}
-
-function cash_trans(){
-	cur_transaction.createCashTransaction(function(transaction){
-
-			let CashTrans = {
-				guid 			: transaction.guid,
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
-				dateCreated : new Date()
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
-	});
-}
-
-/***********************DETECTCARDSWIPE.JS***********************/
-/*
-const HID = require('node-hid');
-var devices = HID.devices() // this lists all the devices
-var usbCardReader = null; // this is going to be our
-
-console.log(devices)
-
-for (device in devices) {
-
-    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
-        //console.log(devices[device].vendorId)
-        usbCardReader = new HID.HID(  devices[device].path  );
-        return
-    }
-}
-
-usbCardReader.on("data", function(data) {
-    console.log(data)
-});
-*/
-
-/***********************DELETE.JS***********************/
-/*When a finger is on the screen and on an item record the start point.
-This is how far away the finger is from the left border.*/
-$(document).on("touchstart", ".whole-item", function(e) {
-  var touchobj = e.originalEvent.changedTouches[0].clientX;
-  touchstart = touchobj;
-});
-
-/*When the finger leaves the screen, record it's end point in pixels.*/
-$(document).on("touchend", ".whole-item", function(e) {
-  var touchobj = e.originalEvent.changedTouches[0].clientX;
-  touchend = touchobj;
-  /*Before seeing if this is a valid swipe take note of the item_id for future use*/
-  item_id = $(this).attr("id");
-  /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
-  if(touchstart-touchend >= 100) {
-    /*Populates the modal with the item name for seller confirmation*/
-    $(this).css("background-color", "red");
-    /*Whole item taken from the html doc*/
-    var item = $(this).find("span").text().trim();
-    var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
-    var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-    if(item_qnt == "1") {
-      $('#item_type').text(item_name);
-    }
-    else {
-      /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
-      $('#delete_option').html(
-        ejs.render(
-          fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : item_qnt}
-        )
-      );
-      $('#item_type').text(" how many of " + item_name);
-    }
-    /*Open modal*/
-    $('#modal1').openModal({
-      dismissible: false, // Modal can be dismissed by clicking outside of the modal
-      opacity: .5, // Opacity of modal background
-      in_duration: 300, // Transition in duration
-      out_duration: 200, // Transition out duration
-    });
-  }
-});
-
-/*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
-$("#y_delete").click(function() {
-  //var i = -1;
-	/*Grab the item info by id and using the find function to find the element in the id*/
-  var item = $("#" + item_id).find("span").text().trim();
-	/*Gte the quantity of items*/
-  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
-	/*Get the item name*/
-  var item_name = item.substring(item.indexOf(": ") + 2, item.length);
-	var i = find_in_customer_list("title", item_name)
-	/*If the cust_quantity value is one*/
-  if(item_list[i].cust_quantity == 1) {
-		/*Do price updates*/
-		update_price('-', 1, i, 0);
-    item_list[i].cust_quantity = 0;
-		/*Remove from gui and item_list*/
-    $("#" + item_id).remove();
-    item_list.splice(i, 1);
-  }
-	/*If the cust_quantity value is greater than one*/
-  else if(item_list[i].cust_quantity > 1) {
-		/*Gran the value to be deleted*/
-    var delete_quantity = $("#delete-quantity").val();
-    /*Do any pricing updates before deleting (can write into a function honestly)*/
-		update_price('-', delete_quantity, i, 0);
-		/*If the quantity of items to be deleted is less than than the current quantity*/
-    if(delete_quantity < item_qnt) {
-      item_list[i].cust_quantity-=delete_quantity;
-			/*In the item info replace the old quantity with the new quantity*/
-      item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
-			/*Take the title of the item and replace all the spaces with underscores because thats how the id is*/
-      $("#" + $("#" + item_id).find("span").attr("id")).text(item);
-    }
-		/*If the quantity to delete matches the current quantity available*/
-    else if(delete_quantity == item_qnt) {
-			/*Make tthe cust_quantity value 0*/
-      item_list[i].cust_quantity = 0;
-			/*Removet hat item from the gui*/
-      $("#" + item_id).remove();
-			/*Remove that item from the item_list*/
-      item_list.splice(i, 1);
-    }
-		/*Remove the form from the modal*/
-		$("#delete-form").remove();
-  }
-	/*If the there aren't any items after deletion then there is nothing to cancel so lower the flag*/
-	if(item_list.length == 0)
-		cancel_flag = 0;
-	/*Removes the red from the item*/
-	$("#" + item_id).removeAttr("style");
-	/*Refocuses the page on the barcode input*/
-  refocus();
-});
-
-$("#n_delete").click(function() {
-  /*Grab the item name*/
-  var item = $("#" + item_id).find("span").text().trim();
-	/*Grab the number of items*/
-  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
-	/*If there are more than one items do this*/
-  if(item_qnt >= "1") {
-		/*Remove the form from the modal*/
-    $("#delete-form").remove();
-  }
-	/*Removes the red from the item*/
-	$("#" + item_id).removeAttr("style");
-	/*Refocuses the page on the barcode input*/
-  refocus();
-});
-
-/***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if (can_end_session == 0){
-      $('#modal9').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-      });
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-  window.location.assign('../03-beginsession/index.html')
-})
-
-/***********************FRONTEND.JS***********************/
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
-
-
- $(".button-collapse").sideNav();
-
-/***********************FUNCTIONS.JS***********************/
-function update_price(operation, quantity, placement, confirmed) {
-    if(!confirmed) {
-        /*Update the global quantities of subtotal, tax, and total*/
-        if(operation == '+')
-            subtotal+=((item_list[placement].price * quantity));
-        else if(operation == '-')
-            subtotal-=((item_list[placement].price * quantity));
-        else if(operation == '~')
-            subtotal-=quantity;
-        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
-        tax = subtotal * .075;
-        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
-        total = subtotal + tax;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
-    }
-    else if(confirmed) {
-        total-=quantity;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
-    }
-}
-
-/*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
-/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
-function void_order(full_void) {
-    can_end_session = 1;
-    confirm_flag = 0;
-    cancel_flag = 0;
-    /*Cash flag is set to 0 to denote the end of a cash transaction*/
-    cash_flag = 0;
-    /**/
-    card_flag = 0;
-    scan_flag = 0;
-    ticket_flag = 0;
-    swipe_flag = 0;
-    current_ticket = [-1, -1, "CODE"];
-    if(full_void == 1) {
-      item_list.splice(0, item_list.length);/*Empties the item list*/
-          /*Empties the left side*/
-      $("#sale_list tbody").empty();
-          /*Empties the subtotal and total*/
-      update_price('~', subtotal, 0, 0);
-      $("#cancel").removeAttr("style");
-      $("#confirm").removeAttr("style");
-      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
-      current_platinum = "NONE";
-      previous_page = "1";
-      current_page = "2";
-      cur_transaction = {};
-      setTimeout(function() {
-          $('#enter-platinum').remove()
-          $('#enter-platinum-modal').remove()
-          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-      }, 1500);
-    }
-}
-
-function colorfy() {
-    /*Sets the cancel and confirm buttons to red and green respectively*/
-    $("#cancel").css("background-color", "red");
-    $("#confirm").css("background-color", "green");
-}
-
-/*********************************************BEGIN ERROR MODAL CODE*********************************************/
-function error_platinum() {
-    $('#modal4').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-    });
-}
-
-function error_in_used() {
-    $('#modal5').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-    });
-}
-
-/***********************PRINT.JS***********************/
-$(document).on("click", "#yes-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  printTheOrder(cur_transaction.guid)
-  void_order(1);
-});
-
-$(document).on("click", "#no-receipt", function() {
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-  void_order(1);
-});
-
-function print_init() {
-  $("#cancel").removeAttr("style");
-  $("#confirm").removeAttr("style");
-  previous_flag = 0;
-  confirm_flag = 0;
-  cancel_flag = 0;
-  cash_flag = 0;
-  card_flag = 0;
-  console.log("===============BEFORE:");
-  console.log(cur_transaction);
-  cur_transaction.save(function(err){
-    if (err){
-      console.log("Error in saving new transaction", err)
-      Materialize.toast(err, 10000)
-      console.log(cur_transaction)
-    }
-    else {
-      console.log("New transaction saved!")
-    }
-  });
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
-  console.log("===============AFTER:");
-  console.log(cur_transaction);
-}
-
-
-// this is what will do the printing
-function printTheOrder(guid){
-    Transaction.findOne({guid : guid}, function(err, transaction){
-        if (err){
-            console.log(err)
-            Materialize.toast(err, 10000)
-        }
-        else {
-
-                unlink( __dirname + '/../../../kprint/reciept.txt')
-
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.guid + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.dateCreated + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.location + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.subtotal + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.tax + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.total + '\n')
-                appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
-
-                /*we need to iterate through this*/
-                let cashes      = transaction.cashes
-                let cards       = transaction.cards
-                let items       = transaction.items
-
-                for (let i = 0; i < cashes.length; i++){
-                    console.log(cashes[i].tendered)
-                }
-                for (let i = 0; i < cards.length; i++){
-                    console.log(cards[i].amount)
-                }
-        }
-    })
-}
-
-/***********************JBOARD.JS***********************/
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-
-$('#search').jboard('standard')
-
-//$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-/***********************TICKET.JS***********************/
-/*Function that verifies tif the current scanned item is a ticket. */
-function verify_ticket(barcode) {
-	var scan_prefix = barcode.substring(0, 6);
-	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
-	var places = [];
-	var i = -1;
-	var ticket = inventory.find(function(e) {
-		i++;
-		if(e.barcode != null) {
-			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
-				return true;
-		}
-	})
-	if(ticket == undefined)
-		return -1;
-	else if(ticket_flag != 1){
-		current_ticket[0] = i;
-		var title = inventory[i].title;
-		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
-		current_ticket[1] = j;
-		current_ticket[2] = barcode.substring(6, barcode.length - 1);
-	}
-}
-/*21610 1  027067   3*/
-function add_to_table(start, quantity) {
-	for(var i = 0; i < quantity; i++) {
-		var tck_cnt = Number(start.substring(6, 12));
-		tck_cnt+=i;
-		if(start[6] == "0")
-		tck_cnt = "0" + tck_cnt.toString();
-		console.log(tck_cnt);
-		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
-		console.log("A");
-	}
-	console.log("TABLE");
-	console.log(ticket_table.keys());
-}
-/*Adds items to the customers item list and does necessary updates, used twice within the code*/
-function add_item(item_list_index, inventory_list_index, quantity, manual) {
-	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
-		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
-		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
-		values as the text values of the td tags.*/
-		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
-		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
-		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
-		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
-		</tr>"
-		/*Append to the table that holds the items*/
-		$("#sale_list tbody").append(item);
-	}
-	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
-	else {
-		var item = $("#inv-item" + inventory_list_index).text().trim();
-		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
-		$("#inv-item" + inventory_list_index).text(item);
-	}
-	cancel_flag = 1;
-	/*Update the global quantities of subtotal, tax, and total*/
-	update_price('+', quantity, item_list_index, 0);
-}
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -1128,6 +626,122 @@ newTrans.chargeCreditCard({
 	});
 }*/
 
+/***********************CASH.JS***********************/
+$("#yes-cash").click(function () {
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	print_init();
+});
+
+/*Renders the necessary partial for completing orders with cash.*/
+$(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
+  cash_flag = 1;
+	previous_page = "pay_choice.html";
+	current_page = "cash.html"
+	colorfy();
+	$('#tendered-modal').remove()
+	/*Renders the html file necessary to handle cash transactions*/
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+});
+
+function handle_cash() {
+	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+	cash_trans();
+	/*Renders the html file necessary to denote the transaction is complete*/
+	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+		$('#modal6').openModal({
+			dismissible: true, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
+	}
+	else {
+		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+		cash_flag = 0;
+		confirm_flag = 0;
+		$("#cancel").removeAttr("style");
+		$("#confirm").removeAttr("style");
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		$("#cancel").css("background-color", "red");
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+	}
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
+	});
+}
+
+/***********************DETECTCARDSWIPE.JS***********************/
+/*
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+console.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+*/
+
+/***********************FRONTEND.JS***********************/
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
+
 /***********************INVENTORY.JS***********************/
 /*var i_i = -1;
 
@@ -1212,6 +826,344 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
+
+/***********************DELETE.JS***********************/
+/*When a finger is on the screen and on an item record the start point.
+This is how far away the finger is from the left border.*/
+$(document).on("touchstart", ".whole-item", function(e) {
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
+  touchstart = touchobj;
+});
+
+/*When the finger leaves the screen, record it's end point in pixels.*/
+$(document).on("touchend", ".whole-item", function(e) {
+  var touchobj = e.originalEvent.changedTouches[0].clientX;
+  touchend = touchobj;
+  /*Before seeing if this is a valid swipe take note of the item_id for future use*/
+  item_id = $(this).attr("id");
+  /*A valid swipe is if the pixel difference from the start to end is 100 pixels. If a valid swipe then bring up the delete confirm modal.*/
+  if(touchstart-touchend >= 100) {
+    /*Populates the modal with the item name for seller confirmation*/
+    $(this).css("background-color", "red");
+    /*Whole item taken from the html doc*/
+    var item = $(this).find("span").text().trim();
+    var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+    var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+    if(item_qnt == "1") {
+      $('#item_type').text(item_name);
+    }
+    else {
+      /*If there are multiple items to be deleted as how many  an create a form to input the amount*/
+      $('#delete_option').html(
+        ejs.render(
+          fs.readFileSync( __dirname + '/partials/delete_form.html', 'utf-8') , {'max' : item_qnt}
+        )
+      );
+      $('#item_type').text(" how many of " + item_name);
+    }
+    /*Open modal*/
+    $('#modal1').openModal({
+      dismissible: false, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
+
+/*Corresponds to a button on the modal. If this button is pressed then deleting is confirmed. All deleting is handled here.*/
+$("#y_delete").click(function() {
+  //var i = -1;
+	/*Grab the item info by id and using the find function to find the element in the id*/
+  var item = $("#" + item_id).find("span").text().trim();
+	/*Gte the quantity of items*/
+  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+	/*Get the item name*/
+  var item_name = item.substring(item.indexOf(": ") + 2, item.length);
+	var i = find_in_customer_list("title", item_name)
+	/*If the cust_quantity value is one*/
+  if(item_list[i].cust_quantity == 1) {
+		/*Do price updates*/
+		update_price('-', 1, i, 0);
+    item_list[i].cust_quantity = 0;
+		/*Remove from gui and item_list*/
+    $("#" + item_id).remove();
+    item_list.splice(i, 1);
+  }
+	/*If the cust_quantity value is greater than one*/
+  else if(item_list[i].cust_quantity > 1) {
+		/*Gran the value to be deleted*/
+    var delete_quantity = $("#delete-quantity").val();
+    /*Do any pricing updates before deleting (can write into a function honestly)*/
+		update_price('-', delete_quantity, i, 0);
+		/*If the quantity of items to be deleted is less than than the current quantity*/
+    if(delete_quantity < item_qnt) {
+      item_list[i].cust_quantity-=delete_quantity;
+			/*In the item info replace the old quantity with the new quantity*/
+      item = item.replace(item_qnt.toString(), item_list[i].cust_quantity.toString());
+			/*Take the title of the item and replace all the spaces with underscores because thats how the id is*/
+      $("#" + $("#" + item_id).find("span").attr("id")).text(item);
+    }
+		/*If the quantity to delete matches the current quantity available*/
+    else if(delete_quantity == item_qnt) {
+			/*Make tthe cust_quantity value 0*/
+      item_list[i].cust_quantity = 0;
+			/*Removet hat item from the gui*/
+      $("#" + item_id).remove();
+			/*Remove that item from the item_list*/
+      item_list.splice(i, 1);
+    }
+		/*Remove the form from the modal*/
+		$("#delete-form").remove();
+  }
+	/*If the there aren't any items after deletion then there is nothing to cancel so lower the flag*/
+	if(item_list.length == 0)
+		cancel_flag = 0;
+	/*Removes the red from the item*/
+	$("#" + item_id).removeAttr("style");
+	/*Refocuses the page on the barcode input*/
+  refocus();
+});
+
+$("#n_delete").click(function() {
+  /*Grab the item name*/
+  var item = $("#" + item_id).find("span").text().trim();
+	/*Grab the number of items*/
+  var item_qnt = Number(item.substring(item.indexOf("x") + 1, item.indexOf(": ")));
+	/*If there are more than one items do this*/
+  if(item_qnt >= "1") {
+		/*Remove the form from the modal*/
+    $("#delete-form").remove();
+  }
+	/*Removes the red from the item*/
+	$("#" + item_id).removeAttr("style");
+	/*Refocuses the page on the barcode input*/
+  refocus();
+});
+
+/***********************PRINT.JS***********************/
+$(document).on("click", "#yes-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  printTheOrder(cur_transaction.guid)
+  void_order(1);
+});
+
+$(document).on("click", "#no-receipt", function() {
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  void_order(1);
+});
+
+function print_init() {
+  $("#cancel").removeAttr("style");
+  $("#confirm").removeAttr("style");
+  previous_flag = 0;
+  confirm_flag = 0;
+  cancel_flag = 0;
+  cash_flag = 0;
+  card_flag = 0;
+  console.log("===============BEFORE:");
+  console.log(cur_transaction);
+  cur_transaction.save(function(err){
+    if (err){
+      console.log("Error in saving new transaction", err)
+      Materialize.toast(err, 10000)
+      console.log(cur_transaction)
+    }
+    else {
+      console.log("New transaction saved!")
+    }
+  });
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
+  console.log("===============AFTER:");
+  console.log(cur_transaction);
+}
+
+
+// this is what will do the printing
+function printTheOrder(guid){
+    Transaction.findOne({guid : guid}, function(err, transaction){
+        if (err){
+            console.log(err)
+            Materialize.toast(err, 10000)
+        }
+        else {
+
+            let stream = fs.createWriteStream( __dirname + '/../../../kprint/reciept.txt', {
+                flags : 'w', encoding : 'utf-8'
+            })
+            stream.on('error', function(error){
+                Materialize.toast(error, 10000)
+            })
+
+            /*This is the header*/
+            stream.write( "date, "      + transaction.dateCreated   + '\n')
+            stream.write( "guid, "      + transaction.guid          + '\n')
+
+            /*This is the lower header*/
+            stream.write( "location, "  + transaction.location      + '\n')
+            stream.write( 'leader, '    + transaction.platinum      + '\n')
+
+            /*This is the */
+            stream.write( "subtotal, "  + transaction.subtotal      + '\n')
+            stream.write( "tax, "       + transaction.tax           + '\n')
+            stream.write( "total,"      + transaction.total         + '\n')
+            stream.write( "payments, "  + transaction.payments      + '\n')
+            stream.end()
+
+
+            //fs.appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
+
+            /*we need to iterate through this*/
+            let cashes      = transaction.cashes
+            let cards       = transaction.cards
+            let items       = transaction.items
+
+            for (let i = 0; i < cashes.length; i++){
+                console.log(cashes[i].tendered)
+            }
+            for (let i = 0; i < cards.length; i++){
+                console.log(cards[i].amount)
+            }
+            for (let i = 0; i < items.length; i++){
+                console.log(items[i])
+            }
+
+        }
+    })
+}
+
+/***********************ENDSESSION.JS***********************/
+const ipc = require('electron').ipcRenderer
+
+$('#end-session').click(function(event){
+
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+  window.location.assign('../03-beginsession/index.html')
+})
+
+/***********************FUNCTIONS.JS***********************/
+function update_price(operation, quantity, placement, confirmed) {
+    if(!confirmed) {
+        /*Update the global quantities of subtotal, tax, and total*/
+        if(operation == '+')
+            subtotal+=((item_list[placement].price * quantity));
+        else if(operation == '-')
+            subtotal-=((item_list[placement].price * quantity));
+        else if(operation == '~')
+            subtotal-=quantity;
+        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
+        tax = subtotal * .075;
+        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
+        total = subtotal + tax;
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
+    }
+    else if(confirmed) {
+        total-=quantity;
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
+    }
+}
+
+/*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
+/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
+function void_order(full_void) {
+    can_end_session = 1;
+    confirm_flag = 0;
+    cancel_flag = 0;
+    /*Cash flag is set to 0 to denote the end of a cash transaction*/
+    cash_flag = 0;
+    /**/
+    card_flag = 0;
+    scan_flag = 0;
+    ticket_flag = 0;
+    swipe_flag = 0;
+    current_ticket = [-1, -1, "CODE"];
+    if(full_void == 1) {
+      item_list.splice(0, item_list.length);/*Empties the item list*/
+          /*Empties the left side*/
+      $("#sale_list tbody").empty();
+          /*Empties the subtotal and total*/
+      update_price('~', subtotal, 0, 0);
+      $("#cancel").removeAttr("style");
+      $("#confirm").removeAttr("style");
+      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+      current_platinum = "NONE";
+      previous_page = "1";
+      current_page = "2";
+      cur_transaction = {};
+      setTimeout(function() {
+          $('#enter-platinum').remove()
+          $('#enter-platinum-modal').remove()
+          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+      }, 1500);
+    }
+}
+
+function colorfy() {
+    /*Sets the cancel and confirm buttons to red and green respectively*/
+    $("#cancel").css("background-color", "red");
+    $("#confirm").css("background-color", "green");
+}
+
+/*********************************************BEGIN ERROR MODAL CODE*********************************************/
+function error_platinum() {
+    $('#modal4').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+    });
+}
+
+function error_in_used() {
+    $('#modal5').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+    });
+}
+
+/***********************JBOARD.JS***********************/
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+
+$('#search').jboard('standard')
+
+//$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
 
 /***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
@@ -1364,6 +1316,72 @@ function determine_item_status(item_list, inventory, barcode) {
     return -1;
   }
 };
+
+/***********************TICKET.JS***********************/
+/*Function that verifies tif the current scanned item is a ticket. */
+function verify_ticket(barcode) {
+	var scan_prefix = barcode.substring(0, 6);
+	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
+	console.log(scan_prefix);
+	var places = [];
+	var i = -1;
+	var ticket = inventory.find(function(e) {
+		i++;
+		if(e.barcode != null) {
+			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+				return true;
+		}
+	})
+	if(ticket == undefined)
+		return -1;
+	else if(ticket_flag != 1){
+		current_ticket[0] = i;
+		var title = inventory[i].title;
+		var j = find_in_customer_list("title", title);
+		console.log("J " + j);
+		current_ticket[1] = j;
+		current_ticket[2] = barcode.substring(6, barcode.length - 1);
+	}
+}
+/*21610 1  027067   3*/
+function add_to_table(start, quantity) {
+	for(var i = 0; i < quantity; i++) {
+		var tck_cnt = Number(start.substring(6, 12));
+		tck_cnt+=i;
+		if(start[6] == "0")
+		tck_cnt = "0" + tck_cnt.toString();
+		console.log(tck_cnt);
+		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
+		console.log("A");
+	}
+	console.log("TABLE");
+	console.log(ticket_table.keys());
+}
+/*Adds items to the customers item list and does necessary updates, used twice within the code*/
+function add_item(item_list_index, inventory_list_index, quantity, manual) {
+	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
+		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+		values as the text values of the td tags.*/
+		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
+		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
+		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
+		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
+		</tr>"
+		/*Append to the table that holds the items*/
+		$("#sale_list tbody").append(item);
+	}
+	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
+	else {
+		var item = $("#inv-item" + inventory_list_index).text().trim();
+		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
+		$("#inv-item" + inventory_list_index).text(item);
+	}
+	cancel_flag = 1;
+	/*Update the global quantities of subtotal, tax, and total*/
+	update_price('+', quantity, item_list_index, 0);
+}
 
 var transactions = [];
 $("#prev-transactions").click(function() {
