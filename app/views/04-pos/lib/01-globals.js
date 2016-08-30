@@ -1,15 +1,16 @@
 /***********************GLOBALS.JS***********************/
 
-var request = require('request');
-var mongoose = require('mongoose');
-var ejs = require('ejs');
-var fs = require('fs');
-var accounting = require('accounting-js');
-var mongoose = require('mongoose');
-var _ = require("underscore");
-var transaction = require('../../lib/create_transaction.js');
-var HashTable = require('hashtable');
+var request         = require('request');
+var mongoose        = require('mongoose');
+var ejs             = require('ejs');
+var fs              = require('fs');
+var accounting      = require('accounting-js');
+var mongoose        = require('mongoose');
+var _               = require("underscore");
+var transaction     = require('../../lib/create_transaction.js');
+var HashTable       = require('hashtable');
 var fs              = require('fs')
+var exec            = require('child_process').exec
 
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer

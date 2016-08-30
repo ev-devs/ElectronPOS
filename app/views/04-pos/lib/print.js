@@ -68,30 +68,32 @@ function printTheOrder(guid){
             stream.write( "tax, "       + transaction.tax           + '\n')
             stream.write( "total,"      + transaction.total         + '\n')
             stream.write( "payments, "  + transaction.payments      + '\n')
+            stream.write('\n\n')
 
 
-
-            stream.write('ItemsBegin')
+            stream.write('ItemsBegin\n')
             for (let i = 0; i < items.length; i++){
-                stream.write(items[i].title + ',' items[i].quantity + ',' + items[i].price + '\n')
+                stream.write(items[i].title + ',' + items[i].quantity + ',' + items[i].price + '\n')
             }
-            stream.write('ItemsEnd')
+            stream.write('ItemsEnd\n\n')
 
 
-            stream.write('BeginCashes')
-            for (let i = 0; i < cashes.length; i++){
-                console.log(cashes[i].tendered + ',' cashes[i].change + '\n')
+            stream.write('BeginCashes\n')
+            for (let j = 0; j < cashes.length; j++){
+                stream.write(cashes[j].tendered + ','  + cashes[j].change + '\n')
             }
-            stream.write('EndCashes')
+            stream.write('EndCashes\n\n')
 
 
-            stream.write('BeginCards')
-            for (let i = 0; i < cards.length; i++){
-                console.log(cards[i].cardType + ',' + cards[i].digits + ',' + cards[i].card_holder + ',' + cards[i].cardType + ',' + cards[i].authCode + ','  + cards[i].transId + '\n')
+            stream.write('BeginCards\n')
+            for (let k = 0; k < cards.length; k++){
+                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].cardType + ',' + cards[k].authCode + ','  + cards[k].transId + '\n')
             }
-            stream.write('EndCards')
+            stream.write('EndCards\n\n')
 
             stream.end()
+
+            
         }
     })
 }
