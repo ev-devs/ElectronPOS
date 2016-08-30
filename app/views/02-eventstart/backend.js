@@ -116,9 +116,8 @@ function validate_event(_type, _event, _code) {
     }, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         var msg = JSON.parse(body);
-        console.log(msg);
+        console.log("MSG:-----------------------------------------------------------------------")
         ipc.send('event-validation-success', msg );
-
         resolve(msg);
       }
       else if (error) {
@@ -137,8 +136,9 @@ function validate_event(_type, _event, _code) {
     });
   });
 }
-
+/*
 ipc.on('event-validaton-success-reply', function (event, arg) {
   const message = `Asynchronous message reply: ${arg}`
   console.log('we have the message! ' + message)
 });
+*/

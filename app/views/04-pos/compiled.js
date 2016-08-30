@@ -8,10 +8,13 @@ var mongoose = require('mongoose');
 var _ = require("underscore");
 var transaction = require('../../lib/create_transaction.js');
 var HashTable = require('hashtable');
+/*used to communicate with main process*/
+const ipc = require('electron').ipcRenderer
 
-
-
-
+/*
+Payment Number
+1000 item delete
+*/
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -21,6 +24,14 @@ var list_names = [];
 var a_list = [];
 var cur_transaction = {};
 var ticket_table = new HashTable();
+var event_info;
+var tax_rate;
+
+ipc.send('event-retrieval', "retrieving event info");
+ipc.on("event-retrieval-reply", function(event, arg) {
+  event_info = arg;
+  tax_rate = event_info.meeting[0].taxrate;
+});
 
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -60,69 +71,6 @@ var Platinum = require('../../lib/platinum.js');             /*This will be used
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
-/***FOR TESTING PURPOSES***/
-function force_transaction() {
-cur_transaction = new Transaction();
-cur_transaction.createGUID();
-cur_transaction.populateItems(function(transaction){
-    // transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
-    transaction.platinum  = "HARAMBE";  //=> Here you should modify the platinum name
-    transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
-    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-    transaction.subtotal = 69   //=> this is the raw subtotal without taxes
-    transaction.tax = 10    //=> this can be calculated via a function with the data we get from the event
-    transaction.total = 420      //=> this is just adding subtotal and tax together
-    transaction.payments = 0   //=> the amount of payments that will be made. At least 1
-
-
-  for (var i = 0; i < 1; i++){
-
-      let item = {
-        guid : cur_transaction.guid,
-        evid 		: 69,
-        barcode 	: 69,
-        title		: "TESTI",
-        isticket	: false,
-        prefix		: 69,
-        price		: 12,
-        tax			:1
-      }
-    }
-});
-
-var newTrans = new transaction();
-newTrans.chargeCreditCard({
-    cardnumber  : "4242424242424242",
-    expdate     : "0220",
-    ccv         : "123",
-    amount      : 80000
-  }).then(function(obj){
-    if (!obj.error){
-      console.log(obj.transMessage)
-      console.log("Trasaction Id:", obj.transId)
-      console.log("Authorization Code:", obj.transAuthCode)
-      /*If all the money was on the card then go to the printing option*/
-      card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-
-      cur_transaction.save(function(err){
-        if (err){
-          console.log("Error in saving new transaction")
-        }
-        else {
-          console.log("New transaction saved!")
-        }
-      });
-    }
-    else {
-      console.log(obj.transMessage)
-      console.log("Error Code:", obj.transErrorCode)
-      console.log("Error Text:", obj.transErrorText)
-    }
-  });
-}
-/***FOR TESTING PURPOSES***/
-
-
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
@@ -159,6 +107,10 @@ var can_end_session = 1;
 
 var credit_card_can_be_charged = false;
 
+ipc.on('event-validation-success-reply', function(event, arg){
+    current_event = arg;
+    console.log(arg)
+});
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -851,7 +803,6 @@ usbCardReader.on("data", function(data) {
 */
 
 /***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
 
 $('#end-session').click(function(event){
 
@@ -927,7 +878,7 @@ function update_price(operation, quantity, placement, confirmed) {
         else if(operation == '~')
             subtotal-=quantity;
         $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
-        tax = subtotal * .075;
+        tax = subtotal * tax_rate;
         $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
         total = subtotal + tax;
         $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
@@ -1420,45 +1371,43 @@ $(document).on("click", "#confirm-void", function() {
   var i = Number(elem_id.substring(0, elem_id.search("_")));
   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
   //console.log(trans_guid);
-
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
   var newTrans = new transaction();
   newTrans.voidTransaction({
       transId  : ay[i].cards[j].transId
   }).then(function(obj){
-
-      if (!obj.error) {
+    if (!obj.error) {
+      console.log(obj.transMessage)
+      console.log("Transaction Id:", obj.transId)
+      $("#" + elem_id).remove();
+      /*Begin transaction search*/
+      Transaction.findOne( { guid : ay[i].guid }, function(err, trans){
+        if (err){
+            console.log( "Error in finding a transaction " +  err)
+        }
+        else {
+          console.log(trans)
+          trans.cards[j].voidable = false;
+          trans.cards[j].voided = true;
+          trans.save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+                  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
+          })
+        }
+      });
+        /*End Transaction search*/
+    }
+    else {
         console.log(obj.transMessage)
-        console.log("Transaction Id:", obj.transId)
-        $("#" + elem_id).remove();
-        /*Begin transaction search*/
-        Transaction.findOne( { guid : ay[i].guid }, function(err, trans){
-          if (err){
-              console.log( "Error in finding a transaction " +  err)
-          }
-          else {
-            console.log(trans)
-            trans.cards[j].voidable = false;
-            trans.cards[j].voided = true;
-            trans.save(function(err){
-                if (err){
-                    console.log("Error in updating Trans " + err)
-                }
-                else {
-                    console.log("Updated Existing Trans")
-                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                }
-            })
-          }
-        });
-          /*End Transaction search*/
-      }
-      else {
-          console.log(obj.transMessage)
-          console.log("Error Code:", obj.transErrorCode)
-          console.log("Error Text:", obj.transErrorText)
-      }
-      console.log('\n')
-  })
+        console.log("Error Code:", obj.transErrorCode)
+        console.log("Error Text:", obj.transErrorText)
+    }
+  });
 });
 
 function update_transaction_db(transactions_) {

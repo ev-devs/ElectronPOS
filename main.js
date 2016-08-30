@@ -43,7 +43,7 @@ function createWindow(window) {
   window.webContents.openDevTools();
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/app/views/04-pos/index.html`);
+  window.loadURL(`file://${__dirname}/app/index.html`);
 
   // Emitted when the window is closed.
   window.on('closed', () => {
@@ -129,7 +129,12 @@ ipc.on('ibo-session-end', function(event, arg){
 ipc.on('event-validation-success', function(event, arg){
     current_event = arg;
     console.log(arg)
-    event.sender.send('event-validaton-success-reply', "Recieved Current Event")
+    event.sender.send('event-validaton-success-reply', 'Ended Session Successfully')
+});
+
+ipc.on("event-retrieval", function(event, arg) {
+
+  event.sender.send('event-retrieval-reply', current_event)
 });
 
 ipc.on('transaction-made', function(event, arg){

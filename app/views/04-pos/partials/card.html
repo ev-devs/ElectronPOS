@@ -28,7 +28,7 @@ cardCapture(function(trackdata){
     previous_flag = 0;
     var name = "";
     var digits = "";
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
     console.log(cardInfo)
@@ -36,8 +36,6 @@ cardCapture(function(trackdata){
         var newTrans = new transaction();
         name = cardInfo.account_name;
         digits = cardInfo.account.substring(cardInfo.account.length - 4, cardInfo.account.length);
-        console.log(digits);
-        console.log(name);
         newTrans.chargeCreditCard({
                 cardnumber  : cardInfo.account, //"4242424242424242",
                 expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
