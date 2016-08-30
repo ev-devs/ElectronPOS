@@ -44,7 +44,10 @@ function printTheOrder(guid){
             Materialize.toast(err, 10000)
         }
         else {
-
+            /*we need to iterate through this*/
+            let cashes      = transaction.cashes
+            let cards       = transaction.cards
+            let items       = transaction.items
             let stream = fs.createWriteStream( __dirname + '/../../../kprint/reciept.txt', {
                 flags : 'w', encoding : 'utf-8'
             })
@@ -65,26 +68,30 @@ function printTheOrder(guid){
             stream.write( "tax, "       + transaction.tax           + '\n')
             stream.write( "total,"      + transaction.total         + '\n')
             stream.write( "payments, "  + transaction.payments      + '\n')
-            stream.end()
 
 
-            //fs.appendFileSync( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
 
-            /*we need to iterate through this*/
-            let cashes      = transaction.cashes
-            let cards       = transaction.cards
-            let items       = transaction.items
-
-            for (let i = 0; i < cashes.length; i++){
-                console.log(cashes[i].tendered)
-            }
-            for (let i = 0; i < cards.length; i++){
-                console.log(cards[i].amount)
-            }
+            stream.write('ItemsBegin')
             for (let i = 0; i < items.length; i++){
-                console.log(items[i])
+                stream.write(items[i].title + ',' items[i].quantity + ',' + items[i].price + '\n')
             }
+            stream.write('ItemsEnd')
 
+
+            stream.write('BeginCashes')
+            for (let i = 0; i < cashes.length; i++){
+                console.log(cashes[i].tendered + ',' cashes[i].change + '\n')
+            }
+            stream.write('EndCashes')
+
+
+            stream.write('BeginCards')
+            for (let i = 0; i < cards.length; i++){
+                console.log(cards[i].cardType + ',' + cards[i].digits + ',' + cards[i].card_holder + ',' + cards[i].cardType + ',' + cards[i].authCode + ','  + cards[i].transId + '\n')
+            }
+            stream.write('EndCards')
+
+            stream.end()
         }
     })
 }
