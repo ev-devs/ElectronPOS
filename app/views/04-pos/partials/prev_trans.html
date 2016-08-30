@@ -1,24 +1,26 @@
 <div class="row">
   <div class="col s12">
     <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll; height: 67vh;">
-      <div class="collection" id="transaction-list" >
+      <div id="transaction-list" >
 
 
-
+        <ul class="collection">
         <% for(var i = 0; i < transactions.length; i++) { %>
               <%for(var j = 0; j < transactions[i].cards.length; j++) {%>
               <%if(transactions[i].cards[j].voidable) {%>
-                <a href="#!" class="collection-item transaction" id="<%=i%>_<%=j%>">
-                  <p>
-                    Name on Card: <%=transactions[i].cards[j].card_holder%><br/>
-                    Platinum: <%=transactions[i].platinum%> <br />
-                    Total: $<%=transactions[i].total%><br />
-                    Date: <%=transactions[i].cards[j].dateCreated%>
-                  </p>
+                <a href="#!" class="transaction" id="<%=i%>_<%=j%>">
+                  <!--<li>
+                      <%=transactions[i].cards[j].card_holder%>-<%=transactions[i].platinum%>-<%=transactions[i].cards[j].dateCreated%>
+                      <i class="material-icons">send</i>
+                  </li>-->
+                  <li class="collection-item"><div>
+                    <b>Card Holder:</b><%=transactions[i].cards[j].card_holder%>-<b>Platinum:</b><%=transactions[i].platinum%>-<b>Date:</b><%=transactions[i].cards[j].dateCreated%>
+                    <a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
                 </a>
               <%}%>
             <%}%>
         <%}%>
+      </ul>
 
 
 
