@@ -1,30 +1,27 @@
 <div class="row">
   <div class="col s12">
     <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll; height: 67vh;">
-      <div class="collection" id="transaction-list" >
+      <div id="transaction-list" >
 
 
-
+        <ul class="collection">
         <% for(var i = 0; i < transactions.length; i++) { %>
               <%for(var j = 0; j < transactions[i].cards.length; j++) {%>
               <%if(transactions[i].cards[j].voidable) {%>
-                <a href="#!" class="collection-item transaction" id="<%=transactions[i].cards[j].transId%>_<%=transactions[i].cards[j].guid%>">
-                  <p>
-                    <%var result = transactions[i].items.map(function(a) {return a.title;});%>
-                    ID: <%=transactions[i].guid%><br />
-                    Name on Card: Dude
-                    Platinum: transactions[i].platinum <br />
-                    Subtotal: $<%=transactions[i].subtotal%><br />
-                    Tax: $<%=transactions[i].tax%><br />
-                    Total: $<%=transactions[i].total%><br />
-                    Charged: $<%=transactions[i].cards[j].amount%> <br />
-                    Items: <%=result%> <br />
-                    Date: <%=transactions[i].cards[j].dateCreated%>
-                  </p>
+                <%var date = transactions[i].cards[j].dateCreated.toString();%>
+                <%date =  date.substring(0, date.search("GMT"));%>
+                <a href="#!" class="transaction" id="<%=i%>_<%=j%>">
+                  <li class="collection-item">
+                    <div>
+                    <b>Card Holder: </b><%=transactions[i].cards[j].card_holder%><br/><b>Platinum: </b><%=transactions[i].platinum%><br/><b>Date: </b><%=date%>
+                    <i class="material-icons secondary-content">send</i>
+                    </div>
+                  </li>
                 </a>
               <%}%>
             <%}%>
         <%}%>
+      </ul>
 
 
 
@@ -34,15 +31,5 @@
 
       </div>
     </div>
-  </div>
-</div>
-
-<div id="voidModal3" class="modal">
-  <div class="modal-content">
-    <h4 id="inventory_place">Are you sure you want to void this transaction?</h4>
-  </div>
-  <div class="modal-footer">
-    <a href="#!" id="confirm-void" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-    <a href="#!" id="cancel-void" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
   </div>
 </div>

@@ -1,15 +1,23 @@
 /***********************GLOBALS.JS***********************/
-var request         = require('request');
-var mongoose        = require('mongoose');
-var ejs             = require('ejs');
-var fs              = require('fs');
-var accounting      = require('accounting-js');
-var mongoose        = require('mongoose');
-var _               = require("underscore");
-var transaction     = require('../../lib/create_transaction.js');
-var HashTable       = require('hashtable');
+
+var request = require('request');
+var mongoose = require('mongoose');
+var ejs = require('ejs');
+var fs = require('fs');
+var accounting = require('accounting-js');
+var mongoose = require('mongoose');
+var _ = require("underscore");
+var transaction = require('../../lib/create_transaction.js');
+var HashTable = require('hashtable');
 var fs              = require('fs')
 
+/*used to communicate with main process*/
+const ipc = require('electron').ipcRenderer
+
+/*
+Payment Number
+1000 item delete
+*/
 
 // Global variables
 var inventory = [];
@@ -20,6 +28,14 @@ var list_names = [];
 var a_list = [];
 var cur_transaction = {};
 var ticket_table = new HashTable();
+var event_info;
+var tax_rate;
+
+ipc.send('event-retrieval', "retrieving event info");
+ipc.on("event-retrieval-reply", function(event, arg) {
+  event_info = arg;
+  tax_rate = event_info.meeting[0].taxrate;
+});
 
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -59,69 +75,6 @@ var Platinum = require('../../lib/platinum.js');             /*This will be used
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
 var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
 
-/***FOR TESTING PURPOSES***/
-function force_transaction() {
-cur_transaction = new Transaction();
-cur_transaction.createGUID();
-cur_transaction.populateItems(function(transaction){
-    // transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
-    transaction.platinum  = "HARAMBE";  //=> Here you should modify the platinum name
-    transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
-    transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-    transaction.subtotal = 69   //=> this is the raw subtotal without taxes
-    transaction.tax = 10    //=> this can be calculated via a function with the data we get from the event
-    transaction.total = 420      //=> this is just adding subtotal and tax together
-    transaction.payments = 0   //=> the amount of payments that will be made. At least 1
-
-
-  for (var i = 0; i < 1; i++){
-
-      let item = {
-        guid : cur_transaction.guid,
-        evid 		: 69,
-        barcode 	: 69,
-        title		: "TESTI",
-        isticket	: false,
-        prefix		: 69,
-        price		: 12,
-        tax			:1
-      }
-    }
-});
-
-var newTrans = new transaction();
-newTrans.chargeCreditCard({
-    cardnumber  : "4242424242424242",
-    expdate     : "0220",
-    ccv         : "123",
-    amount      : 80000
-  }).then(function(obj){
-    if (!obj.error){
-      console.log(obj.transMessage)
-      console.log("Trasaction Id:", obj.transId)
-      console.log("Authorization Code:", obj.transAuthCode)
-      /*If all the money was on the card then go to the printing option*/
-      card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-
-      cur_transaction.save(function(err){
-        if (err){
-          console.log("Error in saving new transaction")
-        }
-        else {
-          console.log("New transaction saved!")
-        }
-      });
-    }
-    else {
-      console.log(obj.transMessage)
-      console.log("Error Code:", obj.transErrorCode)
-      console.log("Error Text:", obj.transErrorText)
-    }
-  });
-}
-/***FOR TESTING PURPOSES***/
-
-
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
 /*Item_list is the list of items the cusotmer has*/
 var item_list = [];
@@ -158,6 +111,10 @@ var can_end_session = 1;
 
 var credit_card_can_be_charged = false;
 
+ipc.on('event-validation-success-reply', function(event, arg){
+    current_event = arg;
+    console.log(arg)
+});
 
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
 
@@ -268,7 +225,7 @@ $("#cancel").click(function() {
     $('#modal2').openModal();
     console.log("CANCEL");
 	}
-  else if(previous_flag) {
+  else if(previous_flag || $(this).css('background-color') == 'rgb(255, 0, 0)') {
     console.log("PREVIOUS");
 		if(current_page == "pay_choice.html") {
 			console.log("1");
@@ -279,6 +236,7 @@ $("#cancel").click(function() {
 			previous_page = "handle_order.html";
       refocus();
 			$("#cancel").removeAttr("style");
+      $("#cancel").text("Cancel");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
@@ -309,11 +267,29 @@ $("#cancel").click(function() {
       previous_page = "card_amt";
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
     }
+    else if(current_page == "prev_trans.html") {
+      console.log("6");
+      current_page = "select_platinums.html";
+      previous_page = "select_platinums.html";
+      $('#enter-platinum-modal').remove();
+      $("#cancel").removeAttr("style");
+      $("#cancel").text("cancel");
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"A" : 0}));
+    }
+    else if(current_page == "indv_trans.html") {
+      console.log("7");
+      current_page = "prev_trans.html";
+      previous_page = "select_platinums.html";
+      $("#confirm").text("confirm");
+      $("#confirm").removeAttr("style");
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {transactions: ay}));
+    }
 	}
   else if($("#cancel").text() == "Clear") {
     console.log("We cleared");
     clearSignaturePad()
   }
+
 	else if(current_platinum == "NONE"){
 		error_platinum();
 	}
@@ -332,131 +308,6 @@ $("#y_cancel").click(function() {
     refocus();
   }
 });
-
-/***********************CONFIRM.JS***********************/
-$("#confirm").click(function() {
-	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
-  if(confirm_flag == 1) {
-		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
-    if(item_list.length != 0) {
-			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
-      if(confirm_flag == 1) {
-				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
-        confirm_flag = 0;
-				scan_flag = 0;
-				previous_flag = 1;
-				previous_page = "handle_order.html";
-				current_page = "pay_choice.html";
-				$("#cancel").css("background-color", "red");
-				init_transaction();
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-      }
-    }
-  }
-	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
-	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
-  else if(cash_flag) {
-		handle_cash();
-  }
-	else if(card_flag) {
-
-		if(current_page != "card.html")
-			handle_card();
-	}
-	else if($("#confirm").text() == "Accept") {
-		acceptSignature()
-	}
-	else if(current_platinum == "NONE") {
-		error_platinum();
-	}
-});
-
-function init_transaction() {
-	cur_transaction = new Transaction();
-	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
-	cur_transaction.populateItems(function(transaction){
-			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
-			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
-			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
-			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-			transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-			transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-			transaction.total = total      //=> this is just adding subtotal and tax together
-			transaction.payments = 50   //=> the amount of payments that will be made. At least 1
-
-
-		for (var i = 0; i < item_list.length; i++){
-
-				let item = {
-					guid : cur_transaction.guid,
-					evid 		: item_list[i].id,
-					barcode 	: item_list[i].barcode,
-					title		: item_list[i].title,
-					isticket	: item_list[i].isticket,
-					prefix		: item_list[i].prefix,
-					price		: item_list[i].price,
-					tax			: item_list[i].price * .0875
-				}
-
-				transaction.items.push(item);
-			}
-	});
-}
-/*console.log("card flag");
-if(current_page == "card_input.html") {
-	console.log("JUAN");
-	if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
-	console.log("JUANA")
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-					cardnumber  : "4242424242424242",
-					expdate     : "0220",
-					ccv         : "123",
-					amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				//card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-				cur_transaction.createCardTransaction(function(transaction){
-					let CardTrans = {
-						guid     : transaction.guid,
-						amount   : card_amt,
-						authCode : obj.transAuthCode,
-						transId  : obj.transId,
-						message  : obj.transMessage,
-						cardType : "Harambe",
-						dateCreated : new Date(),
-						voidable : true,
-						voided   : false
-					}
-					transaction.cards.push(CardTrans);
-					transaction.payments++;
-				});
-
-				if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					print_init();
-				}
-				else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					card_flag = 0;
-					confirm_flag = 0;
-					update_price('~', card_amt, 0, 1)
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-					current_page = "pay_choice.html";
-					previous_page = "handle_order.html";
-					previous_flag = 1;
-					$("#cancel").css("background-color", "red");
-				}
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		})
-	}
-	*/
 
 /***********************CARD.JS***********************/
 /*Renders the necessary partial for completing orders with card.*/
@@ -684,148 +535,141 @@ function cash_trans(){
 	});
 }
 
-/***********************DETECTCARDSWIPE.JS***********************/
-/*
-const HID = require('node-hid');
-var devices = HID.devices() // this lists all the devices
-var usbCardReader = null; // this is going to be our
-
-console.log(devices)
-
-for (device in devices) {
-
-    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
-        //console.log(devices[device].vendorId)
-        usbCardReader = new HID.HID(  devices[device].path  );
-        return
+/***********************CONFIRM.JS***********************/
+$("#confirm").click(function() {
+	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
+  if(confirm_flag == 1 && $("#confirm").text() != "Void") {
+		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
+    if(item_list.length != 0) {
+			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
+      if(confirm_flag == 1) {
+				/*Set the confirm flag to 0 to denote that we are in the middle of a transaction*/
+        confirm_flag = 0;
+				scan_flag = 0;
+				previous_flag = 1;
+				previous_page = "handle_order.html";
+				current_page = "pay_choice.html";
+				$("#cancel").css("background-color", "red");
+				$("#cancel").text("Back");
+				init_transaction();
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+      }
     }
-}
-
-usbCardReader.on("data", function(data) {
-    console.log(data)
-});
-*/
-
-/***********************FRONTEND.JS***********************/
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
   }
-  else
-    $("#change").text(0);
+	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
+	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
+  else if(cash_flag) {
+		handle_cash();
+  }
+	else if(card_flag) {
+
+		if(current_page != "card.html")
+			handle_card();
+	}
+	else if($("#confirm").text() == "Accept") {
+		acceptSignature()
+	}
+	else if($("#confirm").text() == "Void") {
+		console.log("VOID");
+		$('#voidModal3').openModal({
+			dismissible: false, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
+	}
+	else if(current_platinum == "NONE") {
+		error_platinum();
+	}
 });
 
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
+function init_transaction() {
+	cur_transaction = new Transaction();
+	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
+	cur_transaction.populateItems(function(transaction){
+			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
+			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
+			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
+			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
+			transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
+			transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
+			transaction.total = total      //=> this is just adding subtotal and tax together
+			transaction.payments = 50   //=> the amount of payments that will be made. At least 1
+
+
+		for (var i = 0; i < item_list.length; i++){
+
+				let item = {
+					guid : cur_transaction.guid,
+					evid 		: item_list[i].id,
+					barcode 	: item_list[i].barcode,
+					title		: item_list[i].title,
+					isticket	: item_list[i].isticket,
+					prefix		: item_list[i].prefix,
+					price		: item_list[i].price,
+					tax			: item_list[i].price * .0875,
+					quantity : item_list[i].cust_quantity
+				}
+
+				transaction.items.push(item);
+			}
+	});
 }
+/*console.log("card flag");
+if(current_page == "card_input.html") {
+	console.log("JUAN");
+	if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
+	console.log("JUANA")
+	var newTrans = new transaction();
+	newTrans.chargeCreditCard({
+					cardnumber  : "4242424242424242",
+					expdate     : "0220",
+					ccv         : "123",
+					amount      : card_amt.toString()
+		}).then(function(obj){
+			if (!obj.error){
+				console.log(obj.transMessage)
+				console.log("Trasaction Id:", obj.transId)
+				console.log("Authorization Code:", obj.transAuthCode)
+				//card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+				cur_transaction.createCardTransaction(function(transaction){
+					let CardTrans = {
+						guid     : transaction.guid,
+						amount   : card_amt,
+						authCode : obj.transAuthCode,
+						transId  : obj.transId,
+						message  : obj.transMessage,
+						cardType : "Harambe",
+						dateCreated : new Date(),
+						voidable : true,
+						voided   : false
+					}
+					transaction.cards.push(CardTrans);
+					transaction.payments++;
+				});
 
-
- $(".button-collapse").sideNav();
-
-/***********************INVENTORY.JS***********************/
-/*var i_i = -1;
-
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+					print_init();
+				}
+				else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+					card_flag = 0;
+					confirm_flag = 0;
+					update_price('~', card_amt, 0, 1)
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+					current_page = "pay_choice.html";
+					previous_page = "handle_order.html";
+					previous_flag = 1;
+					$("#cancel").css("background-color", "red");
 				}
 			}
-		}
-		else {
-			error_platinum();
-		}
-});
-
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
-});
-
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
 			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
+				console.log(obj.transMessage)
+				console.log("Error Code:", obj.transErrorCode)
+				console.log("Error Text:", obj.transErrorText)
 			}
-		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-	refocus();
-});
-
-$(document).on("click",  "#cancel_item_selection", function() {
-	refocus();
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
+		})
+	}
+	*/
 
 /***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
@@ -941,6 +785,281 @@ $("#n_delete").click(function() {
   refocus();
 });
 
+/***********************DETECTCARDSWIPE.JS***********************/
+/*
+const HID = require('node-hid');
+var devices = HID.devices() // this lists all the devices
+var usbCardReader = null; // this is going to be our
+
+console.log(devices)
+
+for (device in devices) {
+
+    if (devices[device].manufacturer == "Mag-Tek" && devices[device].product == 'USB Swipe Reader'){
+        //console.log(devices[device].vendorId)
+        usbCardReader = new HID.HID(  devices[device].path  );
+        return
+    }
+}
+
+usbCardReader.on("data", function(data) {
+    console.log(data)
+});
+*/
+
+/***********************ENDSESSION.JS***********************/
+
+$('#end-session').click(function(event){
+
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+  window.location.assign('../03-beginsession/index.html')
+})
+
+/***********************FRONTEND.JS***********************/
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
+
+/***********************FUNCTIONS.JS***********************/
+function update_price(operation, quantity, placement, confirmed) {
+    if(!confirmed) {
+        /*Update the global quantities of subtotal, tax, and total*/
+        if(operation == '+')
+            subtotal+=((item_list[placement].price * quantity));
+        else if(operation == '-')
+            subtotal-=((item_list[placement].price * quantity));
+        else if(operation == '~')
+            subtotal-=quantity;
+        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
+        tax = subtotal * tax_rate;
+        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
+        total = subtotal + tax;
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
+    }
+    else if(confirmed) {
+        total-=quantity;
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
+    }
+}
+
+/*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
+/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
+function void_order(full_void) {
+    can_end_session = 1;
+    confirm_flag = 0;
+    cancel_flag = 0;
+    /*Cash flag is set to 0 to denote the end of a cash transaction*/
+    cash_flag = 0;
+    /**/
+    card_flag = 0;
+    scan_flag = 0;
+    ticket_flag = 0;
+    swipe_flag = 0;
+    current_ticket = [-1, -1, "CODE"];
+    if(full_void == 1) {
+      item_list.splice(0, item_list.length);/*Empties the item list*/
+          /*Empties the left side*/
+      $("#sale_list tbody").empty();
+          /*Empties the subtotal and total*/
+      update_price('~', subtotal, 0, 0);
+      $("#cancel").removeAttr("style");
+      $("#confirm").removeAttr("style");
+      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+      current_platinum = "NONE";
+      previous_page = "1";
+      current_page = "2";
+      cur_transaction = {};
+      setTimeout(function() {
+          $('#enter-platinum').remove()
+          $('#enter-platinum-modal').remove()
+          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+      }, 1500);
+    }
+}
+
+function colorfy() {
+    /*Sets the cancel and confirm buttons to red and green respectively*/
+    $("#cancel").css("background-color", "red");
+    $("#confirm").css("background-color", "green");
+}
+
+/*********************************************BEGIN ERROR MODAL CODE*********************************************/
+function error_platinum() {
+    $('#modal4').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+    });
+}
+
+function error_in_used() {
+    $('#modal5').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+    });
+}
+
+/***********************INVENTORY.JS***********************/
+/*var i_i = -1;
+
+var inventory_item = function(item) {
+	i_i++;
+	if(item.barcode != null) {
+		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
+			var item = Object.assign({}, item)
+			inventory_query.push(item);
+			item.title+=("-_" + i_i);
+		}
+	}
+}
+*/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
+});
+
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
+});
+
+$(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
+/***********************JBOARD.JS***********************/
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+
+$('#search').jboard('standard')
+
+//$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
 /***********************PRINT.JS***********************/
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -1031,139 +1150,6 @@ function printTheOrder(guid){
         }
     })
 }
-
-/***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if (can_end_session == 0){
-      $('#modal9').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-      });
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-  window.location.assign('../03-beginsession/index.html')
-})
-
-/***********************FUNCTIONS.JS***********************/
-function update_price(operation, quantity, placement, confirmed) {
-    if(!confirmed) {
-        /*Update the global quantities of subtotal, tax, and total*/
-        if(operation == '+')
-            subtotal+=((item_list[placement].price * quantity));
-        else if(operation == '-')
-            subtotal-=((item_list[placement].price * quantity));
-        else if(operation == '~')
-            subtotal-=quantity;
-        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
-        tax = subtotal * .075;
-        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
-        total = subtotal + tax;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
-    }
-    else if(confirmed) {
-        total-=quantity;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
-    }
-}
-
-/*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
-/*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
-function void_order(full_void) {
-    can_end_session = 1;
-    confirm_flag = 0;
-    cancel_flag = 0;
-    /*Cash flag is set to 0 to denote the end of a cash transaction*/
-    cash_flag = 0;
-    /**/
-    card_flag = 0;
-    scan_flag = 0;
-    ticket_flag = 0;
-    swipe_flag = 0;
-    current_ticket = [-1, -1, "CODE"];
-    if(full_void == 1) {
-      item_list.splice(0, item_list.length);/*Empties the item list*/
-          /*Empties the left side*/
-      $("#sale_list tbody").empty();
-          /*Empties the subtotal and total*/
-      update_price('~', subtotal, 0, 0);
-      $("#cancel").removeAttr("style");
-      $("#confirm").removeAttr("style");
-      /*Sets the confirm flag back to one to denote that a normal completion can happen*/
-      current_platinum = "NONE";
-      previous_page = "1";
-      current_page = "2";
-      cur_transaction = {};
-      setTimeout(function() {
-          $('#enter-platinum').remove()
-          $('#enter-platinum-modal').remove()
-          $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-      }, 1500);
-    }
-}
-
-function colorfy() {
-    /*Sets the cancel and confirm buttons to red and green respectively*/
-    $("#cancel").css("background-color", "red");
-    $("#confirm").css("background-color", "green");
-}
-
-/*********************************************BEGIN ERROR MODAL CODE*********************************************/
-function error_platinum() {
-    $('#modal4').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-    });
-}
-
-function error_in_used() {
-    $('#modal5').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-    });
-}
-
-/***********************JBOARD.JS***********************/
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-
-$('#search').jboard('standard')
-
-//$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
 
 /***********************SCAN.JS***********************/
 /*When the #scan_sim button is click carry out the following callback*/
@@ -1383,14 +1369,19 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-var transactions = [];
+var ay = [];
 $("#prev-transactions").click(function() {
   if(can_end_session == 1) {
     current_platinum = "NON";
     confirm_flag = 1;
+    current_page = "prev_trans.html";
+    prev_page = "select_platinums.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
        update_transaction_db(_transactions);
+       ay = transactions;
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
   }
@@ -1408,65 +1399,81 @@ $("#prev-transactions").click(function() {
 var elem_id;
 $(document).on("click", ".transaction", function() {
    elem_id = $(this).attr("id");
-   $('#voidModal3').openModal({
-     dismissible: true, // Modal can be dismissed by clicking outside of the modal
-     opacity: .5, // Opacity of modal background
-     in_duration: 300, // Transition in duration
-     out_duration: 200, // Transition out duration
-   });
+   var i = Number(elem_id.substring(0, elem_id.search("_")));
+   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+   current_page = "indv_trans.html";
+   prev_page = "prev_trans.html";
+   var x = []
+   x.push(ay[i]);
+   x.push(j);
+   $("#confirm").text("Void");
+   $("#cancel").text("Back");
+   $("#confirm").css("background-color", "green");
+   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
 });
+/*
+$('#voidModal3').openModal({
+  dismissible: true, // Modal can be dismissed by clicking outside of the modal
+  opacity: .5, // Opacity of modal background
+  in_duration: 300, // Transition in duration
+  out_duration: 200, // Transition out duration
+});
+
+*/
+/*var trans_id = elem_id.substring(0, elem_id.search("_"));
+var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)*/
+
+
 
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
-  var trans_id = elem_id.substring(0, elem_id.search("_"));
-  var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)
-  console.log(trans_guid);
+  var i = Number(elem_id.substring(0, elem_id.search("_")));
+  var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+  //console.log(trans_guid);
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
   var newTrans = new transaction();
   newTrans.voidTransaction({
-      transId  : trans_id
+      transId  : ay[i].cards[j].transId
   }).then(function(obj){
-
-      if (!obj.error){
-          console.log(obj.transMessage)
-          console.log("Transaction Id:", obj.transId)
-          $("#" + elem_id).remove();
-          /*Begin transaction search*/
-          Transaction.findOne( { guid : trans_guid }, function(err, trans){
-            if (err){
-                console.log( "Error in finding a transaction " +  err)
-            }
-            else {
-              console.log(trans)
-              trans.cards[0].voidable = false;
-              trans.cards[0].voided = true;
-              trans.save(function(err){
-                  if (err){
-                      console.log("Error in updating Trans " + err)
-                  }
-                  else {
-                      console.log("Updated Existing Trans")
-                  }
-              })
-            }
-          });
-          /*End Transaction search*/
-      }
-      else {
-          console.log(obj.transMessage)
-          console.log("Error Code:", obj.transErrorCode)
-          console.log("Error Text:", obj.transErrorText)
-      }
-      console.log('\n')
-  })
+    if (!obj.error) {
+      console.log(obj.transMessage)
+      console.log("Transaction Id:", obj.transId)
+      $("#" + elem_id).remove();
+      /*Begin transaction search*/
+      Transaction.findOne( { guid : ay[i].guid }, function(err, trans){
+        if (err){
+            console.log( "Error in finding a transaction " +  err)
+        }
+        else {
+          console.log(trans)
+          trans.cards[j].voidable = false;
+          trans.cards[j].voided = true;
+          trans.save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+                  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
+          })
+        }
+      });
+        /*End Transaction search*/
+    }
+    else {
+        console.log(obj.transMessage)
+        console.log("Error Code:", obj.transErrorCode)
+        console.log("Error Text:", obj.transErrorText)
+    }
+  });
 });
 
 function update_transaction_db(transactions_) {
   var cur_date = Date.parse(new Date());
   for(var i = 0; i < transactions_.length; i++) {
     for(var j = 0; j < transactions_[i].cards.length; j++) {
-      //var past_date = transactions_[i].cards[j].dateCreated.parse();
-      //console.log(cur_date - past_date);
       var deadline = transactions_[i].cards[j].dateCreated;
       deadline = deadline.setDate(deadline.getDate() + 1);
       if(cur_date >= deadline) {

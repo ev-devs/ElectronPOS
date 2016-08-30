@@ -9,7 +9,7 @@ function update_price(operation, quantity, placement, confirmed) {
         else if(operation == '~')
             subtotal-=quantity;
         $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
-        tax = subtotal * .075;
+        tax = subtotal * tax_rate;
         $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
         total = subtotal + tax;
         $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
