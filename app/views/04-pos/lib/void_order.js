@@ -6,6 +6,7 @@ $("#prev-transactions").click(function() {
     current_page = "prev_trans.html";
     prev_page = "select_platinums.html";
     $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
        update_transaction_db(_transactions);
@@ -31,8 +32,13 @@ $(document).on("click", ".transaction", function() {
    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
    current_page = "indv_trans.html";
    prev_page = "prev_trans.html";
-   console.log(ay[i].cards[j]);
-   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : ay[i].cards[j] }));
+   var x = []
+   x.push(ay[i]);
+   x.push(j);
+   $("#confirm").text("Void");
+   $("#cancel").text("Back");
+   $("#confirm").css("background-color", "green");
+   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
 });
 /*
 $('#voidModal3').openModal({
@@ -59,7 +65,7 @@ $(document).on("click", "#confirm-void", function() {
       transId  : trans_id
   }).then(function(obj){
 
-      if (!obj.error){
+      if (!obj.error) {
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
           $("#" + elem_id).remove();

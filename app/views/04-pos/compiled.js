@@ -280,6 +280,7 @@ $("#cancel").click(function() {
 			previous_page = "handle_order.html";
       refocus();
 			$("#cancel").removeAttr("style");
+      $("#cancel").text("Cancel");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
@@ -316,12 +317,15 @@ $("#cancel").click(function() {
       previous_page = "select_platinums.html";
       $('#enter-platinum-modal').remove();
       $("#cancel").removeAttr("style");
+      $("#cancel").text("cancel");
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"A" : 0}));
     }
     else if(current_page == "indv_trans.html") {
       console.log("7");
       current_page = "prev_trans.html";
       previous_page = "select_platinums.html";
+      $("#confirm").text("confirm");
+      $("#confirm").removeAttr("style");
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {transactions: ay}));
     }
 	}
@@ -578,7 +582,7 @@ function cash_trans(){
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
-  if(confirm_flag == 1) {
+  if(confirm_flag == 1 && $("#confirm").text() != "Void") {
 		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
     if(item_list.length != 0) {
 			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
@@ -590,6 +594,7 @@ $("#confirm").click(function() {
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
+				$("#cancel").text("Back");
 				init_transaction();
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
@@ -607,6 +612,15 @@ $("#confirm").click(function() {
 	}
 	else if($("#confirm").text() == "Accept") {
 		acceptSignature()
+	}
+	else if($("#confirm").text() == "Void") {
+		console.log("VOID");
+		$('#voidModal3').openModal({
+			dismissible: false, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
 	}
 	else if(current_platinum == "NONE") {
 		error_platinum();
@@ -1352,6 +1366,7 @@ $("#prev-transactions").click(function() {
     current_page = "prev_trans.html";
     prev_page = "select_platinums.html";
     $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
        update_transaction_db(_transactions);
@@ -1377,8 +1392,13 @@ $(document).on("click", ".transaction", function() {
    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
    current_page = "indv_trans.html";
    prev_page = "prev_trans.html";
-   console.log(ay[i].cards[j]);
-   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : ay[i].cards[j] }));
+   var x = []
+   x.push(ay[i]);
+   x.push(j);
+   $("#confirm").text("Void");
+   $("#cancel").text("Back");
+   $("#confirm").css("background-color", "green");
+   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
 });
 /*
 $('#voidModal3').openModal({
@@ -1405,7 +1425,7 @@ $(document).on("click", "#confirm-void", function() {
       transId  : trans_id
   }).then(function(obj){
 
-      if (!obj.error){
+      if (!obj.error) {
           console.log(obj.transMessage)
           console.log("Transaction Id:", obj.transId)
           $("#" + elem_id).remove();
