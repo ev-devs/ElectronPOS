@@ -1,6 +1,7 @@
 /***********************PRINT.JS***********************/
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  printTheOrder(cur_transaction.guid)
   void_order(1);
 });
 
@@ -32,4 +33,39 @@ function print_init() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
   console.log("===============AFTER:");
   console.log(cur_transaction);
+}
+
+
+// this is what will do the printing
+function printTheOrder(guid){
+    Transaction.findOne({guid : guid}, function(err, transaction){
+        if (err){
+            console.log(err)
+            Materialize.toast(err, 10000)
+        }
+        else {
+
+                fs.unlink( __dirname + '/../../../kprint/reciept.txt')
+
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.guid + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.dateCreated + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.location + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.subtotal + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.tax + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.total + '\n')
+                fs.appendFile( __dirname + '/../../../kprint/reciept.txt' , transaction.payments + '\n')
+
+                /*we need to iterate through this*/
+                let cashes      = transaction.cashes
+                let cards       = transaction.cards
+                let items       = transaction.items
+
+                for (let i = 0; i < cashes.length; i++){
+                    console.log(cashes[i].tendered)
+                }
+                for (let i = 0; i < cards.length; i++){
+                    console.log(cards[i].amount)
+                }
+        }
+    })
 }

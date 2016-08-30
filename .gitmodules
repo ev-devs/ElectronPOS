@@ -4,3 +4,6 @@
 [submodule "jboard"]
 	path = jboard
 	url = https://github.com/ev-devs/jboard.git
+[submodule "kprint"]
+	path = kprint
+	url = https://github.com/ev-devs/kprint.git
