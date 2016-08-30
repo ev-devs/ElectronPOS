@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 var Card = new mongoose.Schema({
     guid        : { type : String, required : true }, /*shared*/
     card_holder : { type : String, required : true },
+    digits      : { type : String, required : true },
     amount      : { type : Number, required : true },
     authCode    : { type : String, required : true },
     transId     : { type : String, required : true },
