@@ -571,7 +571,6 @@ function init_transaction() {
 			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
 			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
-			transaction.location = "Harambe's Heart, Ohio";  //=> this can be reached from the main.js process via ipc
 			transaction.subtotal = subtotal;   //=> this is the raw subtotal without taxes
 			transaction.tax = tax;    //=> this can be calculated via a function with the data we get from the event
 			transaction.total = total;      //=> this is just adding subtotal and tax together
