@@ -14,6 +14,5 @@ var Card = new mongoose.Schema({
     voided      : { type : Boolean, required : true }
 })
 
-
 var CardTrans = TransactionConnection.model('CardTrans', Card);
 module.exports = CardTrans

@@ -1,16 +1,28 @@
 /***********************GLOBALS.JS***********************/
-var request = require('request');
-var mongoose = require('mongoose');
-var ejs = require('ejs');
-var fs = require('fs');
-var accounting = require('accounting-js');
-var mongoose = require('mongoose');
-var _ = require("underscore");
-var transaction = require('../../lib/create_transaction.js');
-var HashTable = require('hashtable');
+
+var request         = require('request');
+var mongoose        = require('mongoose');
+var ejs             = require('ejs');
+var fs              = require('fs');
+var accounting      = require('accounting-js');
+var mongoose        = require('mongoose');
+var _               = require("underscore");
+var transaction     = require('../../lib/create_transaction.js');
+var HashTable       = require('hashtable');
+var fs              = require('fs')
+var exec            = require('child_process').exec
+
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 
+<<<<<<< HEAD
+=======
+/*
+Payment Number
+1000 item delete
+*/
+
+>>>>>>> 9af816612a3632d3f3b7b128b6ec3eba76af69b4
 // Global variables
 var inventory = [];
 var inventory_query = [];

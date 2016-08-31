@@ -20,6 +20,7 @@
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
 cardCapture(function(trackdata){
+    
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     confirm_flag = 0;

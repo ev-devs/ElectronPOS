@@ -13,10 +13,11 @@
 
 import usb.core
 import usb.util
+import sys
 
 # MagTek Device MSR100 Mini Swipe AND the MagTek PN-21040145
-vendorid = 0x0801
-productid = 0x0001
+vendorid = 0x40b
+productid = 0x6543
 
 # Define our Character Map per Reference Manual
 # http://www.magtek.com/documentation/public/99875206-17.01.pdf
@@ -137,28 +138,31 @@ shiftchrMap = {
 device = usb.core.find(idVendor=vendorid, idProduct=productid)
 if device is None:
      print 'Could not find USB Card Reader'
+     sys.exit()
 
 # remove device from kernel, this should stop
 # reader from printing to screen and remove /dev/input
 if device.is_kernel_driver_active(0):
     try:
+        device.attach_kernel_driver(0) 
         device.detach_kernel_driver(0)
     except usb.core.USBError as e:
         print "Could not detatch kernel driver: %s" % str(e)
-
 # load our devices configuration
 try:
     device.set_configuration()
     device.reset()
 except usb.core.USBError as e:
     print "Could not set configuration: %s" % str(e)
-
+    sys.exit()
 # get device endpoint information
 endpoint = device[0][(0,0)][0]
 
 swiped = False
 data = []
 datalist = []
+
+
 #print 'Swipe Card:'
 while True:
     try:
