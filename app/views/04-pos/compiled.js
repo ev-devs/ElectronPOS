@@ -15,6 +15,14 @@ var exec            = require('child_process').exec
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 
+<<<<<<< HEAD
+=======
+/*
+Payment Number
+1000 item delete
+*/
+
+>>>>>>> 9af816612a3632d3f3b7b128b6ec3eba76af69b4
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -352,9 +360,6 @@ function start_transaction(cardInfo) {
 	newTrans.chargeCreditCard({
 					cardnumber  : "4242424242424242",
 					expdate     : "0220",
-					ccv         : "123",
-					amount      : card_amt.toString()
-		}).then(function(obj){
 			if (!obj.error){
 				console.log(obj.transMessage)
 				console.log("Trasaction Id:", obj.transId)
@@ -574,12 +579,12 @@ function init_transaction() {
 			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
 			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
-			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-			transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-			transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-			transaction.total = total      //=> this is just adding subtotal and tax together
-			transaction.payments = 50   //=> the amount of payments that will be made. At least 1
-
+			transaction.location = "Harambe's Heart, Ohio";  //=> this can be reached from the main.js process via ipc
+			transaction.subtotal = subtotal;   //=> this is the raw subtotal without taxes
+			transaction.tax = tax;    //=> this can be calculated via a function with the data we get from the event
+			transaction.total = total;      //=> this is just adding subtotal and tax together
+			transaction.payments = 0;   //=> the amount of payments that will be made. At least 1
+			transaction.location = event_info.city + ", " + event_info.state;
 
 		for (var i = 0; i < item_list.length; i++){
 
@@ -1140,7 +1145,7 @@ function printTheOrder(guid){
 
             stream.end()
 
-
+            
         }
     })
 }

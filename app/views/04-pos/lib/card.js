@@ -57,9 +57,6 @@ function start_transaction(cardInfo) {
 	newTrans.chargeCreditCard({
 					cardnumber  : "4242424242424242",
 					expdate     : "0220",
-					ccv         : "123",
-					amount      : card_amt.toString()
-		}).then(function(obj){
 			if (!obj.error){
 				console.log(obj.transMessage)
 				console.log("Trasaction Id:", obj.transId)
