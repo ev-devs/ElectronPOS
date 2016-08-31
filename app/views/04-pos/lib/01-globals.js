@@ -18,7 +18,8 @@ const ipc = require('electron').ipcRenderer
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL
+var URL = process.env.EQ_URL;
+var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = [];
 var list_names = [];
 var a_list = [];

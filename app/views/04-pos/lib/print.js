@@ -69,7 +69,7 @@ function printTheOrder(guid){
             /*This is the */
             stream.write( "subtotal, "  + transaction.subtotal      + '\n')
             stream.write( "tax, "       + transaction.tax           + '\n')
-            stream.write( "total,"      + transaction.total         + '\n')b
+            stream.write( "total,"      + transaction.total         + '\n')
             stream.write( "payments, "  + transaction.payments      + '\n')
             stream.write('\n\n')
 

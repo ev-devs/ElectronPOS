@@ -50,7 +50,7 @@ function init_transaction() {
 	cur_transaction = new Transaction();
 	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
 	cur_transaction.populateItems(function(transaction){
-			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
+
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
 			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
 			transaction.subtotal = subtotal;   //=> this is the raw subtotal without taxes
@@ -61,7 +61,9 @@ function init_transaction() {
 			transaction.state = event_info.meeting[0].state;
 			transaction.zip = event_info.meeting[0].zip;
 			transaction.cashier = cashier.firstname + " " + cashier.lastname;
-			transaction.receiptId = event_info.meeting[0].zip.split('-')[0] + cur_transaction.guid.split('-')[4];
+			var date = Math.round(transaction.dateCreated.getTime()/1000);
+			date = date.toString().substring(date.toString().length - 7, date.toString().length);
+			transaction.receiptId = "2" + deviceID + date;
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {

@@ -18,7 +18,8 @@ const ipc = require('electron').ipcRenderer
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL
+var URL = process.env.EQ_URL;
+var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = [];
 var list_names = [];
 var a_list = [];
@@ -568,7 +569,7 @@ function init_transaction() {
 	cur_transaction = new Transaction();
 	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
 	cur_transaction.populateItems(function(transaction){
-			// transaction.guid      //=> this is the guid DO NOT MODIFY AND DO NOT ASSIGN ANYTHING
+
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
 			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
 			transaction.subtotal = subtotal;   //=> this is the raw subtotal without taxes
@@ -579,7 +580,9 @@ function init_transaction() {
 			transaction.state = event_info.meeting[0].state;
 			transaction.zip = event_info.meeting[0].zip;
 			transaction.cashier = cashier.firstname + " " + cashier.lastname;
-			transaction.receiptId = event_info.meeting[0].zip.split('-')[0] + cur_transaction.guid.split('-')[4];
+			var date = Math.round(transaction.dateCreated.getTime()/1000);
+			date = date.toString().substring(date.toString().length - 7, date.toString().length);
+			transaction.receiptId = "2" + deviceID + date;
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {
@@ -1106,7 +1109,10 @@ function printTheOrder(guid){
             stream.write( "guid, "      + transaction.guid          + '\n')
 
             /*This is the lower header*/
-            stream.write( "location, "  + transaction.location      + '\n')
+            stream.write( "city, "      + transaction.city      + '\n')
+            stream.write( "state, "     + transaction.state     + '\n')
+            stream.write( "recieptId, " + transaction.recieptId + '\n')
+
             stream.write( 'leader, '    + transaction.platinum      + '\n')
 
             /*This is the */
@@ -1139,7 +1145,16 @@ function printTheOrder(guid){
 
             stream.end()
 
-            
+            exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
+                if (error){
+                    Materialize.toast(error, 100000)
+                    console.log(error)
+                }
+                console.log(stdout)
+                console.log(stderr)
+                Materialize.toast(stdout, 10000)
+                Materialize.toast(stderr, 10000)
+            })
         }
     })
 }
@@ -1166,8 +1181,9 @@ $("#barcode").change(function() {
 	}
 	var ticket;
 	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined/*previous_ticket < Number(barcode.substring(6, barcode.length - 1))*/) {
-		if(ticket_flag == 0) {
+	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
+    handle_tickets(barcode);
+		/*if(ticket_flag == 0) {
         console.log("A");
 				ticket_flag = 1;
 				confirm_flag = 0;
@@ -1176,7 +1192,7 @@ $("#barcode").change(function() {
 				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
         refocus();
 		}
-		/*Add <= 50 functionality here*/
+		/*Add <= 50 functionality here
 		else if(ticket_flag == 1) {
       console.log("B");
       var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
@@ -1192,7 +1208,7 @@ $("#barcode").change(function() {
 				//ticket = Object.assign({}, inventory[current_ticket[0]])
         ticket = inventory[current_ticket[0]];
 				ticket.cust_quantity = (itm_qnt);
-        /*ADD TO HASHTABLE*/
+        /*ADD TO HASHTABLE
 				item_list.push(ticket);
 				current_ticket[1] = item_list.length - 1;
 				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
@@ -1209,7 +1225,7 @@ $("#barcode").change(function() {
 			confirm_flag = 1;
 			cancel_flag = 1;
       refocus();
-		}
+		}*/
 	}
 	else if(ticket_table.get(barcode) != undefined) {
 		ticket_flag = 0;
@@ -1250,20 +1266,21 @@ $("#scan_sim").click(function(){
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
 		k = verify_ticket(barcode);
 	}
-	var ticket;
+	//var ticket;
 	/*BRANCH which handles ticket transactions*/
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
-		if(ticket_flag == 0) {
+    handle_tickets();
+    if(ticket_flag == 0) {
         console.log("A");
-				ticket_flag = 1;
-				confirm_flag = 0;
-				cancel_flag = 0;
+        ticket_flag = 1;
+        confirm_flag = 0;
+        cancel_flag = 0;
         previous_ticket = barcode;
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
         refocus();
-		}
-		/*Add <= 50 functionality here*/
-		else if(ticket_flag == 1) {
+    }
+    /*Add <= 50 functionality here*/
+    else if(ticket_flag == 1) {
       console.log("B");
       var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
       if(itm_qnt > 50) {
@@ -1274,28 +1291,28 @@ $("#scan_sim").click(function(){
           out_duration: 200, // Transition out duration
         });
       }
-			else if(current_ticket[1] == -1) {
-				//ticket = Object.assign({}, inventory[current_ticket[0]])
+      else if(current_ticket[1] == -1) {
+        //ticket = Object.assign({}, inventory[current_ticket[0]])
         ticket = inventory[current_ticket[0]];
-				ticket.cust_quantity = (itm_qnt);
+        ticket.cust_quantity = (itm_qnt);
         /*ADD TO HASHTABLE*/
-				item_list.push(ticket);
-				current_ticket[1] = item_list.length - 1;
-				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+        item_list.push(ticket);
+        current_ticket[1] = item_list.length - 1;
+        add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
         add_to_table(previous_ticket, ticket.cust_quantity);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-			}
-			else if(current_ticket[1] != -1) {
-				item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
-				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+      }
+      else if(current_ticket[1] != -1) {
+        item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
+        add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
         add_to_table(previous_ticket, itm_qnt);
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-			}
-			ticket_flag = 0;
-			confirm_flag = 1;
-			cancel_flag = 1;
+      }
+      ticket_flag = 0;
+      confirm_flag = 1;
+      cancel_flag = 1;
       refocus();
-		}
+    }
 	}
 	else if(ticket_table.get(barcode) != undefined) {
 		ticket_flag = 0;
@@ -1377,6 +1394,32 @@ function determine_item_status(item_list, inventory, barcode) {
   }
 };
 
+/*Adds items to the customers item list and does necessary updates, used twice within the code*/
+function add_item(item_list_index, inventory_list_index, quantity, manual) {
+	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
+		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
+		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
+		values as the text values of the td tags.*/
+		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
+		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
+		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
+		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
+		</tr>"
+		/*Append to the table that holds the items*/
+		$("#sale_list tbody").append(item);
+	}
+	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
+	else {
+		var item = $("#inv-item" + inventory_list_index).text().trim();
+		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
+		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
+		$("#inv-item" + inventory_list_index).text(item);
+	}
+	cancel_flag = 1;
+	/*Update the global quantities of subtotal, tax, and total*/
+	update_price('+', quantity, item_list_index, 0);
+}
+
 /***********************TICKET.JS***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
@@ -1417,30 +1460,52 @@ function add_to_table(start, quantity) {
 	console.log("TABLE");
 	console.log(ticket_table.keys());
 }
-/*Adds items to the customers item list and does necessary updates, used twice within the code*/
-function add_item(item_list_index, inventory_list_index, quantity, manual) {
-	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
-		/*The item variable contains the html for the <tr> tag which displays our item in the gui. We give this tag an id of "itemx"
-		where x represents where the item is in the "item_list" variable above. We then go to that place in the list and list out the key
-		values as the text values of the td tags.*/
-		var item = "<tr class=\"whole-item animated fadeIn\" id=\"item" + item_list_index + "\"> \
-		 <td class=\"eq-cells name \" style=\"width: 77%;\"><span class=\"truncate\" id=\"inv-item" + inventory_list_index + "\">\
-		 x" + item_list[item_list_index].cust_quantity + ": " + item_list[item_list_index].title + "</span></td> \
-		 <td class=\"eq-cells price\" style=\"width: 23%; border-left: 1px solid #ddd;\">$" + item_list[item_list_index].price + "</td> \
-		</tr>"
-		/*Append to the table that holds the items*/
-		$("#sale_list tbody").append(item);
+
+function handle_tickets(barcode) {
+	var ticket;
+	if(ticket_flag == 0) {
+			console.log("A");
+			ticket_flag = 1;
+			confirm_flag = 0;
+			cancel_flag = 0;
+			previous_ticket = barcode;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+			refocus();
 	}
-	/*If the item is in the list then just go to its place and increment its counter and update the gui*/
-	else {
-		var item = $("#inv-item" + inventory_list_index).text().trim();
-		var qnt = item.substring(item.indexOf("x") + 1, item.indexOf(": "));
-		item = item.replace(qnt.toString(), item_list[item_list_index].cust_quantity.toString());
-		$("#inv-item" + inventory_list_index).text(item);
+	/*Add <= 50 functionality here*/
+	else if(ticket_flag == 1) {
+		console.log("B");
+		var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
+		if(itm_qnt > 50) {
+			$('#modal7').openModal({
+				dismissible: false, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				in_duration: 300, // Transition in duration
+				out_duration: 200, // Transition out duration
+			});
+		}
+		else if(current_ticket[1] == -1) {
+			//ticket = Object.assign({}, inventory[current_ticket[0]])
+			ticket = inventory[current_ticket[0]];
+			ticket.cust_quantity = (itm_qnt);
+			/*ADD TO HASHTABLE*/
+			item_list.push(ticket);
+			current_ticket[1] = item_list.length - 1;
+			add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+			add_to_table(previous_ticket, ticket.cust_quantity);
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		else if(current_ticket[1] != -1) {
+			item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
+			add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+			add_to_table(previous_ticket, itm_qnt);
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		ticket_flag = 0;
+		confirm_flag = 1;
+		cancel_flag = 1;
+		refocus();
 	}
-	cancel_flag = 1;
-	/*Update the global quantities of subtotal, tax, and total*/
-	update_price('+', quantity, item_list_index, 0);
 }
 
 var ay = [];
