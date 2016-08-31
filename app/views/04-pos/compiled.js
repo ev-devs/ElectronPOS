@@ -579,6 +579,7 @@ function init_transaction() {
 			transaction.state = event_info.meeting[0].state;
 			transaction.zip = event_info.meeting[0].zip;
 			transaction.cashier = cashier.firstname + " " + cashier.lastname;
+			transaction.receiptId = event_info.meeting[0].zip.split('-')[0] + cur_transaction.guid.split('-')[4];
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {
@@ -1138,7 +1139,7 @@ function printTheOrder(guid){
 
             stream.end()
 
-
+            
         }
     })
 }
