@@ -1106,13 +1106,16 @@ function printTheOrder(guid){
             stream.write( "guid, "      + transaction.guid          + '\n')
 
             /*This is the lower header*/
-            stream.write( "location, "  + transaction.location      + '\n')
+            stream.write( "city, "      + transaction.city      + '\n')
+            stream.write( "state, "     + transaction.state     + '\n')
+            stream.write( "recieptId, " + transaction.recieptId + '\n')
+
             stream.write( 'leader, '    + transaction.platinum      + '\n')
 
             /*This is the */
             stream.write( "subtotal, "  + transaction.subtotal      + '\n')
             stream.write( "tax, "       + transaction.tax           + '\n')
-            stream.write( "total,"      + transaction.total         + '\n')
+            stream.write( "total,"      + transaction.total         + '\n')b
             stream.write( "payments, "  + transaction.payments      + '\n')
             stream.write('\n\n')
 
@@ -1139,7 +1142,16 @@ function printTheOrder(guid){
 
             stream.end()
 
-            
+            exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
+                if (error){
+                    Materialize.toast(error, 100000)
+                    console.log(error)
+                }
+                console.log(stdout)
+                console.log(stderr)
+                Materialize.toast(stdout, 10000)
+                Materialize.toast(stderr, 10000)
+            })
         }
     })
 }
