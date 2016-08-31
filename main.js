@@ -133,10 +133,11 @@ ipc.on('event-validation-success', function(event, arg){
 });
 
 ipc.on("event-retrieval", function(event, arg) {
-
   event.sender.send('event-retrieval-reply', current_event)
 });
-
+ipc.on("cashier-retrieval", function(event, arg) {
+  event.sender.send("cashier-retrieval-reply", current_ibo_session)
+});
 ipc.on('transaction-made', function(event, arg){
     // we add a transaction to the user
     console.log(arg)

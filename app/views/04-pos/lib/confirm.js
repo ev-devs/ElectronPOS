@@ -70,8 +70,9 @@ function init_transaction() {
 					isticket	: item_list[i].isticket,
 					prefix		: item_list[i].prefix,
 					price		: item_list[i].price,
-					tax			: item_list[i].price * .0875,
-					quantity : item_list[i].cust_quantity
+					tax			: item_list[i].price * taxrate,
+					quantity : item_list[i].cust_quantity,
+					cashier : cashier.lastname + ", "+ cashier.firstname
 				}
 
 				transaction.items.push(item);

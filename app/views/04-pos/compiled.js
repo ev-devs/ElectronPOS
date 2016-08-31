@@ -11,10 +11,6 @@ var HashTable = require('hashtable');
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 
-/*
-Payment Number
-1000 item delete
-*/
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -26,26 +22,28 @@ var cur_transaction = {};
 var ticket_table = new HashTable();
 var event_info;
 var tax_rate;
-
-ipc.send('event-retrieval', "retrieving event info");
-ipc.on("event-retrieval-reply", function(event, arg) {
+var cashier;
+ipc.send('event-retrieval', "retrieving event info"); //sends a message to the main process which then responds with event info
+ipc.send('cashier-retrieval', "retrieving event info");//sends a message to the main process which then responds with session info
+ipc.on("event-retrieval-reply", function(event, arg) {//assigns the response to two global variables
   event_info = arg;
   tax_rate = event_info.meeting[0].taxrate;
 });
+ipc.on("cashier-retrieval-reply", function(event, arg) { //Assigns the response to a global variable
+  cashier = arg;
+});
 
 /***********THIS IS OUR LOGIC**********************/
-var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
+var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){ //Connects to the local platinum data base
     if (err){
         console.log(err)
-    //    Materialize.toast('Error connecting to Platinums MongoDB. Please start up mongod', 1000000000000, 'rounded')
     }
     else {
         console.log('we are connected to mongodb://localhost/platinums')
-
     }
 });
 
-var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
+var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){ //connects to the local inventory database
     if (err){
         console.log(err)
         //Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
@@ -55,7 +53,7 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     }
 });
 
-var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){ //connects to the local transaction database
     if (err){
         console.log(err)
         Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
@@ -69,50 +67,37 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 /*This needs to be declared after we connect to the databases*/
 var Platinum = require('../../lib/platinum.js');             /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
-var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
+var Transaction = require('../../lib/transactions.js');     /*This will be used to store our transactions*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
-/*Item_list is the list of items the cusotmer has*/
-var item_list = [];
+var item_list = []; //Item_list is the list of items the cusotmer has
 /*Next 3 variables are self-explanatory. Just look at their name.*/
 var subtotal = 0.00;
 var tax = 0.00;
 var total = 0.00;
-/*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
-var item_id = "NONE";
+
+var item_id = "NONE"; //Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions
 var item_num = 0;
-var current_platinum = "NONE";
-var current_ticket = [-1, -1, "CODE"];
-var previous_ticket = 0;
+var current_platinum = "NONE"; //Holds the current platinum
+var current_ticket = [-1, -1, "CODE"]; //Holds the place of the current ticket in inventory and item_list as well as the code
+var previous_ticket = 0; //Holds the code of the previous tickets
 /*********************************************NOTE: BEGIN CONFIRM ORDER VARIABLES*********************************************/
-/*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
-var confirm_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
-var card_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
-var cash_flag = 0;
-/*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
-var cancel_flag = 0;
-/*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
-var previous_flag = 0;
-/*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
-var scan_flag = 0;
-/*Flag which denotes that the user is handling a ticket transaction*/
-var ticket_flag = 0;
-var swipe_flag = 0;
-var card_amt = 1;
-var previous_page = "1";
-var current_page = "2";
-var can_end_session = 1;
+var confirm_flag = 0;//Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.
+var card_flag = 0;//Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.
+var cash_flag = 0; //Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.
+var cancel_flag = 0; //Flag which denotes that the user can cancel at any time assuming the flag is raised..
+var previous_flag = 0; //Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.
+var scan_flag = 0;//Flag which denotes that the user can scan at any time assuming the flag is raised.
+var ticket_flag = 0;//Flag which denotes that the user is handling a ticket transaction
+var swipe_flag = 0;//Flag which denotes if a swipe can happen
+var card_amt = 1; //Stores the
+var previous_page = "1";//Stores the previous page
+var current_page = "2";//Stores the current page
+var can_end_session = 1;//Denotes if a session can be ended
 
-var credit_card_can_be_charged = false;
+var credit_card_can_be_charged = false;//denotes if a card can be charged
 
-ipc.on('event-validation-success-reply', function(event, arg){
-    current_event = arg;
-    console.log(arg)
-});
-
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
@@ -198,7 +183,6 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
-	//force_transaction();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -603,8 +587,9 @@ function init_transaction() {
 					isticket	: item_list[i].isticket,
 					prefix		: item_list[i].prefix,
 					price		: item_list[i].price,
-					tax			: item_list[i].price * .0875,
-					quantity : item_list[i].cust_quantity
+					tax			: item_list[i].price * taxrate,
+					quantity : item_list[i].cust_quantity,
+					cashier : cashier.lastname + ", "+ cashier.firstname
 				}
 
 				transaction.items.push(item);

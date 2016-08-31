@@ -11,6 +11,7 @@ const CashTrans = require('./CashTrans.js').schema
 var transactionSchema = new mongoose.Schema({
     /*Think of this as a "Header" of sorts*/
     guid        : { type : String, required : true },
+    cashier     : { type : String, required : true }
     platinum    : { type : String, required : true },
     dateCreated : { type : Date, required : true },
     location    : { type : String, required : true },
