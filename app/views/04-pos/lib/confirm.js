@@ -57,8 +57,10 @@ function init_transaction() {
 			transaction.tax = tax;    //=> this can be calculated via a function with the data we get from the event
 			transaction.total = total;      //=> this is just adding subtotal and tax together
 			transaction.payments = 0;   //=> the amount of payments that will be made. At least 1
-			transaction.location = event_info.city + ", " + event_info.state;
-
+			transaction.city = event_info.meeting[0].city;
+			transaction.state = event_info.meeting[0].state;
+			transaction.zip = event_info.meeting[0].zip;
+			transaction.cashier = cashier.firstname + " " cashier.lastname;
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {
@@ -69,7 +71,7 @@ function init_transaction() {
 					isticket	: item_list[i].isticket,
 					prefix		: item_list[i].prefix,
 					price		: item_list[i].price,
-					tax			: item_list[i].price * taxrate,
+					tax			: item_list[i].price * tax_rate,
 					quantity : item_list[i].cust_quantity,
 					cashier : cashier.lastname + ", "+ cashier.firstname
 				}
