@@ -15,14 +15,6 @@ var exec            = require('child_process').exec
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 
-<<<<<<< HEAD
-=======
-/*
-Payment Number
-1000 item delete
-*/
-
->>>>>>> 9af816612a3632d3f3b7b128b6ec3eba76af69b4
 // Global variables
 var inventory = [];
 var inventory_query = [];
