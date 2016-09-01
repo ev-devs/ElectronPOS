@@ -29,20 +29,32 @@ $("#prev-transactions").click(function() {
 var elem_id;
 $(document).on("click", ".transaction", function() {
    elem_id = $(this).attr("id");
-   var i = Number(elem_id.substring(0, elem_id.search("_")));
+   var guid = elem_id.substring(0, elem_id.search("_"));
    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
    current_page = "indv_trans.html";
    prev_page = "prev_trans.html";
    var x = []
-   x.push(ay[i]);
-   x.push(j);
-   $("#confirm").text("Void");
-   $("#cancel").text("Back");
-   $("#confirm").css("background-color", "green");
-   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
+   Transaction.findOne({guid : guid}, function(err, _transaction) {
+      x.push(_transaction);
+      x.push(j);
+      $("#confirm").text("Void");
+      $("#cancel").text("Back");
+      $("#confirm").css("background-color", "green");
+      console.log(x);
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
+   });
 });
 
-$(document).on("click", "#confirm-void", function() {
+$(document).on("click", ".void-all", function() {
+  $('#voidModal2').openModal({
+    dismissible: false, // Modal can be dismissed by clicking outside of the modal
+    opacity: .5, // Opacity of modal background
+    in_duration: 300, // Transition in duration
+    out_duration: 200, // Transition out duration
+  });
+});
+
+$(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
   var i = Number(elem_id.substring(0, elem_id.search("_")));

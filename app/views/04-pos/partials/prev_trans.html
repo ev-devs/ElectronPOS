@@ -10,7 +10,7 @@
               <%if(transactions[i].cards[j].voidable) {%>
                 <%var date = transactions[i].cards[j].dateCreated.toString();%>
                 <%date =  date.substring(0, date.search("GMT"));%>
-                <a href="#!" class="transaction" id="<%=i%>_<%=j%>">
+                <a href="#!" class="transaction" id="<%=transactions[i].guid%>_<%=j%>" style="color: inherit;">
                   <li class="collection-item" style="border-bottom: solid 1px blue;">
                     <div>
                     <b>Card Holder: </b><%=transactions[i].cards[j].card_holder%><br/><b>Platinum: </b><%=transactions[i].platinum%><br/><b>Date: </b><%=date%>
@@ -22,13 +22,6 @@
             <%}%>
         <%}%>
       </ul>
-
-
-
-
-
-
-
       </div>
     </div>
   </div>

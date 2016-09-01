@@ -44,7 +44,7 @@ var user_input = "";
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {
 		if(key == "delete"){
-			user_input = user_input.substring(0,user_input - 1) 
+			user_input = user_input.substring(0,user_input - 1)
 		}
 		else{
 			user_input = user_input + key
@@ -69,8 +69,8 @@ function display_list(list){
 }
 
 
- 
- 
+
+
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
