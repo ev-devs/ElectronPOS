@@ -170,18 +170,14 @@ function search_list(list, input){
 			searched.push(list[i]);
 		} 
 	}
-	console.log(searched)
 	return searched
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
-<<<<<<< HEAD
+
 			user_input = user_input.substring(0,user_input.length - 1) 
-=======
-			user_input = user_input.substring(0,user_input - 1)
->>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 		}
 		else{
 			var k = key
@@ -201,7 +197,6 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 			user_input = user_input + k
 		}
 		if(user_input != ""){
-			console.log(user_input)
 			searched_leaders = search_list(leaders_list, user_input)
 			display_list(searched_leaders);
 		}
@@ -223,13 +218,6 @@ function display_list(list){
 	}
 }
 
-<<<<<<< HEAD
- 
-=======
-
-
-
->>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
