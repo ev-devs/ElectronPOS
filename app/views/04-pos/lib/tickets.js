@@ -3,7 +3,6 @@
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
 	var places = [];
 	var i = -1;
 	var ticket = inventory.find(function(e) {
@@ -19,7 +18,6 @@ function verify_ticket(barcode) {
 		current_ticket[0] = i;
 		var title = inventory[i].title;
 		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}

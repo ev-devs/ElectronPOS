@@ -1167,7 +1167,7 @@ $("#barcode").change(function() {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   /*BRANCH which handles ticket transactions*/
 	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
@@ -1185,7 +1185,7 @@ $("#barcode").change(function() {
 
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
-    console.log("SEXY");
+    find_transaction(barcode);
   }
 	else if(k == -1 && current_platinum != "NONE"){
     console.log("X")
@@ -1283,13 +1283,34 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
 }
+/*200002687132*/
+function find_transaction(receiptId) {
+  Transaction.findOne( { receiptId : receiptId }, function(err, trans){
+    if (err){
+        console.log( "Error in finding a transaction " +  err)
+    }
+    else {
+      if(trans) {
+        console.log(trans)
+        trans.save(function(err){
+            if (err){
+                console.log("Error in updating Trans " + err)
+            }
+            else {
+                console.log("Updated Existing Trans")
+            }
+        })
+        console.log("FOUND");
+      }
+    }
+  });
+}
 
 /***********************TICKET.JS***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
 	var places = [];
 	var i = -1;
 	var ticket = inventory.find(function(e) {
@@ -1305,7 +1326,6 @@ function verify_ticket(barcode) {
 		current_ticket[0] = i;
 		var title = inventory[i].title;
 		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
@@ -1387,6 +1407,7 @@ $("#prev-transactions").click(function() {
        ay = transactions;
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
+    refocus();
   }
   else {
     $('#modal8').openModal({
@@ -1414,19 +1435,6 @@ $(document).on("click", ".transaction", function() {
    $("#confirm").css("background-color", "green");
    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
 });
-/*
-$('#voidModal3').openModal({
-  dismissible: true, // Modal can be dismissed by clicking outside of the modal
-  opacity: .5, // Opacity of modal background
-  in_duration: 300, // Transition in duration
-  out_duration: 200, // Transition out duration
-});
-
-*/
-/*var trans_id = elem_id.substring(0, elem_id.search("_"));
-var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)*/
-
-
 
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";

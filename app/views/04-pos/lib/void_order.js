@@ -13,6 +13,7 @@ $("#prev-transactions").click(function() {
        ay = transactions;
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
+    refocus();
   }
   else {
     $('#modal8').openModal({
@@ -40,19 +41,6 @@ $(document).on("click", ".transaction", function() {
    $("#confirm").css("background-color", "green");
    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
 });
-/*
-$('#voidModal3').openModal({
-  dismissible: true, // Modal can be dismissed by clicking outside of the modal
-  opacity: .5, // Opacity of modal background
-  in_duration: 300, // Transition in duration
-  out_duration: 200, // Transition out duration
-});
-
-*/
-/*var trans_id = elem_id.substring(0, elem_id.search("_"));
-var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)*/
-
-
 
 $(document).on("click", "#confirm-void", function() {
   current_platinum = "NONE";

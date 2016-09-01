@@ -6,7 +6,7 @@ $("#barcode").change(function() {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   /*BRANCH which handles ticket transactions*/
 	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
@@ -24,7 +24,7 @@ $("#barcode").change(function() {
 
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
-    console.log("SEXY");
+    find_transaction(barcode);
   }
 	else if(k == -1 && current_platinum != "NONE"){
     console.log("X")
@@ -121,4 +121,26 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
+}
+/*200002687132*/
+function find_transaction(receiptId) {
+  Transaction.findOne( { receiptId : receiptId }, function(err, trans){
+    if (err){
+        console.log( "Error in finding a transaction " +  err)
+    }
+    else {
+      if(trans) {
+        console.log(trans)
+        trans.save(function(err){
+            if (err){
+                console.log("Error in updating Trans " + err)
+            }
+            else {
+                console.log("Updated Existing Trans")
+            }
+        })
+        console.log("FOUND");
+      }
+    }
+  });
 }
