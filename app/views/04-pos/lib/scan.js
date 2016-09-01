@@ -6,7 +6,7 @@ $("#barcode").change(function() {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   /*BRANCH which handles ticket transactions*/
 	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
@@ -24,7 +24,16 @@ $("#barcode").change(function() {
 
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
-    console.log("SEXY");
+    Transaction.findOne({receiptId : barcode.substring(0, barcode.length - 1)}, function(err, _transaction) {
+       console.log(_transaction);
+       if(_transaction) {
+         current_page = 'queried_trans.html';
+         previous_page = 'prev_trans.html';
+         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/queried_trans.html', 'utf-8') , { transaction : _transaction }));
+        }
+       else
+        console.log("Not found");
+    });;
   }
 	else if(k == -1 && current_platinum != "NONE"){
     console.log("X")

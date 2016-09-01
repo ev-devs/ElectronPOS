@@ -34,7 +34,7 @@ $("#confirm").click(function() {
 	}
 	else if($("#confirm").text() == "Void") {
 		console.log("VOID");
-		$('#voidModal3').openModal({
+		$('#voidModal1').openModal({
 			dismissible: false, // Modal can be dismissed by clicking outside of the modal
 			opacity: .5, // Opacity of modal background
 			in_duration: 300, // Transition in duration

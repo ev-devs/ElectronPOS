@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col s12">
+    <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll; height: 67vh;">
+      <div id="transaction-list" >
+
+
+        <ul class="collection">
+              <%for(var j = 0; j < transaction.cards.length; j++) {%>
+              <%if(transaction.cards[j].voidable) {%>
+                <%var date = transaction.cards[j].dateCreated.toString();%>
+                <%date =  date.substring(0, date.search("GMT"));%>
+                <a href="#!" class="transaction" id="<%=transaction.guid%>_<%=j%>" style="color: inherit;">
+                  <li class="collection-item" style="border-bottom: solid 1px blue;">
+                    <div>
+                    <b>Card Holder: </b><%=transaction.cards[j].card_holder%><br/><b>Platinum: </b><%=transaction.platinum%><br/><b>Date: </b><%=date%>
+                    <i class="material-icons secondary-content">send</i>
+                    </div>
+                  </li>
+                </a>
+              <%}%>
+            <%}%>
+            <a href="#!" class="void-all" id="<%=transaction.guid%>" style="color: inherit;">
+              <li class="collection-item" style="border-bottom: solid 1px red; background-color: red;">
+                <div>
+                <b style="color: white;">Void All</b>
+                <i class="material-icons secondary-content" style="color: white;">not_interested</i>
+                </div>
+              </li>
+            </a>
+      </ul>
+      <div id="voidModal2" class="modal">
+        <div class="modal-content">
+          <h4 id="inventory_place">Are you sure you want to void this whole transaction?</h4>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" id="confirm-void-all" class="confirm-void modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+          <a href="#!" id="cancel-void-all" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+      </div>
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>

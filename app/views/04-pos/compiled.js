@@ -177,7 +177,11 @@ function search_list(list, input){
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
+<<<<<<< HEAD
 			user_input = user_input.substring(0,user_input.length - 1) 
+=======
+			user_input = user_input.substring(0,user_input - 1)
+>>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 		}
 		else{
 			var k = key
@@ -219,7 +223,13 @@ function display_list(list){
 	}
 }
 
+<<<<<<< HEAD
  
+=======
+
+
+
+>>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
@@ -303,12 +313,13 @@ $("#cancel").click(function() {
       $("#cancel").text("cancel");
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"A" : 0}));
     }
-    else if(current_page == "indv_trans.html") {
+    else if(current_page == "indv_trans.html" || previous_page == "queried_trans.html") {
       console.log("7");
       current_page = "prev_trans.html";
       previous_page = "select_platinums.html";
       $("#confirm").text("confirm");
       $("#confirm").removeAttr("style");
+      refocus();
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {transactions: ay}));
     }
 	}
@@ -595,7 +606,7 @@ $("#confirm").click(function() {
 	}
 	else if($("#confirm").text() == "Void") {
 		console.log("VOID");
-		$('#voidModal3').openModal({
+		$('#voidModal1').openModal({
 			dismissible: false, // Modal can be dismissed by clicking outside of the modal
 			opacity: .5, // Opacity of modal background
 			in_duration: 300, // Transition in duration
@@ -1209,7 +1220,7 @@ $("#barcode").change(function() {
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
   /*BRANCH which handles ticket transactions*/
 	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
@@ -1227,7 +1238,16 @@ $("#barcode").change(function() {
 
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
-    console.log("SEXY");
+    Transaction.findOne({receiptId : barcode.substring(0, barcode.length - 1)}, function(err, _transaction) {
+       console.log(_transaction);
+       if(_transaction) {
+         current_page = 'queried_trans.html';
+         previous_page = 'prev_trans.html';
+         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/queried_trans.html', 'utf-8') , { transaction : _transaction }));
+        }
+       else
+        console.log("Not found");
+    });;
   }
 	else if(k == -1 && current_platinum != "NONE"){
     console.log("X")
@@ -1331,7 +1351,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 function verify_ticket(barcode) {
 	var scan_prefix = barcode.substring(0, 6);
 	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
 	var places = [];
 	var i = -1;
 	var ticket = inventory.find(function(e) {
@@ -1347,7 +1366,6 @@ function verify_ticket(barcode) {
 		current_ticket[0] = i;
 		var title = inventory[i].title;
 		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
 		current_ticket[1] = j;
 		current_ticket[2] = barcode.substring(6, barcode.length - 1);
 	}
@@ -1429,6 +1447,7 @@ $("#prev-transactions").click(function() {
        ay = transactions;
        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
+    refocus();
   }
   else {
     $('#modal8').openModal({
@@ -1444,33 +1463,32 @@ $("#prev-transactions").click(function() {
 var elem_id;
 $(document).on("click", ".transaction", function() {
    elem_id = $(this).attr("id");
-   var i = Number(elem_id.substring(0, elem_id.search("_")));
+   var guid = elem_id.substring(0, elem_id.search("_"));
    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
    current_page = "indv_trans.html";
    prev_page = "prev_trans.html";
    var x = []
-   x.push(ay[i]);
-   x.push(j);
-   $("#confirm").text("Void");
-   $("#cancel").text("Back");
-   $("#confirm").css("background-color", "green");
-   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
-});
-/*
-$('#voidModal3').openModal({
-  dismissible: true, // Modal can be dismissed by clicking outside of the modal
-  opacity: .5, // Opacity of modal background
-  in_duration: 300, // Transition in duration
-  out_duration: 200, // Transition out duration
+   Transaction.findOne({guid : guid}, function(err, _transaction) {
+      x.push(_transaction);
+      x.push(j);
+      $("#confirm").text("Void");
+      $("#cancel").text("Back");
+      $("#confirm").css("background-color", "green");
+      console.log(x);
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
+   });
 });
 
-*/
-/*var trans_id = elem_id.substring(0, elem_id.search("_"));
-var trans_guid = elem_id.substring(elem_id.search("_") + 1, elem_id.length)*/
+$(document).on("click", ".void-all", function() {
+  $('#voidModal2').openModal({
+    dismissible: false, // Modal can be dismissed by clicking outside of the modal
+    opacity: .5, // Opacity of modal background
+    in_duration: 300, // Transition in duration
+    out_duration: 200, // Transition out duration
+  });
+});
 
-
-
-$(document).on("click", "#confirm-void", function() {
+$(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
   var i = Number(elem_id.substring(0, elem_id.search("_")));
