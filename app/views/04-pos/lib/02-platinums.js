@@ -39,20 +39,50 @@ var leader = function(leader) {
 	return criteria(leader, name);
 };
 */
-var user_input = "";
+
+
+function search_list(list, input){
+	var searched = [];
+	var Reg_input = new RegExp(input, "i")
+	for(i = 0; i < list.length; i++){
+		if(list[i].search(Reg_input) != -1){
+			searched.push(list[i]);
+		} 
+	}
+	console.log(searched)
+	return searched
+}
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-   if(key != "shift" && key != "enter" && key != "123") {
+   if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
-			user_input = user_input.substring(0,user_input - 1) 
+			user_input = user_input.substring(0,user_input.length - 1) 
 		}
 		else{
-			user_input = user_input + key
+			var k = key
+			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" || 
+				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
+				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" || 
+				 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
+				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
+				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
+				 k == "9" || k == "0" || k == ";"){
+				Materialize.toast("Please Enter a Valid Character", 1000)
+				k = " "
+			}
+			if(k == "space"){
+				k = " "
+			}
+			user_input = user_input + k
 		}
-		console.log(user_input)
-		//if(user_input != ""){
-			display_list(leaders_list);
-		//}
+		if(user_input != ""){
+			console.log(user_input)
+			searched_leaders = search_list(leaders_list, user_input)
+			display_list(searched_leaders);
+		}
+		else if(user_input == ""){
+			$("#platinums-list").empty();
+		}
 	}
 });
 
@@ -68,8 +98,6 @@ function display_list(list){
 	}
 }
 
-
- 
  
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
@@ -88,7 +116,7 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
-
+		user_input = ""
 		$('#enter-platinum').remove()
 		$('#enter-platinum-modal').remove()
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
