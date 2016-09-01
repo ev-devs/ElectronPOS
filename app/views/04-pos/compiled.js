@@ -1145,7 +1145,7 @@ function printTheOrder(guid){
                 Materialize.toast(error, 10000)
             })
 
-            /*This is the header*/
+            /*This is the Header*/
             stream.write( "date, "      + transaction.dateCreated   + '\n')
             stream.write( "guid, "      + transaction.guid          + '\n')
 
