@@ -44,11 +44,13 @@ function printTheOrder(guid){
             Materialize.toast(err, 10000)
         }
         else {
+
+            console.log("writing to the receipts.txt")
             /*we need to iterate through this*/
             let cashes      = transaction.cashes
             let cards       = transaction.cards
             let items       = transaction.items
-            let stream = fs.createWriteStream( __dirname + '/../../../kprint/reciept.txt', {
+            let stream = fs.createWriteStream( __dirname + '/../../../kprint/receipt.txt', {
                 flags : 'w', encoding : 'utf-8'
             })
             stream.on('error', function(error){
@@ -62,7 +64,7 @@ function printTheOrder(guid){
             /*This is the lower header*/
             stream.write( "city, "      + transaction.city      + '\n')
             stream.write( "state, "     + transaction.state     + '\n')
-            stream.write( "recieptId, " + transaction.recieptId + '\n')
+            stream.write( "recieptId, " + transaction.receiptId + '\n')
 
             stream.write( 'leader, '    + transaction.platinum      + '\n')
 
@@ -90,7 +92,7 @@ function printTheOrder(guid){
 
             stream.write('BeginCards\n')
             for (let k = 0; k < cards.length; k++){
-                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].cardType + ',' + cards[k].authCode + ','  + cards[k].transId + '\n')
+                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + '\n')
             }
             stream.write('EndCards\n\n')
 
