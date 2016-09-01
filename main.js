@@ -29,9 +29,9 @@ let win;
 function createWindow(window) {
   // Create the browser window.
   window = new BrowserWindow({
-      fullscreen : true,
-      //height : 600,
-      //width : 100000,
+      //fullscreen : true,
+      height : 600,
+      width : 1024,
       autoHideMenuBar : true,
       scrollBounce : true,
       frame: false
@@ -129,9 +129,15 @@ ipc.on('ibo-session-end', function(event, arg){
 ipc.on('event-validation-success', function(event, arg){
     current_event = arg;
     console.log(arg)
-    event.sender.send('event-validaton-success-reply', "Recieved Current Event")
+    event.sender.send('event-validaton-success-reply', 'Ended Session Successfully')
 });
 
+ipc.on("event-retrieval", function(event, arg) {
+  event.sender.send('event-retrieval-reply', current_event)
+});
+ipc.on("cashier-retrieval", function(event, arg) {
+  event.sender.send("cashier-retrieval-reply", current_ibo_session)
+});
 ipc.on('transaction-made', function(event, arg){
     // we add a transaction to the user
     console.log(arg)

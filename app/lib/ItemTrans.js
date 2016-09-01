@@ -8,7 +8,8 @@ var Item =  new mongoose.Schema({
     isticket    : { type : String, required : true },
     prefix      : { type : String }, // not all items have a prefix, and some prefix's are null
     price       : { type : String, required : true },
-    tax         : { type : String, required : true }
+    tax         : { type : String, required : true },
+    quantity    : { type : Number, required : true }
 });
 
 var ItemTrans = TransactionConnection.model('ItemTrans', Item );

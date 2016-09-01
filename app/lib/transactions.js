@@ -11,14 +11,17 @@ const CashTrans = require('./CashTrans.js').schema
 var transactionSchema = new mongoose.Schema({
     /*Think of this as a "Header" of sorts*/
     guid        : { type : String, required : true },
+    cashier     : { type : String, required : true },
     platinum    : { type : String, required : true },
     dateCreated : { type : Date, required : true },
-    location    : { type : String, required : true },
+    city        : { type : String, required : true },
+    state       : { type : String, required : true },
+    zip         : { type : String, required : true },
     subtotal    : { type : Number, required : true },
     tax         : { type : Number, required : true },
     total       : { type : Number, required : true },
     payments    : { type : Number, required : true },
-
+    receiptId   : { type : String, required : true },
     /*This is the "body" of some sort*/
     cashes      : [ CashTrans ],
     cards       : [ CardTrans ],

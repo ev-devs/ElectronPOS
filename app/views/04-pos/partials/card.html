@@ -19,21 +19,24 @@
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
-var name = "";
 cardCapture(function(trackdata){
+    
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     confirm_flag = 0;
     card_flag = 0;
     cancel_flag = 0;
     previous_flag = 0;
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , {}));
+    var name = "";
+    var digits = "";
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
     console.log(cardInfo)
     if (cardInfo.hasTrack1){
         var newTrans = new transaction();
         name = cardInfo.account_name;
+        digits = cardInfo.account.substring(cardInfo.account.length - 4, cardInfo.account.length);
         newTrans.chargeCreditCard({
                 cardnumber  : cardInfo.account, //"4242424242424242",
                 expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
@@ -61,7 +64,7 @@ cardCapture(function(trackdata){
                     console.log("Trasaction Id:", obj.transId)
                     console.log("Authorization Code:", obj.transAuthCode)
                     /*If all the money was on the card then go to the printing option*/
-                    card_trans(obj.transAuthCode, obj.transId, obj.transMessage, cardInfo.firstName, cardInfo.lastName);
+                    card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
                 }
             }
             else {
@@ -107,12 +110,13 @@ cardCapture(function(trackdata){
     }
 });
 var card_date;
-function card_trans(transAuthCode, transId, transMessage, firstname, lastname) {
+function card_trans(transAuthCode, transId, transMessage, name, digits) {
     cur_transaction.createCardTransaction(function(transaction){
         let CardTrans = {
             guid     : transaction.guid,
             amount   : card_amt,
             card_holder : name,
+            digits : digits,
             authCode : transAuthCode,
             transId  : transId,
             message  : transMessage,
