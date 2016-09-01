@@ -187,7 +187,7 @@ Inventory.find({}, function(err, _inventory) {
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname + ", " + list[i].firstname;
+		name = list[i].firstname + " " +  list[i].lastname;
 		leaders_list.push(name);
 	}
 	leaders_list.sort();
@@ -200,7 +200,7 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-
+/*
 var criteria = function(item, check) {
 	if(check!= ""){
 		if(item.search(check) != -1){
@@ -215,16 +215,25 @@ var leader = function(leader) {
 	var name = new RegExp($("#enter-platinum").val(), "i");
 	return criteria(leader, name);
 };
+*/
+var user_input = "";
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {
-		var user_input = $("#enter-platinum").val();
-		if(user_input != ""){
-			list_names = leaders_list.filter(leader);
-			display_list(list_names);
+		if(key == "delete"){
+			user_input = user_input.substring(0,user_input - 1) 
 		}
+		else{
+			user_input = user_input + key
+		}
+		console.log(user_input)
+		//if(user_input != ""){
+			display_list(leaders_list);
+		//}
 	}
 });
+
+//Displays the list of leaders
 
 function display_list(list){
 	var name = "";
@@ -236,6 +245,9 @@ function display_list(list){
 	}
 }
 
+
+ 
+ 
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
@@ -246,7 +258,6 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
-	//force_transaction();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -836,36 +847,6 @@ usbCardReader.on("data", function(data) {
 });
 */
 
-/***********************ENDSESSION.JS***********************/
-const ipc = require('electron').ipcRenderer
-
-$('#end-session').click(function(event){
-
-    if (can_end_session == 0){
-      $('#modal9').openModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-      });
-    }
-    else {
-        ipc.send('ibo-session-end', 'ending session now')
-    }
-
-})
-
-// returns true if transaction is in progress
-function transactionIsInProgress(){
-    // chcek to see if the plane is completely empty
-}
-
-ipc.on('ibo-session-end-reply', function (event, arg) {
-  const message = `Asynchronous message reply from main process: ${arg}`
-  console.log(message)
-  window.location.assign('../03-beginsession/index.html')
-})
-
 /***********************FRONTEND.JS***********************/
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
@@ -901,6 +882,36 @@ function fade_out() {
 
 
  $(".button-collapse").sideNav();
+
+/***********************ENDSESSION.JS***********************/
+const ipc = require('electron').ipcRenderer
+
+$('#end-session').click(function(event){
+
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
+    }
+    else {
+        ipc.send('ibo-session-end', 'ending session now')
+    }
+
+})
+
+// returns true if transaction is in progress
+function transactionIsInProgress(){
+    // chcek to see if the plane is completely empty
+}
+
+ipc.on('ibo-session-end-reply', function (event, arg) {
+  const message = `Asynchronous message reply from main process: ${arg}`
+  console.log(message)
+  window.location.assign('../03-beginsession/index.html')
+})
 
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {

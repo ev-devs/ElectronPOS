@@ -10,7 +10,7 @@
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname + ", " + list[i].firstname;
+		name = list[i].firstname + " " +  list[i].lastname;
 		leaders_list.push(name);
 	}
 	leaders_list.sort();
@@ -23,7 +23,7 @@ function alphabetize(list){
 //if regex is found, NOT -1, then get the index
 // change to list to show in the browser
 
-
+/*
 var criteria = function(item, check) {
 	if(check!= ""){
 		if(item.search(check) != -1){
@@ -38,16 +38,25 @@ var leader = function(leader) {
 	var name = new RegExp($("#enter-platinum").val(), "i");
 	return criteria(leader, name);
 };
+*/
+var user_input = "";
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123") {
-		var user_input = $("#enter-platinum").val();
-		if(user_input != ""){
-			list_names = leaders_list.filter(leader);
-			display_list(list_names);
+		if(key == "delete"){
+			user_input = user_input.substring(0,user_input - 1) 
 		}
+		else{
+			user_input = user_input + key
+		}
+		console.log(user_input)
+		//if(user_input != ""){
+			display_list(leaders_list);
+		//}
 	}
 });
+
+//Displays the list of leaders
 
 function display_list(list){
 	var name = "";
@@ -59,6 +68,9 @@ function display_list(list){
 	}
 }
 
+
+ 
+ 
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
@@ -69,7 +81,6 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
-	//force_transaction();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
