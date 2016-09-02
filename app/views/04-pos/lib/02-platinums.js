@@ -47,7 +47,7 @@ function search_list(list, input){
 	for(i = 0; i < list.length; i++){
 		if(list[i].search(Reg_input) != -1){
 			searched.push(list[i]);
-		} 
+		}
 	}
 	console.log(searched)
 	return searched
@@ -56,17 +56,13 @@ function search_list(list, input){
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
-<<<<<<< HEAD
-			user_input = user_input.substring(0,user_input.length - 1) 
-=======
-			user_input = user_input.substring(0,user_input - 1)
->>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
+			user_input = user_input.substring(0,user_input.length - 1)
 		}
 		else{
 			var k = key
-			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" || 
+			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
 				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
-				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" || 
+				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" ||
 				 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
 				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
 				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
@@ -102,13 +98,6 @@ function display_list(list){
 	}
 }
 
-<<<<<<< HEAD
- 
-=======
-
-
-
->>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");

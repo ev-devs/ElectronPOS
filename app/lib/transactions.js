@@ -22,6 +22,8 @@ var transactionSchema = new mongoose.Schema({
     total       : { type : Number, required : true },
     payments    : { type : Number, required : true },
     receiptId   : { type : String, required : true },
+    event_type  : { type : String/*, required : true */},
+    isEnglish   : { type : String/*, required : true */},
     /*This is the "body" of some sort*/
     cashes      : [ CashTrans ],
     cards       : [ CardTrans ],

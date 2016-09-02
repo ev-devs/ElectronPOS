@@ -9,9 +9,7 @@ $("#prev-transactions").click(function() {
     $("#cancel").text("Back");
     Transaction.find({}, function(err, _transactions) {
        var transactions = _transactions;
-       update_transaction_db(_transactions);
-       ay = transactions;
-       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
+       update_transaction_db(transactions);
     });
     refocus();
   }
@@ -61,73 +59,82 @@ $(document).on("click", ".confirm-void", function() {
   if($(this).attr("id") == "confirm-void-one") {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-    //console.log(trans_guid);
-    var newTrans = new transaction();
-    newTrans.voidTransaction({
-        transId  : ay[i].cards[j].transId
-    }).then(function(obj){
-      if (!obj.error) {
-        console.log(obj.transMessage)
-        console.log("Transaction Id:", obj.transId)
-        $("#" + elem_id).remove();
-        /*Begin transaction search*/
-        Transaction.findOne( { guid : ay[i].guid }, function(err, trans){
-          if (err){
-              console.log( "Error in finding a transaction " +  err)
-          }
-          else {
-            console.log(trans)
-            trans.cards[j].voidable = false;
-            trans.cards[j].voided = true;
-            trans.save(function(err){
-                if (err){
-                    console.log("Error in updating Trans " + err)
-                }
-                else {
-                    console.log("Updated Existing Trans")
-                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                }
-            })
-          }
-        });
-          /*End Transaction search*/
-      }
-      else {
+    Transaction.findOne({guid : guid}, function(err, _transaction) {
+      if(_transaction) {
+        var newTrans = new transaction();
+        newTrans.voidTransaction({
+              transId  : _transaction.cards[j].transId
+        }).then(function(obj){
           console.log(obj.transMessage)
-          console.log("Error Code:", obj.transErrorCode)
-          console.log("Error Text:", obj.transErrorText)
+          console.log("Transaction Id:", obj.transId)
+          $("#" + elem_id).remove();
+          _transaction.cards[j].voidable = false;
+          _transaction.cards[j].voided = true;
+        });
       }
     });
   }
 });
 
+
+
+
+
+
+
+
+          _transaction.save(function(err){
+            if(err) {
+                console.log("Error in updating Trans " + err)
+            }
+            else {
+                console.log("Updated Existing Trans")
+                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+            }
+          });
+        });
+        else {
+            console.log(obj.transMessage)
+            console.log("Error Code:", obj.transErrorCode)
+            console.log("Error Text:", obj.transErrorText)
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function update_transaction_db(transactions_) {
-  var cur_date = Date.parse(new Date());
   for(var i = 0; i < transactions_.length; i++) {
     for(var j = 0; j < transactions_[i].cards.length; j++) {
-      var deadline = transactions_[i].cards[j].dateCreated;
-      deadline = deadline.setDate(deadline.getDate() + 1);
-      if(cur_date >= deadline) {
-        /*Begin transaction search*/
-        Transaction.findOne( { guid : transactions_[i].cards[j].guid }, function(err, trans){
-          if (err){
-              console.log( "Error in finding a transaction " +  err)
-          }
-          else {
-            console.log(trans)
-            trans.cards[0].voidable = false;
-            trans.save(function(err){
-                if (err){
-                    console.log("Error in updating Trans " + err)
+      var cur_date = new Date().getTime() + 86400000;
+      var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
+      console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
+      if(cur_date > deadline && transactions_[i].cards[j].voidable) {
+        transactions_[i].save(function(err){
+            if (err){
+                console.log("Error in updating Trans " + err)
+            }
+            else {
+                if(i == transactions_.length - 1 && j == transactions_[i].cards.length) {
+                  Transaction.find({}, function(err, trans_) {
+                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , {transactions : trans_}));
+                  });
                 }
-                else {
-                    console.log("Updated Existing Trans")
-                }
-            })
-            console.log("FOUND");
-          }
+                console.log("Updated Existing Trans")
+            }
         });
-        /*End Transaction search*/
       }
     }
   }
