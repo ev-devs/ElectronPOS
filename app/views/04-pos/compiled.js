@@ -22,7 +22,7 @@ var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
 var user_input = ""; // user_input for platinums search
-var searched_leaders = []; //modified array of searched leaders 
+var searched_leaders = []; //modified array of searched leaders
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
@@ -119,6 +119,8 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
 });
 
+update_transaction_db();
+
 /***********************PLATINUMS.JS***********************/
 /*Leaders*/
 //Lists leaders in alphabetical order
@@ -143,7 +145,7 @@ function search_list(list, input){
 	for(i = 0; i < list.length; i++){
 		if(list[i].search(Reg_input) != -1){
 			searched.push(list[i]);
-		} 
+		}
 	}
 	return searched
 }
@@ -152,14 +154,13 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 	console.log(leaders_list)
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
-
-			user_input = user_input.substring(0,user_input.length - 1) 
+			user_input = user_input.substring(0,user_input.length - 1)
 		}
 		else{
 			var k = key
-			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" || 
+			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
 				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
-				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" || 
+				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" ||
 				 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
 				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
 				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
@@ -597,6 +598,8 @@ function init_transaction() {
 			transaction.state = event_info.meeting[0].state;
 			transaction.zip = event_info.meeting[0].zip;
 			transaction.cashier = cashier.firstname + " " + cashier.lastname;
+			transaction.event_type = event_info.meeting[0].type;
+			transaction.isEnglish = event_info.meeting[0].isenglish;
 			var date = Math.round(transaction.dateCreated.getTime()/1000);
 			date = date.toString().substring(date.toString().length - 7, date.toString().length);
 			transaction.receiptId = "2" + deviceID + date;
@@ -991,12 +994,12 @@ function void_order(full_void) {
     cancel_flag = 0;
     /*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
-    /**/
     card_flag = 0;
     scan_flag = 0;
     ticket_flag = 0;
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
+    update_transaction_db();
     if(full_void == 1) {
       item_list.splice(0, item_list.length);/*Empties the item list*/
           /*Empties the left side*/
@@ -1405,13 +1408,10 @@ $("#prev-transactions").click(function() {
     prev_page = "select_platinums.html";
     $("#cancel").css("background-color", "red");
     $("#cancel").text("Back");
-    Transaction.find({}, function(err, _transactions) {
-       var transactions = _transactions;
-       update_transaction_db(_transactions);
-       ay = transactions;
-       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
-    });
     refocus();
+    Transaction.find({}, function(err, transactions) {
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
+    });
   }
   else {
     $('#modal8').openModal({
@@ -1459,25 +1459,22 @@ $(document).on("click", ".confirm-void", function() {
   if($(this).attr("id") == "confirm-void-one") {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-    //console.log(trans_guid);
-    var newTrans = new transaction();
-    newTrans.voidTransaction({
-        transId  : ay[i].cards[j].transId
-    }).then(function(obj){
-      if (!obj.error) {
-        console.log(obj.transMessage)
-        console.log("Transaction Id:", obj.transId)
-        $("#" + elem_id).remove();
-        /*Begin transaction search*/
-        Transaction.findOne( { guid : ay[i].guid }, function(err, trans){
-          if (err){
-              console.log( "Error in finding a transaction " +  err)
-          }
-          else {
-            console.log(trans)
-            trans.cards[j].voidable = false;
-            trans.cards[j].voided = true;
-            trans.save(function(err){
+    Transaction.findOne({ guid : guid }, function(err, transaction) {
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction) {
+        var newTrans = new transaction();
+        newTrans.voidTransaction({
+            transId  : transaction.cards[j].transId
+        }).then(function(obj){
+          if (!obj.error) {
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+            $("#" + elem_id).remove();
+            transaction.cards[j].voidable = false;
+            transaction.cards[j].voided = true;
+            transaction.save(function(err){
                 if (err){
                     console.log("Error in updating Trans " + err)
                 }
@@ -1485,48 +1482,41 @@ $(document).on("click", ".confirm-void", function() {
                     console.log("Updated Existing Trans")
                     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
                 }
-            })
+            });
+          }
+          else {
+              console.log(obj.transMessage)
+              console.log("Error Code:", obj.transErrorCode)
+              console.log("Error Text:", obj.transErrorText)
           }
         });
-          /*End Transaction search*/
       }
-      else {
-          console.log(obj.transMessage)
-          console.log("Error Code:", obj.transErrorCode)
-          console.log("Error Text:", obj.transErrorText)
+      else if(!transaction){
+        console.log("transaction does not exist");
       }
     });
   }
 });
 
-function update_transaction_db(transactions_) {
-  var cur_date = Date.parse(new Date());
-  for(var i = 0; i < transactions_.length; i++) {
-    for(var j = 0; j < transactions_[i].cards.length; j++) {
-      var deadline = transactions_[i].cards[j].dateCreated;
-      deadline = deadline.setDate(deadline.getDate() + 1);
-      if(cur_date >= deadline) {
-        /*Begin transaction search*/
-        Transaction.findOne( { guid : transactions_[i].cards[j].guid }, function(err, trans){
-          if (err){
-              console.log( "Error in finding a transaction " +  err)
-          }
-          else {
-            console.log(trans)
-            trans.cards[0].voidable = false;
-            trans.save(function(err){
-                if (err){
-                    console.log("Error in updating Trans " + err)
-                }
-                else {
-                    console.log("Updated Existing Trans")
-                }
-            })
-            console.log("FOUND");
-          }
-        });
-        /*End Transaction search*/
+function update_transaction_db() {
+  Transaction.find({}, function(err, transactions_) {
+    for(var i = 0; i < transactions_.length; i++) {
+      for(var j = 0; j < transactions_[i].cards.length; j++) {
+        var cur_date = new Date().getTime();
+        var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
+        console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
+        if(cur_date > deadline && transactions_[i].cards[j].voidable) {
+          transactions_[i].cards[j].voidable = false;;
+          transactions_[i].save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+              }
+          });
+        }
       }
     }
-  }
+  });
 }

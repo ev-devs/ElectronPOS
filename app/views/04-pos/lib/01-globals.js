@@ -22,7 +22,7 @@ var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
 var user_input = ""; // user_input for platinums search
-var searched_leaders = []; //modified array of searched leaders 
+var searched_leaders = []; //modified array of searched leaders
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
@@ -118,3 +118,5 @@ Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
+
+update_transaction_db();

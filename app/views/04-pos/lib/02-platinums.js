@@ -22,7 +22,7 @@ function search_list(list, input){
 	for(i = 0; i < list.length; i++){
 		if(list[i].search(Reg_input) != -1){
 			searched.push(list[i]);
-		} 
+		}
 	}
 	return searched
 }
@@ -31,14 +31,13 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 	console.log(leaders_list)
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
-
-			user_input = user_input.substring(0,user_input.length - 1) 
+			user_input = user_input.substring(0,user_input.length - 1)
 		}
 		else{
 			var k = key
-			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" || 
+			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
 				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
-				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" || 
+				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" ||
 				 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
 				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
 				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
