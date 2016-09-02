@@ -64,15 +64,19 @@ function printTheOrder(guid){
             /*This is the lower header*/
             stream.write( "city, "      + transaction.city      + '\n')
             stream.write( "state, "     + transaction.state     + '\n')
-            stream.write( "recieptId, " + transaction.receiptId + '\n')
+            stream.write( "receiptId, " + transaction.receiptId + '\n')
 
             stream.write( 'leader, '    + transaction.platinum      + '\n')
+            stream.write( 'cashier, '   + transaction.cashier       + '\n')
 
             /*This is the */
             stream.write( "subtotal, "  + transaction.subtotal      + '\n')
             stream.write( "tax, "       + transaction.tax           + '\n')
             stream.write( "total,"      + transaction.total         + '\n')
             stream.write( "payments, "  + transaction.payments      + '\n')
+            stream.write( "eventType, " + transaction.eventType     + '\n')
+            stream.write( "isEnglish, " + transaction.isEnglish     + "\n")
+
             stream.write('\n\n')
 
 
@@ -92,7 +96,7 @@ function printTheOrder(guid){
 
             stream.write('BeginCards\n')
             for (let k = 0; k < cards.length; k++){
-                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + '\n')
+                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + ','+ cards[k].amount + '\n')
             }
             stream.write('EndCards\n\n')
 
