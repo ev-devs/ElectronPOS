@@ -137,31 +137,6 @@ function alphabetize(list){
 	leaders_list.sort();
 }
 
-//take user input .change(function(){})   DONE
-//convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");
-//search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index
-// change to list to show in the browser
-
-/*
-var criteria = function(item, check) {
-	if(check!= ""){
-		if(item.search(check) != -1){
-			return true
-		}
-	}
-	else
-		return false;
-};
-
-var leader = function(leader) {
-	var name = new RegExp($("#enter-platinum").val(), "i");
-	return criteria(leader, name);
-};
-*/
-
-
 function search_list(list, input){
 	var searched = [];
 	var Reg_input = new RegExp(input, "i")
@@ -170,7 +145,6 @@ function search_list(list, input){
 			searched.push(list[i]);
 		}
 	}
-	console.log(searched)
 	return searched
 }
 
@@ -197,7 +171,6 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 			user_input = user_input + k
 		}
 		if(user_input != ""){
-			console.log(user_input)
 			searched_leaders = search_list(leaders_list, user_input)
 			display_list(searched_leaders);
 		}
