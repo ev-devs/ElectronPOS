@@ -7,11 +7,10 @@ $("#prev-transactions").click(function() {
     prev_page = "select_platinums.html";
     $("#cancel").css("background-color", "red");
     $("#cancel").text("Back");
-    Transaction.find({}, function(err, _transactions) {
-       var transactions = _transactions;
-       update_transaction_db(transactions);
-    });
     refocus();
+    Transaction.find({}, function(err, transactions) {
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
+    });
   }
   else {
     $('#modal8').openModal({
@@ -59,83 +58,64 @@ $(document).on("click", ".confirm-void", function() {
   if($(this).attr("id") == "confirm-void-one") {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-    Transaction.findOne({guid : guid}, function(err, _transaction) {
-      if(_transaction) {
+    Transaction.findOne({ guid : guid }, function(err, transaction) {
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction) {
         var newTrans = new transaction();
         newTrans.voidTransaction({
-              transId  : _transaction.cards[j].transId
+            transId  : transaction.cards[j].transId
         }).then(function(obj){
-          console.log(obj.transMessage)
-          console.log("Transaction Id:", obj.transId)
-          $("#" + elem_id).remove();
-          _transaction.cards[j].voidable = false;
-          _transaction.cards[j].voided = true;
+          if (!obj.error) {
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+            $("#" + elem_id).remove();
+            transaction.cards[j].voidable = false;
+            transaction.cards[j].voided = true;
+            transaction.save(function(err){
+                if (err){
+                    console.log("Error in updating Trans " + err)
+                }
+                else {
+                    console.log("Updated Existing Trans")
+                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+                }
+            });
+          }
+          else {
+              console.log(obj.transMessage)
+              console.log("Error Code:", obj.transErrorCode)
+              console.log("Error Text:", obj.transErrorText)
+          }
         });
+      }
+      else if(!transaction){
+        console.log("transaction does not exist");
       }
     });
   }
 });
 
-
-
-
-
-
-
-
-          _transaction.save(function(err){
-            if(err) {
-                console.log("Error in updating Trans " + err)
-            }
-            else {
-                console.log("Updated Existing Trans")
-                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-            }
+function update_transaction_db() {
+  Transaction.find({}, function(err, transactions_) {
+    for(var i = 0; i < transactions_.length; i++) {
+      for(var j = 0; j < transactions_[i].cards.length; j++) {
+        var cur_date = new Date().getTime();
+        var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
+        console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
+        if(cur_date > deadline && transactions_[i].cards[j].voidable) {
+          transactions_[i].cards[j].voidable = false;;
+          transactions_[i].save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+              }
           });
-        });
-        else {
-            console.log(obj.transMessage)
-            console.log("Error Code:", obj.transErrorCode)
-            console.log("Error Text:", obj.transErrorText)
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function update_transaction_db(transactions_) {
-  for(var i = 0; i < transactions_.length; i++) {
-    for(var j = 0; j < transactions_[i].cards.length; j++) {
-      var cur_date = new Date().getTime() + 86400000;
-      var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
-      console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
-      if(cur_date > deadline && transactions_[i].cards[j].voidable) {
-        transactions_[i].save(function(err){
-            if (err){
-                console.log("Error in updating Trans " + err)
-            }
-            else {
-                if(i == transactions_.length - 1 && j == transactions_[i].cards.length) {
-                  Transaction.find({}, function(err, trans_) {
-                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , {transactions : trans_}));
-                  });
-                }
-                console.log("Updated Existing Trans")
-            }
-        });
       }
     }
-  }
+  });
 }

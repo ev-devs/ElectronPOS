@@ -28,12 +28,12 @@ function void_order(full_void) {
     cancel_flag = 0;
     /*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
-    /**/
     card_flag = 0;
     scan_flag = 0;
     ticket_flag = 0;
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
+    update_transaction_db();
     if(full_void == 1) {
       item_list.splice(0, item_list.length);/*Empties the item list*/
           /*Empties the left side*/

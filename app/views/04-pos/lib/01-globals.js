@@ -118,3 +118,5 @@ Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
+
+update_transaction_db();
