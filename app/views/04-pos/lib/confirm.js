@@ -34,7 +34,7 @@ $("#confirm").click(function() {
 	}
 	else if($("#confirm").text() == "Void") {
 		console.log("VOID");
-		$('#voidModal3').openModal({
+		$('#voidModal1').openModal({
 			dismissible: false, // Modal can be dismissed by clicking outside of the modal
 			opacity: .5, // Opacity of modal background
 			in_duration: 300, // Transition in duration
@@ -61,6 +61,8 @@ function init_transaction() {
 			transaction.state = event_info.meeting[0].state;
 			transaction.zip = event_info.meeting[0].zip;
 			transaction.cashier = cashier.firstname + " " + cashier.lastname;
+			transaction.event_type = event_info.meeting[0].type;
+			transaction.isEnglish = event_info.meeting[0].isenglish;
 			var date = Math.round(transaction.dateCreated.getTime()/1000);
 			date = date.toString().substring(date.toString().length - 7, date.toString().length);
 			transaction.receiptId = "2" + deviceID + date;

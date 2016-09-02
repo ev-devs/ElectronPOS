@@ -57,12 +57,13 @@ $("#cancel").click(function() {
       $("#cancel").text("cancel");
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"A" : 0}));
     }
-    else if(current_page == "indv_trans.html") {
+    else if(current_page == "indv_trans.html" || current_page == "queried_trans.html") {
       console.log("7");
       current_page = "prev_trans.html";
       previous_page = "select_platinums.html";
       $("#confirm").text("confirm");
       $("#confirm").removeAttr("style");
+      refocus();
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {transactions: ay}));
     }
 	}

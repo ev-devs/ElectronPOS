@@ -24,7 +24,16 @@ $("#barcode").change(function() {
 
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
-    find_transaction(barcode);
+    Transaction.findOne({receiptId : barcode.substring(0, barcode.length - 1)}, function(err, _transaction) {
+       console.log(_transaction);
+       if(_transaction) {
+         current_page = 'queried_trans.html';
+         previous_page = 'prev_trans.html';
+         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/queried_trans.html', 'utf-8') , { transaction : _transaction }));
+        }
+       else
+        console.log("Not found");
+    });;
   }
 	else if(k == -1 && current_platinum != "NONE"){
     console.log("X")
@@ -121,26 +130,4 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
-}
-/*200002687132*/
-function find_transaction(receiptId) {
-  Transaction.findOne( { receiptId : receiptId }, function(err, trans){
-    if (err){
-        console.log( "Error in finding a transaction " +  err)
-    }
-    else {
-      if(trans) {
-        console.log(trans)
-        trans.save(function(err){
-            if (err){
-                console.log("Error in updating Trans " + err)
-            }
-            else {
-                console.log("Updated Existing Trans")
-            }
-        })
-        console.log("FOUND");
-      }
-    }
-  });
 }
