@@ -16,31 +16,6 @@ function alphabetize(list){
 	leaders_list.sort();
 }
 
-//take user input .change(function(){})   DONE
-//convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");
-//search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index
-// change to list to show in the browser
-
-/*
-var criteria = function(item, check) {
-	if(check!= ""){
-		if(item.search(check) != -1){
-			return true
-		}
-	}
-	else
-		return false;
-};
-
-var leader = function(leader) {
-	var name = new RegExp($("#enter-platinum").val(), "i");
-	return criteria(leader, name);
-};
-*/
-
-
 function search_list(list, input){
 	var searched = [];
 	var Reg_input = new RegExp(input, "i")
@@ -97,13 +72,6 @@ function display_list(list){
 	}
 }
 
-<<<<<<< HEAD
- 
-=======
-
-
-
->>>>>>> ce1e4cec501191f6dec1042d67f6b9c3508244da
 $(document).on("click", ".platinum", function() {
   if(current_platinum != "NONE") {
     $("#" + current_platinum).removeClass("green");
