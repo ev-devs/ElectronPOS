@@ -11,7 +11,7 @@ function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
 		name = list[i].firstname + " " +  list[i].lastname;
-		leaders_list.push(name);
+		leaders_list.push(name.trim());
 	}
 	leaders_list.sort();
 }
@@ -28,6 +28,7 @@ function search_list(list, input){
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
+	console.log(leaders_list)
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
 
