@@ -1458,22 +1458,22 @@ $(document).on("click", ".confirm-void", function() {
   if($(this).attr("id") == "confirm-void-one") {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-    Transaction.findOne({ guid : guid }, function(err, transaction) {
+    Transaction.findOne({ guid : guid }, function(err, transaction_) {
       if(err) {
         console.log("ERRORS");
       }
-      else if(transaction) {
+      else if(transaction_) {
         var newTrans = new transaction();
         newTrans.voidTransaction({
-            transId  : transaction.cards[j].transId
+            transId  : transaction_.cards[j].transId
         }).then(function(obj){
           if (!obj.error) {
             console.log(obj.transMessage)
             console.log("Transaction Id:", obj.transId)
             $("#" + elem_id).remove();
-            transaction.cards[j].voidable = false;
-            transaction.cards[j].voided = true;
-            transaction.save(function(err){
+            transaction_.cards[j].voidable = false;
+            transaction_.cards[j].voided = true;
+            transaction_.save(function(err){
                 if (err){
                     console.log("Error in updating Trans " + err)
                 }
@@ -1490,7 +1490,7 @@ $(document).on("click", ".confirm-void", function() {
           }
         });
       }
-      else if(!transaction){
+      else if(!transaction_){
         console.log("transaction does not exist");
       }
     });
