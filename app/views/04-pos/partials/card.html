@@ -19,8 +19,10 @@
 <script type="text/javascript">
 var cardCapture = require('node-card-capture').cardCapture
 var trackParser = require('trackparser')
+var creditCardValidator = require('credit-card-validator')
+
 cardCapture(function(trackdata){
-    
+
     $("#cancel").removeAttr("style");
     $("#confirm").removeAttr("style");
     confirm_flag = 0;
@@ -30,8 +32,22 @@ cardCapture(function(trackdata){
     var name = "";
     var digits = "";
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
+
     console.log(trackdata)
     cardInfo = new trackParser(trackdata)
+
+    console.log(cardInfo)
+
+    if (cardInfo.hasTrack1){
+        if (!creditCardValidator.validateCard(cardInfo.account)){
+            Materialize.toast("MagTek reader is giving us the wrong number", 5000)
+            return
+        }
+        else {
+            console.log("Valid card number!", creditCardValidator.getCardName(cardInfo.account))
+        }
+    }
+
     console.log(cardInfo)
     if (cardInfo.hasTrack1){
         var newTrans = new transaction();
@@ -120,7 +136,7 @@ function card_trans(transAuthCode, transId, transMessage, name, digits) {
             authCode : transAuthCode,
             transId  : transId,
             message  : transMessage,
-            cardType : "Harambe",
+            cardType : creditCardValidator.getCardName(cardInfo.account),
             dateCreated : new Date(),
             voidable : true,
             voided   : false
