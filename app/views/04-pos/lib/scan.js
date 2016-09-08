@@ -9,6 +9,7 @@ $("#barcode").change(function() {
 	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
+  console.log("Q");
 	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
     handle_tickets(barcode);
 	}
@@ -21,9 +22,9 @@ $("#barcode").change(function() {
 	}
 	/*END TICKET HANDLING CODE*/
 
-
 	/*Handles transactions other than tickets*/
   else if(current_page == "prev_trans.html") {
+    console.log("W");
     Transaction.findOne({receiptId : barcode.substring(0, barcode.length - 1)}, function(err, _transaction) {
        console.log(_transaction);
        if(_transaction) {
@@ -36,7 +37,7 @@ $("#barcode").change(function() {
     });;
   }
 	else if(k == -1 && current_platinum != "NONE"){
-    console.log("X")
+    console.log("E");
 	  var i;
 	  var places = [];
 	  if(current_platinum != "NONE" && scan_flag == 1)

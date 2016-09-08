@@ -43,15 +43,17 @@ function void_order(full_void) {
       $("#cancel").removeAttr("style");
       $("#confirm").removeAttr("style");
       /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+      $("#cancel").text("Cancel");
+      $("#confirm").text("Confirm");
       current_platinum = "NONE";
       previous_page = "1";
       current_page = "2";
       cur_transaction = {};
-      setTimeout(function() {
+      //setTimeout(function() {
           $('#enter-platinum').remove()
           $('#enter-platinum-modal').remove()
           $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-      }, 1500);
+      //}, 1500);
     }
 }
 

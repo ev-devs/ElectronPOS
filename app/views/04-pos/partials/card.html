@@ -48,8 +48,8 @@ cardCapture(function(trackdata){
         }
     }
 
-    console.log(cardInfo)
-    if (cardInfo.hasTrack1){
+    console.log(cardInfo);
+    if (cardInfo.hasTrack1 && previous_page != "return.html"){
         var newTrans = new transaction();
         name = cardInfo.account_name;
         digits = cardInfo.account.substring(cardInfo.account.length - 4, cardInfo.account.length);
@@ -116,6 +116,10 @@ cardCapture(function(trackdata){
                 }
             }
           });
+    }
+    else if(cardInfo.hasTrack1 && previous_page == "return.html") {
+      console.log("RETURNED");
+      void_order(1);
     }
     else {
         console.log("There was an error reading + parsing the card data, try again")

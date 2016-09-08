@@ -1,7 +1,8 @@
-$(document).on("click", "return-items", function() {
+$(document).on("click", "#return-items", function() {
   if(can_end_session == 1) {
     current_platinum = "NON";
     confirm_flag = 1;
+    scan_flag = 1;
     current_page = "return.html";
     prev_page = "handle_order.html";
     $("#cancel").css("background-color", "red");

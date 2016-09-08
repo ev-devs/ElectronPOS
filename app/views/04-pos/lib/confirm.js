@@ -1,7 +1,7 @@
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
-  if(confirm_flag == 1 && $("#confirm").text() != "Void") {
+  if(confirm_flag == 1 && $("#confirm").text() != "Void" && current_page == "handle_order.html") {
 		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
     if(item_list.length != 0) {
 			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
@@ -21,6 +21,13 @@ $("#confirm").click(function() {
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
+	else if(current_page == "return.html") {
+		if(item_list.length != 0) {
+			previous_page = "return.html";
+			current_page = "card.html";
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card.html', 'utf-8') , {}));
+		}
+	}
   else if(cash_flag) {
 		handle_cash();
   }
