@@ -12,7 +12,6 @@ var fs              = require('fs')
 var exec            = require('child_process').exec
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
-console.log("SEXY SMEXY");
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -1461,7 +1460,6 @@ $(document).on("click", ".transaction", function() {
       $("#confirm").text("Void");
       $("#cancel").text("Back");
       $("#confirm").css("background-color", "green");
-      console.log(x);
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
    });
 });
@@ -1569,7 +1567,6 @@ function update_transaction_db() {
       for(var j = 0; j < transactions_[i].cards.length; j++) {
         var cur_date = new Date().getTime();
         var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
-        console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
         if(cur_date > deadline && transactions_[i].cards[j].voidable) {
           transactions_[i].cards[j].voidable = false;;
           transactions_[i].save(function(err){

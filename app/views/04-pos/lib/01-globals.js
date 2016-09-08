@@ -12,7 +12,6 @@ var fs              = require('fs')
 var exec            = require('child_process').exec
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
-console.log("SEXY SMEXY");
 // Global variables
 var inventory = [];
 var inventory_query = [];
