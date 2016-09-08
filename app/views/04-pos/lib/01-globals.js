@@ -1,5 +1,4 @@
 /***********************GLOBALS.JS***********************/
-
 var request         = require('request');
 var mongoose        = require('mongoose');
 var ejs             = require('ejs');
@@ -11,10 +10,9 @@ var transaction     = require('../../lib/create_transaction.js');
 var HashTable       = require('hashtable');
 var fs              = require('fs')
 var exec            = require('child_process').exec
-
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
-
+console.log("SEXY SMEXY");
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -104,8 +102,6 @@ var can_end_session = 1;//Denotes if a session can be ended
 
 var credit_card_can_be_charged = false;//denotes if a card can be charged
 
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
-
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
   /*selectPlatinum(leaders_list)*/
@@ -118,5 +114,5 @@ Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
-
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();

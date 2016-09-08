@@ -1,5 +1,4 @@
 /***********************GLOBALS.JS***********************/
-
 var request         = require('request');
 var mongoose        = require('mongoose');
 var ejs             = require('ejs');
@@ -11,10 +10,9 @@ var transaction     = require('../../lib/create_transaction.js');
 var HashTable       = require('hashtable');
 var fs              = require('fs')
 var exec            = require('child_process').exec
-
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
-
+console.log("SEXY SMEXY");
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -104,8 +102,6 @@ var can_end_session = 1;//Denotes if a session can be ended
 
 var credit_card_can_be_charged = false;//denotes if a card can be charged
 
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
-
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
   /*selectPlatinum(leaders_list)*/
@@ -118,7 +114,7 @@ Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
-
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();
 
 /***********************PLATINUMS.JS***********************/
@@ -1185,6 +1181,27 @@ function printTheOrder(guid){
     })
 }
 
+$(document).on("click", "return-items", function() {
+  if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    current_page = "return.html";
+    prev_page = "handle_order.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
+    refocus();
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/return.html', 'utf-8') , {}));
+  }
+  else {
+    $('#modal8').openModal({
+      dismissible: true, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
+
 /***********************SCAN.JS***********************/
 
 $("#barcode").change(function() {
@@ -1449,6 +1466,7 @@ $(document).on("click", ".transaction", function() {
    });
 });
 
+//var query;
 $(document).on("click", ".void-all", function() {
   $('#voidModal2').openModal({
     dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -1456,15 +1474,16 @@ $(document).on("click", ".void-all", function() {
     in_duration: 300, // Transition in duration
     out_duration: 200, // Transition out duration
   });
+  //query = $(this).attr("id");
 });
-
+/*
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
+  var guid = elem_id.substring(0, elem_id.search("_"));
+  var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
   if($(this).attr("id") == "confirm-void-one") {
-    var guid = elem_id.substring(0, elem_id.search("_"));
-    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
     Transaction.findOne({ guid : guid }, function(err, transaction_) {
       if(err) {
         console.log("ERRORS");
@@ -1502,8 +1521,48 @@ $(document).on("click", ".confirm-void", function() {
       }
     });
   }
-});
+  else if($(this).attr("id") == "confirm-void-all") {
+    Transaction.findOne({ guid : query }, function(err, transaction_) {
 
+      for(var i = 0; i < transaction.cards.length; i++) {
+
+        if(err) {
+          console.log("ERRORS");
+        }
+        else if(transaction_) {
+          var newTrans = new transaction();
+          newTrans.voidTransaction({
+              transId  : transaction_.cards[i].transId
+          })
+          .then(function(obj){
+            if (!obj.error) {
+              console.log(obj.transMessage)
+              console.log("Transaction Id:", obj.transId)
+              $("#" + elem_id).remove();
+              transaction_.cards[i].voidable = false;
+              transaction_.cards[i].voided = true;
+              transaction_.save(function(err){
+                  if (err){
+                      console.log("Error in updating Trans " + err)
+                  }
+                  else {
+                      console.log("Updated Existing Trans")
+                      if(i ==  transaction_.cards.length - 1)
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+                  }
+              });
+            }
+            else {
+                console.log(obj.transMessage)
+                console.log("Error Code:", obj.transErrorCode)
+                console.log("Error Text:", obj.transErrorText)
+            }
+          });
+        }
+      }
+    });
+  }
+}*/
 function update_transaction_db() {
   Transaction.find({}, function(err, transactions_) {
     for(var i = 0; i < transactions_.length; i++) {
