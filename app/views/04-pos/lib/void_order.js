@@ -42,7 +42,7 @@ $(document).on("click", ".transaction", function() {
    });
 });
 
-var query;
+//var query;
 $(document).on("click", ".void-all", function() {
   $('#voidModal2').openModal({
     dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -50,9 +50,9 @@ $(document).on("click", ".void-all", function() {
     in_duration: 300, // Transition in duration
     out_duration: 200, // Transition out duration
   });
-  query = $(this).attr("id");
+  //query = $(this).attr("id");
 });
-
+/*
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -138,7 +138,7 @@ $(document).on("click", ".confirm-void", function() {
       }
     });
   }
-}
+}*/
 function update_transaction_db() {
   Transaction.find({}, function(err, transactions_) {
     for(var i = 0; i < transactions_.length; i++) {

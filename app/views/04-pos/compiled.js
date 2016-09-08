@@ -12,7 +12,7 @@ var fs              = require('fs')
 var exec            = require('child_process').exec
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
-
+console.log("SEXY SMEXY");
 // Global variables
 var inventory = [];
 var inventory_query = [];
@@ -114,7 +114,7 @@ Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
 });
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment 
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();
 
 /***********************PLATINUMS.JS***********************/
@@ -1466,7 +1466,7 @@ $(document).on("click", ".transaction", function() {
    });
 });
 
-var query;
+//var query;
 $(document).on("click", ".void-all", function() {
   $('#voidModal2').openModal({
     dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -1474,9 +1474,9 @@ $(document).on("click", ".void-all", function() {
     in_duration: 300, // Transition in duration
     out_duration: 200, // Transition out duration
   });
-  query = $(this).attr("id");
+  //query = $(this).attr("id");
 });
-
+/*
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -1562,7 +1562,7 @@ $(document).on("click", ".confirm-void", function() {
       }
     });
   }
-}
+}*/
 function update_transaction_db() {
   Transaction.find({}, function(err, transactions_) {
     for(var i = 0; i < transactions_.length; i++) {
