@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN DELETE CODE*********************************************/
+/***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
 $(document).on("touchstart", ".whole-item", function(e) {

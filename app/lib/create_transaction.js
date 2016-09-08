@@ -115,7 +115,7 @@ var transaction = function(){
         }
         else {
             console.error('Not enough paramters fam')
-            thisObj.error = "Not enough paramters fam"
+            thisObj.error = "Not enough paramters fam to even send the request"
             return thisObj
         }
     }
@@ -151,26 +151,6 @@ newTrans.chargeCreditCard({
     }
     console.log('\n')
 });
-
-
-setInterval(function(){
-
-    newTrans.voidTransaction({
-        transId  : newTrans.transId
-    }).then(function(obj){
-        if (!obj.error){
-            console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
-        }
-        else {
-            console.log(obj.transMessage)
-            console.log("Error Code:", obj.transErrorCode)
-            console.log("Error Text:", obj.transErrorText)
-        }
-        console.log('\n')
-    })
-
-}, 5000)
 */
 
 

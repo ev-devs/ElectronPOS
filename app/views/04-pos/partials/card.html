@@ -1,16 +1,151 @@
-<div class="col s12 m12 l12 center">
-  <div class="row animated fadeIn" id="thanks">
-    <div class="col s12 m12 l12 center">
-      <p style="text-align: center; font-size:300%; width: 50vw; height: 10vh; margin-top: 20vh" class="center">Please swipe card</p>
+<br><br>
+<div class="center container">
+  <div class="animated fadeIn" id="thanks">
+        <p style="text-align: center; font-size:200%; width: 100%; height: 10vh;">Please swipe card</p>
     </div>
   </div>
-  <div class="row animated fadeIn">
-    <a href="#!" style="color: inherit;">
-      <div class="col s12 m12 l12 blue lighten-3 center waves-effect waves-light z-depth-1">
-        <h4 class="white-text">
-          Input card info
-        </h4>
-      </div>
+  <div class="center animated fadeIn">
+    <a href="#!" style="color: inherit;" id="card-input">
+    <div class="blue lighten-3 center waves-effect waves-light z-depth-1">
+        <div class="container">
+            <h4 class="white-text">
+              Or input card info
+            </h4>
+        </div>
+     </div>
     </a>
   </div>
 </div>
+<script type="text/javascript">
+var cardCapture = require('node-card-capture').cardCapture
+var trackParser = require('trackparser')
+var creditCardValidator = require('credit-card-validator')
+
+cardCapture(function(trackdata){
+
+    $("#cancel").removeAttr("style");
+    $("#confirm").removeAttr("style");
+    confirm_flag = 0;
+    card_flag = 0;
+    cancel_flag = 0;
+    previous_flag = 0;
+    var name = "";
+    var digits = "";
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
+
+    console.log(trackdata)
+    cardInfo = new trackParser(trackdata)
+
+    console.log(cardInfo)
+
+    if (cardInfo.hasTrack1){
+        if (!creditCardValidator.validateCard(cardInfo.account)){
+            Materialize.toast("MagTek reader is giving us the wrong number", 5000)
+            return
+        }
+        else {
+            console.log("Valid card number!", creditCardValidator.getCardName(cardInfo.account))
+        }
+    }
+
+    console.log(cardInfo)
+    if (cardInfo.hasTrack1){
+        var newTrans = new transaction();
+        name = cardInfo.account_name;
+        digits = cardInfo.account.substring(cardInfo.account.length - 4, cardInfo.account.length);
+        newTrans.chargeCreditCard({
+                cardnumber  : cardInfo.account, //"4242424242424242",
+                expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+                ccv         : "123", // this can be anything since we don't send this to auth net anyways
+                amount      : card_amt.toString()
+          }).then(function(obj){
+            if (!obj.error){
+                // catches error from the server
+                if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
+                    console.warn("There was an error getting a response from the server")
+                    Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
+                    setTimeout(function(){
+                        $("#cancel").css("background-color", "red");
+                        $("#confirm").css("background-color", "green");
+                        confirm_flag = 0;
+                        card_flag = 1;
+                        cancel_flag = 0;
+                        previous_flag = 1;
+                        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+
+                    }, 3000)
+                }
+                else {
+                    console.log(obj.transMessage)
+                    console.log("Trasaction Id:", obj.transId)
+                    console.log("Authorization Code:", obj.transAuthCode)
+                    /*If all the money was on the card then go to the printing option*/
+                    card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+                }
+            }
+            else {
+                // catches error from the server
+                if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
+                    console.warn('We did not get a response from the server!')
+                    Materialize.toast('There was an error getting a response from the server', 8000)
+                    setTimeout(function(){
+                      $("#cancel").css("background-color", "red");
+                      $("#confirm").css("background-color", "green");
+                      confirm_flag = 0;
+                      card_flag = 1;
+                      cancel_flag = 0;
+                      previous_flag = 1;
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    }, 3000)
+                }
+                else {
+                    console.log(obj.transMessage)
+                    console.log("Error Code:", obj.transErrorCode)
+                    console.log("Error Text:", obj.transErrorText)
+                    Materialize.toast(obj.transMessage, 8000)
+                    Materialize.toast(obj.transErrorText, 8000)
+                    setTimeout(function(){
+                      $("#cancel").css("background-color", "red");
+                      $("#confirm").css("background-color", "green");
+                      confirm_flag = 0;
+                      card_flag = 1;
+                      cancel_flag = 0;
+                      previous_flag = 1;
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+                    }, 3000)
+                }
+            }
+          });
+    }
+    else {
+        console.log("There was an error reading + parsing the card data, try again")
+        Materialize.toast('There was an error reading + parsing the card data, try again', 3000)
+        setTimeout(function(){
+            $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+        }, 3000)
+    }
+});
+var card_date;
+function card_trans(transAuthCode, transId, transMessage, name, digits) {
+    cur_transaction.createCardTransaction(function(transaction){
+        let CardTrans = {
+            guid     : transaction.guid,
+            amount   : card_amt,
+            card_holder : name,
+            digits : digits,
+            authCode : transAuthCode,
+            transId  : transId,
+            message  : transMessage,
+            cardType : creditCardValidator.getCardName(cardInfo.account),
+            dateCreated : new Date(),
+            voidable : true,
+            voided   : false
+        }
+        transaction.cards.push(CardTrans);
+        transaction.payments++;
+    });
+    $("#cancel").text("Clear");
+    $("#confirm").text("Accept");
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
+}
+</script>

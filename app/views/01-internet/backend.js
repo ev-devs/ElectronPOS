@@ -13,7 +13,6 @@ var URL = process.env.EQ_URL
 var request = require('request');
 var _ = require("underscore");
 var mongoose = require('mongoose');
-
 $('main').html(ejs.render(fs.readFileSync( __dirname + '/partials/loader.html', 'utf-8') , {}));
 /***********THIS IS OUR LOGIC**********************/
 var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
@@ -324,7 +323,7 @@ function insertInventoryToDatabase(inventory){
 
 $('#retry').click(function(event){
 
-    var ping = execSync('ping -c 1 google.com') // this is a single ping
+    var ping = execSync('sudo ping -c 1 google.com') // this is a single ping
     console.log(ping)
     $( "#proceed" ).trigger( "click" );
 

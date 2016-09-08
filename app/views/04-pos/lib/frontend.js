@@ -1,3 +1,4 @@
+/***********************FRONTEND.JS***********************/
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })

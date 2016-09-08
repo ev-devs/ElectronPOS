@@ -1,19 +1,19 @@
-
-
 'use strict'
 
 const electron = require('electron');
 // Module to control application life
-const {app, globalShortcut } = electron
+const { app, globalShortcut } = electron
 // Module to create native browser window.
-const {BrowserWindow} = electron
+const { BrowserWindow } = electron
 // Module to communicate between the processes
 const ipc = electron.ipcMain
-
+// captures envoiirnment variables
 const shellEnv = require('shell-env');
+
+/* When electron is not started by bash, evnironment variables need to be loaded manually*/
 process.env = shellEnv.sync()
 
-// This is used to update our sessions and products
+// This is used to update our sessions
 // var mongoose = require('mongoose')
 var Session = require('./app/lib/sessions.js')
 
@@ -31,7 +31,7 @@ function createWindow(window) {
   window = new BrowserWindow({
       //fullscreen : true,
       height : 600,
-      width : 100000,
+      width : 1024,
       autoHideMenuBar : true,
       scrollBounce : true,
       frame: false
@@ -63,16 +63,24 @@ app.on('ready', () => {
 
     createWindow(win)
 
-    /* globalShortcut.register('CommandOrControl+J+K+M', () => {
+    // this is for later
+    /*globalShortcut.register('CommandOrControl+J+K+M', () => {
         app.quit()
     });*/
 
-    globalShortcut.register('CommandOrControl+C', () => {
+    globalShortcut.register('CommandOrControl+Q', () => {
         app.quit()
+    })
+
+    globalShortcut.register('CommandOrControl+R', () => {
+        win.reload()
     })
 
     globalShortcut.register('CommandOrControl+D', () => {
          win.webContents.openDevTools();
+    })
+    globalShortcut.register('CommandOrControl+M', () => {
+        win.minimize()
     })
 });
 
@@ -96,9 +104,8 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
-    createWindow(win);
+      createWindow(win);
   }
-
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -122,9 +129,15 @@ ipc.on('ibo-session-end', function(event, arg){
 ipc.on('event-validation-success', function(event, arg){
     current_event = arg;
     console.log(arg)
-    event.sender.send('event-validaton-success-reply', "Recieved Current Event")
+    event.sender.send('event-validaton-success-reply', 'Ended Session Successfully')
 });
 
+ipc.on("event-retrieval", function(event, arg) {
+  event.sender.send('event-retrieval-reply', current_event)
+});
+ipc.on("cashier-retrieval", function(event, arg) {
+  event.sender.send("cashier-retrieval-reply", current_ibo_session)
+});
 ipc.on('transaction-made', function(event, arg){
     // we add a transaction to the user
     console.log(arg)

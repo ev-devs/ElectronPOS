@@ -1,3 +1,4 @@
+/***********************JBOARD.JS***********************/
 function jboardify(id, type) {
     $('#' + id).jboard(type)
 }

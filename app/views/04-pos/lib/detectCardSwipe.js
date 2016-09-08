@@ -1,3 +1,4 @@
+/***********************DETECTCARDSWIPE.JS***********************/
 /*
 const HID = require('node-hid');
 var devices = HID.devices() // this lists all the devices

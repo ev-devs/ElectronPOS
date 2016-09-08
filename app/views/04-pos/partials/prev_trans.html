@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col s12">
+    <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll; height: 67vh;">
+      <div id="transaction-list" >
+
+
+        <ul class="collection">
+        <% for(var i = 0; i < transactions.length; i++) { %>
+              <%for(var j = 0; j < transactions[i].cards.length; j++) {%>
+              <%if(transactions[i].cards[j].voidable) {%>
+                <%var date = transactions[i].cards[j].dateCreated.toString();%>
+                <%date =  date.substring(0, date.search("GMT"));%>
+                <a href="#!" class="transaction" id="<%=transactions[i].guid%>_<%=j%>" style="color: inherit;">
+                  <li class="collection-item" style="border-bottom: solid 1px blue;">
+                    <div>
+                    <b>Card Holder: </b><%=transactions[i].cards[j].card_holder%><br/><b>Platinum: </b><%=transactions[i].platinum%><br/><b>Date: </b><%=date%>
+                    <i class="material-icons secondary-content">send</i>
+                    </div>
+                  </li>
+                </a>
+              <%}%>
+            <%}%>
+        <%}%>
+      </ul>
+      </div>
+    </div>
+  </div>
+</div>

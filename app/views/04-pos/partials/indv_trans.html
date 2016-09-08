@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col s12">
+    <div id="transaction-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll; height: 67vh;">
+      <ul class="collection">
+        <%var date = transaction[0].cards[transaction[1]].dateCreated.toString();%>
+        <%date =  date.substring(0, date.search("GMT"));%>
+        <li class="collection-item"><b>Date:</b> <%=date%></li>
+        <li class="collection-item"><b>Name on card:</b> <%=transaction[0].cards[transaction[1]].card_holder%></li>
+        <li class="collection-item"><b>Platinum:</b> <%=transaction[0].platinum%></li>
+        <li class="collection-item"><b>Items:</b><br/>
+          <%for(var i = 0; i < transaction[0].items.length; i++) {%>
+            <%=transaction[0].items[i].title%><br/>
+          <%}%>
+        </li>
+        <li class="collection-item"><b>Subtotal:</b> $<%=transaction[0].subtotal%></li>
+        <li class="collection-item"><b>Tax:</b> $<%=transaction[0].tax%></li>
+        <li class="collection-item"><b>Total:</b> $<%=transaction[0].total%></li>
+        <li class="collection-item"><b>Charged on card:</b> $<%=transaction[0].cards[transaction[1]].amount%></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="voidModal1" class="modal">
+  <div class="modal-content">
+    <h4 id="inventory_place">Are you sure you want to void this transaction?</h4>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" id="confirm-void-one" class="confirm-void modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    <a href="#!" id="cancel-void-one" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+  </div>
+</div>

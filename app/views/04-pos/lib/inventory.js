@@ -1,4 +1,4 @@
-/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/***********************INVENTORY.JS***********************/
 /*var i_i = -1;
 
 var inventory_item = function(item) {
@@ -75,8 +75,10 @@ $(document).on("click",  "#confirm_item_selection", function() {
 			}
 		}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });

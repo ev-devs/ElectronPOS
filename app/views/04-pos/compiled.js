@@ -1,38 +1,56 @@
-var request = require('request');
-var mongoose = require('mongoose');
-var ejs = require('ejs');
-var fs = require('fs');
-var accounting = require('accounting-js');
-var mongoose = require('mongoose');
-var _ = require("underscore");
-var transaction = require('../../lib/create_transaction.js');
-var HashTable = require('hashtable');
-var guid = require("guid");
+/***********************GLOBALS.JS***********************/
+
+var request         = require('request');
+var mongoose        = require('mongoose');
+var ejs             = require('ejs');
+var fs              = require('fs');
+var accounting      = require('accounting-js');
+var mongoose        = require('mongoose');
+var _               = require("underscore");
+var transaction     = require('../../lib/create_transaction.js');
+var HashTable       = require('hashtable');
+var fs              = require('fs')
+var exec            = require('child_process').exec
+
+/*used to communicate with main process*/
+const ipc = require('electron').ipcRenderer
+
 // Global variables
 var inventory = [];
 var inventory_query = [];
-var URL = process.env.EQ_URL
-var leaders_list = [];
+var URL = process.env.EQ_URL;
+var deviceID = process.env.EQ_DEVICE_ID;
+var leaders_list = []; // list of leaders pulled from the server
+var user_input = ""; // user_input for platinums search
+var searched_leaders = []; //modified array of searched leaders
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
 var ticket_table = new HashTable();
-
+var event_info;
+var tax_rate;
+var cashier;
+ipc.send('event-retrieval', "retrieving event info"); //sends a message to the main process which then responds with event info
+ipc.send('cashier-retrieval', "retrieving event info");//sends a message to the main process which then responds with session info
+ipc.on("event-retrieval-reply", function(event, arg) {//assigns the response to two global variables
+  event_info = arg;
+  tax_rate = event_info.meeting[0].taxrate;
+});
+ipc.on("cashier-retrieval-reply", function(event, arg) { //Assigns the response to a global variable
+  cashier = arg;
+});
 
 /***********THIS IS OUR LOGIC**********************/
-
-var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){
+var PlatinumConnection = mongoose.createConnection('mongodb://localhost/platinums', function(err){ //Connects to the local platinum data base
     if (err){
         console.log(err)
-    //    Materialize.toast('Error connecting to Platinums MongoDB. Please start up mongod', 1000000000000, 'rounded')
     }
     else {
         console.log('we are connected to mongodb://localhost/platinums')
-
     }
 });
 
-var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){
+var InventoryConnection = mongoose.createConnection('mongodb://localhost/inventory', function(err){ //connects to the local inventory database
     if (err){
         console.log(err)
         //Materialize.toast('Error connecting to Inventory MongoDB. Please startup mongod', 1000000000000, 'rounded')
@@ -42,7 +60,7 @@ var InventoryConnection = mongoose.createConnection('mongodb://localhost/invento
     }
 });
 
-var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){
+var TransactionConnection = mongoose.createConnection('mongodb://localhost/transactions', function(err){ //connects to the local transaction database
     if (err){
         console.log(err)
         Materialize.toast('Error connecting to transactions MongoDB. Please start up mongod', 1000000000000, 'rounded')
@@ -56,49 +74,37 @@ var TransactionConnection = mongoose.createConnection('mongodb://localhost/trans
 /*This needs to be declared after we connect to the databases*/
 var Platinum = require('../../lib/platinum.js');             /*This will be used to store our platinums*/
 var Inventory = require('../../lib/inventory.js');           /*This will be used to store our inventory*/
-var Transaction = require('../../lib/transactions.js');     /*This will be used to store our inventory*/
-
-
-
+var Transaction = require('../../lib/transactions.js');     /*This will be used to store our transactions*/
 
 /*********************************************NOTE: BEGIN SCAN VARIABLES*********************************************/
-/*Item_list is the list of items the cusotmer has*/
-var item_list = [];
+var item_list = []; //Item_list is the list of items the cusotmer has
 /*Next 3 variables are self-explanatory. Just look at their name.*/
 var subtotal = 0.00;
 var tax = 0.00;
 var total = 0.00;
-/*Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions*/
-var item_id = "NONE";
+
+var item_id = "NONE"; //Holds the id of the current item (id attribute assigned in the <tr> tage below). Is changed in one of the below functions
 var item_num = 0;
-var current_platinum = "NONE";
-var current_ticket = [-1, -1, "CODE"];
-var previous_ticket = 0;
+var current_platinum = "NONE"; //Holds the current platinum
+var current_ticket = [-1, -1, "CODE"]; //Holds the place of the current ticket in inventory and item_list as well as the code
+var previous_ticket = 0; //Holds the code of the previous tickets
 /*********************************************NOTE: BEGIN CONFIRM ORDER VARIABLES*********************************************/
-/*Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.*/
-var confirm_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.*/
-var card_flag = 0;
-/*Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.*/
-var cash_flag = 0;
-/*Flag which denotes that the user can cancel at any time assuming the flag is raised..*/
-var cancel_flag = 0;
-/*Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.*/
-var previous_flag = 0;
-/*Flag which denotes that the user can scan at any time assuming the flag is raised.*/
-var scan_flag = 0;
-/*Flag which denotes that the user is handling a ticket transaction*/
-var ticket_flag = 0;
-var swipe_flag = 0;
-var card_amt = 1;
-var previous_page = "1";
-var current_page = "2";
+var confirm_flag = 0;//Flag which denotes that the user can confirm at any time assuming the flag is raised. By default it is raised.
+var card_flag = 0;//Flag which denotes the status of a transaction. If it is raised then a card transaction is being done.
+var cash_flag = 0; //Flag which denotes the status of a transaction. If it is raised then a cash transaction is being done.
+var cancel_flag = 0; //Flag which denotes that the user can cancel at any time assuming the flag is raised..
+var previous_flag = 0; //Flag which denotes that the user can go to the previous page at any time assuming the flag is raised.
+var scan_flag = 0;//Flag which denotes that the user can scan at any time assuming the flag is raised.
+var ticket_flag = 0;//Flag which denotes that the user is handling a ticket transaction
+var swipe_flag = 0;//Flag which denotes if a swipe can happen
+var card_amt = 1; //Stores the
+var previous_page = "1";//Stores the previous page
+var current_page = "2";//Stores the current page
+var can_end_session = 1;//Denotes if a session can be ended
 
+var credit_card_can_be_charged = false;//denotes if a card can be charged
 
-var credit_card_can_be_charged = false;
-
-
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1}));
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 
 Platinum.find({}, function(err, leaders) {
   alphabetize(leaders); // gets leaders in alphabetic order places the result in leaders_list
@@ -113,7 +119,9 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
 });
 
-/*********************************************NOTE: BEGIN PLATINUM CODE*********************************************/
+update_transaction_db();
+
+/***********************PLATINUMS.JS***********************/
 /*Leaders*/
 //Lists leaders in alphabetical order
 // appends html element to display all the names
@@ -125,44 +133,57 @@ Inventory.find({}, function(err, _inventory) {
 function alphabetize(list){
 	var name = "";
 	for(var i = 0; i < list.length; i++){
-		name = list[i].lastname + ", " + list[i].firstname;
-		leaders_list.push(name);
+		name = list[i].firstname + " " +  list[i].lastname;
+		leaders_list.push(name.trim());
 	}
 	leaders_list.sort();
 }
 
-//take user input .change(function(){})   DONE
-//convert to string .val()     DONE
-//convert string into regex    var re = new RegExp("a|b", "i");
-//search for regex in each element of the array array[i].search(regex)
-//if regex is found, NOT -1, then get the index
-// change to list to show in the browser
-
-
-var criteria = function(item, check) {
-	if(check!= ""){
-		if(item.search(check) != -1){
-			return true
+function search_list(list, input){
+	var searched = [];
+	var Reg_input = new RegExp(input, "i")
+	for(i = 0; i < list.length; i++){
+		if(list[i].search(Reg_input) != -1){
+			searched.push(list[i]);
 		}
 	}
-	else
-		return false;
-};
-
-var leader = function(leader) {
-	var name = new RegExp($("#enter-platinum").val(), "i");
-	return criteria(leader, name);
-};
+	return searched
+}
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-   if(key != "shift" && key != "enter" && key != "123") {
-		var user_input = $("#enter-platinum").val();
+	console.log(leaders_list)
+   if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
+		if(key == "delete"){
+			user_input = user_input.substring(0,user_input.length - 1)
+		}
+		else{
+			var k = key
+			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
+				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
+				k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" ||
+				 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
+				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
+				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
+				 k == "9" || k == "0" || k == ";"){
+				Materialize.toast("Please Enter a Valid Character", 1000)
+				k = " "
+			}
+			if(k == "space"){
+				k = " "
+			}
+			user_input = user_input + k
+		}
 		if(user_input != ""){
-			list_names = leaders_list.filter(leader);
-			display_list(list_names);
+			searched_leaders = search_list(leaders_list, user_input)
+			display_list(searched_leaders);
+		}
+		else if(user_input == ""){
+			$("#platinums-list").empty();
 		}
 	}
 });
+
+//Displays the list of leaders
 
 function display_list(list){
 	var name = "";
@@ -183,6 +204,7 @@ $(document).on("click", ".platinum", function() {
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
+	can_end_session = 0;
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -190,33 +212,37 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
+		user_input = ""
+		$('#enter-platinum').remove()
+		$('#enter-platinum-modal').remove()
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
 	}
 })
 
-
-/*********************************************NOTE: BEGIN CANCEL ORDER CODE*********************************************/
+/***********************CANCEL.JS***********************/
 $("#cancel").click(function() {
 
   /*Open modal as long as there are items to cancel and the cancel flag is raised*/
   if(item_list.length > 0 && cancel_flag == 1 && $(this).css('background-color') != 'rgb(255, 0, 0)') {
     $('#modal2').openModal();
-
+    console.log("CANCEL");
 	}
-  else if(previous_flag) {
-
+  else if(previous_flag || $(this).css('background-color') == 'rgb(255, 0, 0)') {
+    console.log("PREVIOUS");
 		if(current_page == "pay_choice.html") {
 			console.log("1");
 			confirm_flag = 1;
 			scan_flag = 1;
 			previous_flag = 0;
-			current_page = "handle_order.html"
-			previous_page = "handle_order.html"
+			current_page = "handle_order.html";
+			previous_page = "handle_order.html";
+      refocus();
 			$("#cancel").removeAttr("style");
+      $("#cancel").text("Cancel");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 		}
 		else if(current_page == "card_amt.html") {
-
+      console.log("2");
 			current_page = "pay_choice.html";
 			previous_page = "handle_order.html";
 			card_flag = 0;
@@ -224,7 +250,7 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "cash.html") {
-
+      console.log("3");
 			current_page = "pay_choice.html"
 			previous_page = "handle_order.html"
 			cash_flag = 0;
@@ -232,12 +258,41 @@ $("#cancel").click(function() {
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
 		else if(current_page == "card.html") {
+      console.log("4");
 			current_page = "card_amt.html"
 			previous_page = "pay_choice.html"
-			$("#confirm").removeAttr("style");
 			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
 		}
+    else if(current_page == "card_input.html") {
+      console.log("5");
+      current_page = "card.html";
+      previous_page = "card_amt";
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+    }
+    else if(current_page == "prev_trans.html") {
+      console.log("6");
+      current_page = "select_platinums.html";
+      previous_page = "select_platinums.html";
+      $('#enter-platinum-modal').remove();
+      $("#cancel").removeAttr("style");
+      $("#cancel").text("cancel");
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"A" : 0}));
+    }
+    else if(current_page == "indv_trans.html" || current_page == "queried_trans.html") {
+      console.log("7");
+      current_page = "prev_trans.html";
+      previous_page = "select_platinums.html";
+      $("#confirm").text("confirm");
+      $("#confirm").removeAttr("style");
+      refocus();
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {transactions: ay}));
+    }
 	}
+  else if($("#cancel").text() == "Clear") {
+    console.log("We cleared");
+    clearSignaturePad()
+  }
+
 	else if(current_platinum == "NONE"){
 		error_platinum();
 	}
@@ -266,13 +321,11 @@ $(document).on("click", "#card", function () {
 	current_page = "card_amt.html";
 	colorfy();
 	/*Renders the html file necessary to handle card transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
+
+	$('#tendered_card-modal').remove();
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_amt.html', 'utf-8') , {"total" : accounting.formatNumber(total, 2, ",")}));
 });
 
-
-$(document).on('input', function(event){
-	console.log("input in the document")
-})
 
 $(document).on("click", "#swipe_sim", function() {
 	/*Set the cancel flag to prevent any cancellations once the card is in the processing stages*/
@@ -280,7 +333,7 @@ $(document).on("click", "#swipe_sim", function() {
 	previous_flag = 0;
 	/*Only allows the swipe button to render the process.html file if the card option is the selected pay option*/
   if(card_flag && swipe_flag) {
-		card_call_to_auth();
+		//card_call_to_auth();
 		$("#cancel").removeAttr("style");
 		$("#confirm").removeAttr("style");
 		confirm_flag = 0;
@@ -295,6 +348,12 @@ $(document).on("click", "#swipe_sim", function() {
 	}
 });
 
+$(document).on("click", "#card-input", function() {
+	current_page = "card_input.html";
+	previous_page = "card.html";
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/card_input.html', 'utf-8') , {}));
+});
+
 function handle_card() {
 	if(card_amt != 0) {
 		current_page = "card.html";
@@ -305,6 +364,29 @@ function handle_card() {
 	}
 }
 
+/*
+function start_transaction(cardInfo) {
+
+	var newTrans = new transaction();
+	newTrans.chargeCreditCard({
+					cardnumber  : "4242424242424242",
+					expdate     : "0220",
+			if (!obj.error){
+				console.log(obj.transMessage)
+				console.log("Trasaction Id:", obj.transId)
+				console.log("Authorization Code:", obj.transAuthCode)
+				/*If all the money was on the card then go to the printing option
+				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+			}
+			else {
+				console.log(obj.transMessage)
+				console.log("Error Code:", obj.transErrorCode)
+				console.log("Error Text:", obj.transErrorText)
+			}
+		});
+}
+*//*
+var card_date;
 function card_trans(transAuthCode, transId, transMessage) {
 	cur_transaction.createCardTransaction(function(transaction){
 		let CardTrans = {
@@ -313,11 +395,48 @@ function card_trans(transAuthCode, transId, transMessage) {
 			authCode : transAuthCode,
 			transId  : transId,
 			message  : transMessage,
-			cardType : "Harambe"
+			cardType : "Harambe",
+			dateCreated : new Date(),
+			voidable : true,
+			voided   : false
 		}
 		transaction.cards.push(CardTrans);
 		transaction.payments++;
 	});
+
+	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		print_init();
+	}
+	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		card_flag = 0;
+		confirm_flag = 0;
+		update_price('~', card_amt, 0, 1)
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		previous_flag = 1;
+		$("#cancel").css("background-color", "red");
+	}
+}*/
+/*
+var card_date;
+function card_trans(transAuthCode, transId, transMessage) {
+	cur_transaction.createCardTransaction(function(transaction){
+		let CardTrans = {
+			guid     : transaction.guid,
+			amount   : card_amt,
+			authCode : transAuthCode,
+			transId  : transId,
+			message  : transMessage,
+			cardType : "Harambe",
+			dateCreated : new Date(),
+			voidable : true,
+			voided   : false
+		}
+		transaction.cards.push(CardTrans);
+		transaction.payments++;
+	});
+
 	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
 		//void_order(1);
 		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
@@ -331,32 +450,32 @@ function card_trans(transAuthCode, transId, transMessage) {
 		current_page = "pay_choice.html";
 		previous_page = "handle_order.html";
 		previous_flag = 1;
-		$("#cancel").css("background-color", "red");
+		$("#cancel"%B6010569719163353^11027541/89^25010004000060084713           ?;6010569719163353=25010004000060084713?).css("background-color", "red");
 	}
 }
-
-function card_call_to_auth() {
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-			cardnumber  : "4242424242424242",
-			expdate     : "0220",
-			ccv         : "123",
-			amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option*/
-				card_trans(obj.transMessage, obj.transId,obj.transAuthCode);
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		});
-}
+*/
+/*function card_call_to_auth() {
+var newTrans = new transaction();
+newTrans.chargeCreditCard({
+		cardnumber  : "4242424242424242",
+		expdate     : "0220",
+		ccv         : "123",
+		amount      : card_amt.toString()
+	}).then(function(obj){
+		if (!obj.error){
+			console.log(obj.transMessage)
+			console.log("Trasaction Id:", obj.transId)
+			console.log("Authorization Code:", obj.transAuthCode)
+			/*If all the money was on the card then go to the printing option
+			card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+		}
+		else {
+			console.log(obj.transMessage)
+			console.log("Error Code:", obj.transErrorCode)
+			console.log("Error Text:", obj.transErrorText)
+		}
+	});
+}*/
 
 /***********************CASH.JS***********************/
 $("#yes-cash").click(function () {
@@ -372,6 +491,7 @@ $(document).on("click", "#cash", function () {
 	previous_page = "pay_choice.html";
 	current_page = "cash.html"
 	colorfy();
+	$('#tendered-modal').remove()
 	/*Renders the html file necessary to handle cash transactions*/
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
 });
@@ -407,17 +527,18 @@ function cash_trans(){
 			let CashTrans = {
 				guid 			: transaction.guid,
 				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length))
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
 			}
 			transaction.cashes.push(CashTrans);
 			transaction.payments++;
 	});
 }
 
-/*********************************************NOTE: BEGIN CONFIRM ORDER CODE*********************************************/
+/***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
-  if(confirm_flag == 1) {
+  if(confirm_flag == 1 && $("#confirm").text() != "Void") {
 		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
     if(item_list.length != 0) {
 			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
@@ -429,6 +550,7 @@ $("#confirm").click(function() {
 				previous_page = "handle_order.html";
 				current_page = "pay_choice.html";
 				$("#cancel").css("background-color", "red");
+				$("#cancel").text("Back");
 				init_transaction();
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
@@ -440,7 +562,21 @@ $("#confirm").click(function() {
 		handle_cash();
   }
 	else if(card_flag) {
-		handle_card();
+
+		if(current_page != "card.html")
+			handle_card();
+	}
+	else if($("#confirm").text() == "Accept") {
+		acceptSignature()
+	}
+	else if($("#confirm").text() == "Void") {
+		console.log("VOID");
+		$('#voidModal1').openModal({
+			dismissible: false, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
 	}
 	else if(current_platinum == "NONE") {
 		error_platinum();
@@ -449,37 +585,100 @@ $("#confirm").click(function() {
 
 function init_transaction() {
 	cur_transaction = new Transaction();
-	cur_transaction.createGUID();
+	cur_transaction.createGUID(); // this is where we assing the GUID. DO NOT CALL guid.create()
 	cur_transaction.populateItems(function(transaction){
-			transaction.guid = guid.create()       //=> this is the guid DO NOT MODIFY
+
 			transaction.platinum  = current_platinum.replace(/1/g, " ").replace(/2/g, ",");  //=> Here you should modify the platinum name
-			transaction.date = new Date();     //=> Using the date.now() methd you should be fine
-			transaction.location = "Harambe's Heart, Ohio"  //=> this can be reached from the main.js process via ipc
-			transaction.subtotal = subtotal   //=> this is the raw subtotal without taxes
-			transaction.tax = tax    //=> this can be calculated via a function with the data we get from the event
-			transaction.total = total      //=> this is just adding subtotal and tax together
-			transaction.payments = 50   //=> the amount of payments that will be made. At least 1
-
-
+			transaction.dateCreated = new Date();     //=> Using the date.now() methd you should be fine
+			transaction.subtotal = subtotal;   //=> this is the raw subtotal without taxes
+			transaction.tax = tax;    //=> this can be calculated via a function with the data we get from the event
+			transaction.total = total;      //=> this is just adding subtotal and tax together
+			transaction.payments = 0;   //=> the amount of payments that will be made. At least 1
+			transaction.city = event_info.meeting[0].city;
+			transaction.state = event_info.meeting[0].state;
+			transaction.zip = event_info.meeting[0].zip;
+			transaction.cashier = cashier.firstname + " " + cashier.lastname;
+			transaction.event_type = event_info.meeting[0].type;
+			transaction.isEnglish = event_info.meeting[0].isenglish;
+			var date = Math.round(transaction.dateCreated.getTime()/1000);
+			date = date.toString().substring(date.toString().length - 7, date.toString().length);
+			transaction.receiptId = "2" + deviceID + date;
 		for (var i = 0; i < item_list.length; i++){
 
 				let item = {
-
+					guid : cur_transaction.guid,
 					evid 		: item_list[i].id,
 					barcode 	: item_list[i].barcode,
 					title		: item_list[i].title,
 					isticket	: item_list[i].isticket,
 					prefix		: item_list[i].prefix,
 					price		: item_list[i].price,
-					tax			: item_list[i].price * .0875
+					tax			: item_list[i].price * tax_rate,
+					quantity : item_list[i].cust_quantity,
+					cashier : cashier.lastname + ", "+ cashier.firstname
 				}
 
 				transaction.items.push(item);
 			}
 	});
 }
+/*console.log("card flag");
+if(current_page == "card_input.html") {
+	console.log("JUAN");
+	if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
+	console.log("JUANA")
+	var newTrans = new transaction();
+	newTrans.chargeCreditCard({
+					cardnumber  : "4242424242424242",
+					expdate     : "0220",
+					ccv         : "123",
+					amount      : card_amt.toString()
+		}).then(function(obj){
+			if (!obj.error){
+				console.log(obj.transMessage)
+				console.log("Trasaction Id:", obj.transId)
+				console.log("Authorization Code:", obj.transAuthCode)
+				//card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+				cur_transaction.createCardTransaction(function(transaction){
+					let CardTrans = {
+						guid     : transaction.guid,
+						amount   : card_amt,
+						authCode : obj.transAuthCode,
+						transId  : obj.transId,
+						message  : obj.transMessage,
+						cardType : "Harambe",
+						dateCreated : new Date(),
+						voidable : true,
+						voided   : false
+					}
+					transaction.cards.push(CardTrans);
+					transaction.payments++;
+				});
 
-/*********************************************NOTE: BEGIN DELETE CODE*********************************************/
+				if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+					print_init();
+				}
+				else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+					card_flag = 0;
+					confirm_flag = 0;
+					update_price('~', card_amt, 0, 1)
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+					current_page = "pay_choice.html";
+					previous_page = "handle_order.html";
+					previous_flag = 1;
+					$("#cancel").css("background-color", "red");
+				}
+			}
+			else {
+				console.log(obj.transMessage)
+				console.log("Error Code:", obj.transErrorCode)
+				console.log("Error Text:", obj.transErrorText)
+			}
+		})
+	}
+	*/
+
+/***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
 This is how far away the finger is from the left border.*/
 $(document).on("touchstart", ".whole-item", function(e) {
@@ -593,6 +792,7 @@ $("#n_delete").click(function() {
   refocus();
 });
 
+/***********************DETECTCARDSWIPE.JS***********************/
 /*
 const HID = require('node-hid');
 var devices = HID.devices() // this lists all the devices
@@ -614,12 +814,17 @@ usbCardReader.on("data", function(data) {
 });
 */
 
-const ipc = require('electron').ipcRenderer
+/***********************ENDSESSION.JS***********************/
 
 $('#end-session').click(function(event){
 
-    if ( transactionIsInProgress() ){
-        // do error handling
+    if (can_end_session == 0){
+      $('#modal9').openModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .5, // Opacity of modal background
+        in_duration: 300, // Transition in duration
+        out_duration: 200, // Transition out duration
+      });
     }
     else {
         ipc.send('ibo-session-end', 'ending session now')
@@ -635,10 +840,10 @@ function transactionIsInProgress(){
 ipc.on('ibo-session-end-reply', function (event, arg) {
   const message = `Asynchronous message reply from main process: ${arg}`
   console.log(message)
-  window.location.assign('../03-beginsession/index.htmle')
-
+  window.location.assign('../03-beginsession/index.html')
 })
 
+/***********************FRONTEND.JS***********************/
 document.addEventListener('refocus', function(e) {
   $("#barcode").focus();
 })
@@ -674,7 +879,7 @@ function fade_out() {
 
  $(".button-collapse").sideNav();
 
-/*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
+/***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
         /*Update the global quantities of subtotal, tax, and total*/
@@ -684,31 +889,32 @@ function update_price(operation, quantity, placement, confirmed) {
             subtotal-=((item_list[placement].price * quantity));
         else if(operation == '~')
             subtotal-=quantity;
-        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-        tax = subtotal * .075;
-        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
+        tax = subtotal * tax_rate;
+        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
         total = subtotal + tax;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
     else if(confirmed) {
         total-=quantity;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
 }
 
 /*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order(full_void) {
+    can_end_session = 1;
     confirm_flag = 0;
     cancel_flag = 0;
     /*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
-    /**/
     card_flag = 0;
     scan_flag = 0;
     ticket_flag = 0;
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
+    update_transaction_db();
     if(full_void == 1) {
       item_list.splice(0, item_list.length);/*Empties the item list*/
           /*Empties the left side*/
@@ -724,6 +930,7 @@ function void_order(full_void) {
       cur_transaction = {};
       setTimeout(function() {
           $('#enter-platinum').remove()
+          $('#enter-platinum-modal').remove()
           $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
       }, 1500);
     }
@@ -754,7 +961,7 @@ function error_in_used() {
     });
 }
 
-/**********************************************NOTE: BEGIN SEARCH INVENTORY CODE*********************************************/
+/***********************INVENTORY.JS***********************/
 /*var i_i = -1;
 
 var inventory_item = function(item) {
@@ -831,12 +1038,15 @@ $(document).on("click",  "#confirm_item_selection", function() {
 			}
 		}
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
+/***********************JBOARD.JS***********************/
 function jboardify(id, type) {
     $('#' + id).jboard(type)
 }
@@ -857,8 +1067,10 @@ $('#barcode').on( 'jpress', function(event, key){
     console.log(key)
 })
 
+/***********************PRINT.JS***********************/
 $(document).on("click", "#yes-receipt", function() {
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+  printTheOrder(cur_transaction.guid)
   void_order(1);
 });
 
@@ -877,91 +1089,115 @@ function print_init() {
   card_flag = 0;
   console.log("===============BEFORE:");
   console.log(cur_transaction);
-  /*cur_transaction.save(function(err){
+  cur_transaction.save(function(err){
     if (err){
-      console.log("Error in saving new transaction")
+      console.log("Error in saving new transaction", err)
+      Materialize.toast(err, 10000)
+      console.log(cur_transaction)
     }
     else {
       console.log("New transaction saved!")
     }
-  })*/
+  });
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {}));
   console.log("===============AFTER:");
   console.log(cur_transaction);
-  Transaction.find({}, function(err, _transactions) {
-    console.log(_transactions);
-  });
 }
 
-/*********************************************NOTE: BEGIN SCAN CODE*********************************************/
-/*When the #scan_sim button is click carry out the following callback*/
-/*$(document).on("input", "#barcode", function()  {
 
-  $('#modal8').openModal({
-    dismissible: false, // Modal can be dismissed by clicking outside of the modal
-    opacity: .5, // Opacity of modal background
-    in_duration: 300, // Transition in duration
-    out_duration: 200, // Transition out duration
-  });
-});
-*/
-$("#TEST").click(function() {
-  refocus();
+// this is what will do the printing
+function printTheOrder(guid){
+    Transaction.findOne({guid : guid}, function(err, transaction){
+        if (err){
+            console.log(err)
+            Materialize.toast(err, 10000)
+        }
+        else {
 
-})
-$("#scan_sim").click(function()  {
+            console.log("writing to the receipts.txt")
+            /*we need to iterate through this*/
+            let cashes      = transaction.cashes
+            let cards       = transaction.cards
+            let items       = transaction.items
+            let stream = fs.createWriteStream( __dirname + '/../../../kprint/receipt.txt', {
+                flags : 'w', encoding : 'utf-8'
+            })
+            stream.on('error', function(error){
+                Materialize.toast(error, 10000)
+            })
+
+            /*This is the header*/
+            stream.write( "date, "      + transaction.dateCreated   + '\n')
+            stream.write( "guid, "      + transaction.guid          + '\n')
+
+            /*This is the lower header*/
+            stream.write( "city, "      + transaction.city      + '\n')
+            stream.write( "state, "     + transaction.state     + '\n')
+            stream.write( "receiptId, " + transaction.receiptId + '\n')
+
+            stream.write( 'leader, '    + transaction.platinum      + '\n')
+            stream.write( 'cashier, '   + transaction.cashier       + '\n')
+
+            /*This is the */
+            stream.write( "subtotal, "  + transaction.subtotal      + '\n')
+            stream.write( "tax, "       + transaction.tax           + '\n')
+            stream.write( "total,"      + transaction.total         + '\n')
+            stream.write( "payments, "  + transaction.payments      + '\n')
+            stream.write( "eventType, " + transaction.eventType     + '\n')
+            stream.write( "isEnglish, " + transaction.isEnglish     + "\n")
+
+            stream.write('\n\n')
+
+
+            stream.write('ItemsBegin\n')
+            for (let i = 0; i < items.length; i++){
+                stream.write(items[i].title + ',' + items[i].quantity + ',' + items[i].price + '\n')
+            }
+            stream.write('ItemsEnd\n\n')
+
+
+            stream.write('BeginCashes\n')
+            for (let j = 0; j < cashes.length; j++){
+                stream.write(cashes[j].tendered + ','  + cashes[j].change + '\n')
+            }
+            stream.write('EndCashes\n\n')
+
+
+            stream.write('BeginCards\n')
+            for (let k = 0; k < cards.length; k++){
+                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + ','+ cards[k].amount + '\n')
+            }
+            stream.write('EndCards\n\n')
+
+            stream.end()
+
+            exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
+                if (error){
+                    Materialize.toast(error, 100000)
+                    console.log(error)
+                }
+                console.log(stdout)
+                console.log(stderr)
+                Materialize.toast(stdout, 10000)
+                Materialize.toast(stderr, 10000)
+            })
+        }
+    })
+}
+
+/***********************SCAN.JS***********************/
+
+$("#barcode").change(function() {
   /*Grab the barcode from the text area about*/
   var barcode = $("#barcode").val();
   /*Pass into  this function, which is defined below. See the function to know what it does.*/
+  /*BRANCH which handles ticket transactions*/
 	var k = -1;
-	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE") {
+	if(barcode[0] == '2' && barcode.length != 1 && current_platinum != "NONE" && current_page != "prev_trans.html") {
 		k = verify_ticket(barcode);
 	}
-	var ticket;
-  console.log(ticket_table.get(barcode))
-	/*BRANCH which handles ticket transactions*/
-	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined/*previous_ticket < Number(barcode.substring(6, barcode.length - 1))*/) {
-		if(ticket_flag == 0) {
-        console.log("A");
-				ticket_flag = 1;
-				confirm_flag = 0;
-				cancel_flag = 0;
-        previous_ticket = barcode;
-				$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
-		}
-		/*Add <= 50 functionality here*/
-		else if(ticket_flag == 1) {
-      console.log("B");
-      var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
-      if(itm_qnt > 50) {
-        $('#modal7').openModal({
-          dismissible: false, // Modal can be dismissed by clicking outside of the modal
-          opacity: .5, // Opacity of modal background
-          in_duration: 300, // Transition in duration
-          out_duration: 200, // Transition out duration
-        });
-      }
-			else if(current_ticket[1] == -1) {
-				//ticket = Object.assign({}, inventory[current_ticket[0]])
-        ticket = inventory[current_ticket[0]];
-				ticket.cust_quantity = (itm_qnt);
-        /*ADD TO HASHTABLE*/
-				item_list.push(ticket);
-				current_ticket[1] = item_list.length - 1;
-				add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
-        add_to_table(previous_ticket, ticket.cust_quantity);
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-			}
-			else if(current_ticket[1] != -1) {
-				item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
-				add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
-        add_to_table(previous_ticket, itm_qnt);
-        $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-			}
-			ticket_flag = 0;
-			confirm_flag = 1;
-			cancel_flag = 1;
-		}
+	if(k != -1 && current_platinum != "NONE" && ticket_table.get(barcode) == undefined) {
+    handle_tickets(barcode);
 	}
 	else if(ticket_table.get(barcode) != undefined) {
 		ticket_flag = 0;
@@ -974,7 +1210,20 @@ $("#scan_sim").click(function()  {
 
 
 	/*Handles transactions other than tickets*/
+  else if(current_page == "prev_trans.html") {
+    Transaction.findOne({receiptId : barcode.substring(0, barcode.length - 1)}, function(err, _transaction) {
+       console.log(_transaction);
+       if(_transaction) {
+         current_page = 'queried_trans.html';
+         previous_page = 'prev_trans.html';
+         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/queried_trans.html', 'utf-8') , { transaction : _transaction }));
+        }
+       else
+        console.log("Not found");
+    });;
+  }
 	else if(k == -1 && current_platinum != "NONE"){
+    console.log("X")
 	  var i;
 	  var places = [];
 	  if(current_platinum != "NONE" && scan_flag == 1)
@@ -991,6 +1240,7 @@ $("#scan_sim").click(function()  {
 	else {
 		error_platinum();
 	}
+  $("#barcode").val("");
 });
 
 /*Finds the specified item in the list, returns -1 if not found.*/
@@ -1043,46 +1293,6 @@ function determine_item_status(item_list, inventory, barcode) {
   }
 };
 
-/*********************************************NOTE: BEGIN TICKET TRANSACTION CODE*********************************************/
-/*Function that verifies tif the current scanned item is a ticket. */
-function verify_ticket(barcode) {
-	var scan_prefix = barcode.substring(0, 6);
-	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
-	console.log(scan_prefix);
-	var places = [];
-	var i = -1;
-	var ticket = inventory.find(function(e) {
-		i++;
-		if(e.barcode != null) {
-			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
-				return true;
-		}
-	})
-	if(ticket == undefined)
-		return -1;
-	else if(ticket_flag != 1){
-		current_ticket[0] = i;
-		var title = inventory[i].title;
-		var j = find_in_customer_list("title", title);
-		console.log("J " + j);
-		current_ticket[1] = j;
-		current_ticket[2] = barcode.substring(6, barcode.length - 1);
-	}
-}
-/*21610 1  027067   3*/
-function add_to_table(start, quantity) {
-	for(var i = 0; i < quantity; i++) {
-		var tck_cnt = Number(start.substring(6, 12));
-		tck_cnt+=i;
-		if(start[6] == "0")
-		tck_cnt = "0" + tck_cnt.toString();
-		console.log(tck_cnt);
-		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
-		console.log("A");
-	}
-	console.log("TABLE");
-	console.log(ticket_table.keys());
-}
 /*Adds items to the customers item list and does necessary updates, used twice within the code*/
 function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	if(item_list[item_list_index].cust_quantity == 1 || manual == 1) {
@@ -1107,4 +1317,212 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	cancel_flag = 1;
 	/*Update the global quantities of subtotal, tax, and total*/
 	update_price('+', quantity, item_list_index, 0);
+}
+
+/***********************TICKET.JS***********************/
+/*Function that verifies tif the current scanned item is a ticket. */
+function verify_ticket(barcode) {
+	var scan_prefix = barcode.substring(0, 6);
+	scan_prefix = scan_prefix.substring(0, 1) + "0" + scan_prefix.substring(1, scan_prefix.length - 1);
+	var places = [];
+	var i = -1;
+	var ticket = inventory.find(function(e) {
+		i++;
+		if(e.barcode != null) {
+			if(e.barcode.search(scan_prefix) != -1 && e.isticket == 1)
+				return true;
+		}
+	})
+	if(ticket == undefined)
+		return -1;
+	else if(ticket_flag != 1){
+		current_ticket[0] = i;
+		var title = inventory[i].title;
+		var j = find_in_customer_list("title", title);
+		current_ticket[1] = j;
+		current_ticket[2] = barcode.substring(6, barcode.length - 1);
+	}
+}
+/*21610 1  027067   3*/
+function add_to_table(start, quantity) {
+	for(var i = 0; i < quantity; i++) {
+		var tck_cnt = Number(start.substring(6, 12));
+		tck_cnt+=i;
+		if(start[6] == "0")
+		tck_cnt = "0" + tck_cnt.toString();
+		console.log(tck_cnt);
+		ticket_table.put(start.replace(start.substring(6, 12), tck_cnt).toString(), true);
+		console.log("A");
+	}
+	console.log("TABLE");
+	console.log(ticket_table.keys());
+}
+
+function handle_tickets(barcode) {
+	var ticket;
+	if(ticket_flag == 0) {
+			console.log("A");
+			ticket_flag = 1;
+			confirm_flag = 0;
+			cancel_flag = 0;
+			previous_ticket = barcode;
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/tickets.html', 'utf-8') , {}));
+			refocus();
+	}
+	/*Add <= 50 functionality here*/
+	else if(ticket_flag == 1) {
+		console.log("B");
+		var itm_qnt = Number(barcode.substring(6, barcode.length - 1)) - Number(current_ticket[2]) + 1;
+		if(itm_qnt > 50) {
+			$('#modal7').openModal({
+				dismissible: false, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				in_duration: 300, // Transition in duration
+				out_duration: 200, // Transition out duration
+			});
+		}
+		else if(current_ticket[1] == -1) {
+			//ticket = Object.assign({}, inventory[current_ticket[0]])
+			ticket = inventory[current_ticket[0]];
+			ticket.cust_quantity = (itm_qnt);
+			/*ADD TO HASHTABLE*/
+			item_list.push(ticket);
+			current_ticket[1] = item_list.length - 1;
+			add_item(current_ticket[1], current_ticket[0], ticket.cust_quantity, 1)
+			add_to_table(previous_ticket, ticket.cust_quantity);
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		else if(current_ticket[1] != -1) {
+			item_list[current_ticket[1]].cust_quantity+=(itm_qnt);
+			add_item(current_ticket[1], current_ticket[0], item_list[current_ticket[1]].cust_quantity, 0)
+			add_to_table(previous_ticket, itm_qnt);
+			$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+		}
+		ticket_flag = 0;
+		confirm_flag = 1;
+		cancel_flag = 1;
+		refocus();
+	}
+}
+
+var ay = [];
+$("#prev-transactions").click(function() {
+  if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    current_page = "prev_trans.html";
+    prev_page = "select_platinums.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
+    refocus();
+    Transaction.find({}, function(err, transactions) {
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
+    });
+  }
+  else {
+    $('#modal8').openModal({
+      dismissible: true, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
+
+
+var elem_id;
+$(document).on("click", ".transaction", function() {
+   elem_id = $(this).attr("id");
+   var guid = elem_id.substring(0, elem_id.search("_"));
+   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+   current_page = "indv_trans.html";
+   prev_page = "prev_trans.html";
+   var x = []
+   Transaction.findOne({guid : guid}, function(err, _transaction) {
+      x.push(_transaction);
+      x.push(j);
+      $("#confirm").text("Void");
+      $("#cancel").text("Back");
+      $("#confirm").css("background-color", "green");
+      console.log(x);
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
+   });
+});
+
+$(document).on("click", ".void-all", function() {
+  $('#voidModal2').openModal({
+    dismissible: false, // Modal can be dismissed by clicking outside of the modal
+    opacity: .5, // Opacity of modal background
+    in_duration: 300, // Transition in duration
+    out_duration: 200, // Transition out duration
+  });
+});
+
+$(document).on("click", ".confirm-void", function() {
+  current_platinum = "NONE";
+  confirm_flag = 0;
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
+  if($(this).attr("id") == "confirm-void-one") {
+    var guid = elem_id.substring(0, elem_id.search("_"));
+    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+    Transaction.findOne({ guid : guid }, function(err, transaction_) {
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction_) {
+        var newTrans = new transaction();
+        newTrans.voidTransaction({
+            transId  : transaction_.cards[j].transId
+        }).then(function(obj){
+          if (!obj.error) {
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+            $("#" + elem_id).remove();
+            transaction_.cards[j].voidable = false;
+            transaction_.cards[j].voided = true;
+            transaction_.save(function(err){
+                if (err){
+                    console.log("Error in updating Trans " + err)
+                }
+                else {
+                    console.log("Updated Existing Trans")
+                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+                }
+            });
+          }
+          else {
+              console.log(obj.transMessage)
+              console.log("Error Code:", obj.transErrorCode)
+              console.log("Error Text:", obj.transErrorText)
+          }
+        });
+      }
+      else if(!transaction_){
+        console.log("transaction does not exist");
+      }
+    });
+  }
+});
+
+function update_transaction_db() {
+  Transaction.find({}, function(err, transactions_) {
+    for(var i = 0; i < transactions_.length; i++) {
+      for(var j = 0; j < transactions_[i].cards.length; j++) {
+        var cur_date = new Date().getTime();
+        var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
+        console.log(cur_date > deadline && transactions_[i].cards[j].voidable);
+        if(cur_date > deadline && transactions_[i].cards[j].voidable) {
+          transactions_[i].cards[j].voidable = false;;
+          transactions_[i].save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+              }
+          });
+        }
+      }
+    }
+  });
 }

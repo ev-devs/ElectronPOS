@@ -79,3 +79,7 @@ python setup.py build
 sudo python setup.py install
 cd ..
 sudo rm -rf python-escpos
+
+# This is for reading from the USB mag stripe reader
+sudo apt-get install libusb-1.0-0
+sudo -H pip install pyusb --pre --upgrade

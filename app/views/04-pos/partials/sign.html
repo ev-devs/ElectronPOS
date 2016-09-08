@@ -1,0 +1,70 @@
+<script src="../../../bower_components/signature_pad/signature_pad.js" charset="utf-8"></script>
+
+<div id="sign-container" class="animated fadeIn center" style="margin-left: auto; margin-right: auto">
+    <div class="">
+        <h4>Sign Here</h4>
+    </div>
+    <canvas id="signature-canvas" style="background-color : white"></canvas>
+</div>
+
+<style media="screen">
+    #signature-canvas {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<script>
+var canvas = document.getElementById("signature-canvas");
+var signaturePad = new SignaturePad(canvas);
+
+function clearSignaturePad() {
+    signaturePad.clear()
+}
+
+function acceptSignature() {
+    // cannot accept unless there is a signature
+    if ( signaturePad.isEmpty() ){
+        Materialize.toast('Please sign before proceeding', 5000)
+    }
+    else {
+        console.log ( signaturePad.toDataURL() )
+        console.log(card_amt);
+        console.log(cur_transaction);
+
+        if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+            print_init();
+        }
+        else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+            card_flag = 0;
+            confirm_flag = 0;
+            update_price('~', card_amt, 0, 1)
+            $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+            current_page = "pay_choice.html";
+            previous_page = "handle_order.html";
+            previous_flag = 1;
+            $("#cancel").css("background-color", "red");
+        }
+        $("#cancel").text("Cancel");
+        $("#confirm").text("Confirm");
+    }
+}
+
+$("#B").click(function() {
+  if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		print_init();
+	}
+	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+		card_flag = 0;
+		confirm_flag = 0;
+		update_price('~', card_amt, 0, 1)
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		previous_flag = 1;
+		$("#cancel").css("background-color", "red");
+	}
+})
+</script>

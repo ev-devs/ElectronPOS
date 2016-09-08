@@ -11,14 +11,19 @@ const CashTrans = require('./CashTrans.js').schema
 var transactionSchema = new mongoose.Schema({
     /*Think of this as a "Header" of sorts*/
     guid        : { type : String, required : true },
+    cashier     : { type : String, required : true },
     platinum    : { type : String, required : true },
-    date        : { type : Date  , required : true },
-    location    : { type : String, required : true },
+    dateCreated : { type : Date, required : true },
+    city        : { type : String, required : true },
+    state       : { type : String, required : true },
+    zip         : { type : String, required : true },
     subtotal    : { type : Number, required : true },
     tax         : { type : Number, required : true },
     total       : { type : Number, required : true },
     payments    : { type : Number, required : true },
-
+    receiptId   : { type : String, required : true },
+    event_type  : { type : String/*, required : true */},
+    isEnglish   : { type : String/*, required : true */},
     /*This is the "body" of some sort*/
     cashes      : [ CashTrans ],
     cards       : [ CardTrans ],
@@ -62,65 +67,3 @@ var Transaction = TransactionConnection.model('Transaction', transactionSchema);
 */
 
 module.exports = Transaction
-
-
-/*############################### THIS IS WHERE THE EXAMPLES START*/
-/*
-var newTransaction = new Transaction();
-newTransaction.createGUID() // this creates the GUID
-
-newTransaction.populateItems(function(transaction){
-    // populate the items right here
-    // you also have access to the entire model
-    transaction.platinum    //=> Here you should modify the platinum name
-    transaction.date        //=> Using the date.now() methd you should be fine
-    transaction.location    //=> this can be reached from the main.js process via ipc
-    transaction.subtotal    //=> this is the raw subtotal without taxes
-    transaction.tax         //=> this can be calculated via a function with the data we get from the event
-    transaction.total       //=> this is just adding subtotal and tax together
-    transaction.payments    //=> the amount of payments that will be made. At least 1
-
-    transaction.cashes      //=> this is an array of cash transaction
-    transaction.cards       //=> this is an array of card transactions
-    transaction.items       //=> this is where we need to create the items
-
-    for (i; i < 100; i++){
-        // populate the items array
-        // calculate tax per item
-        // update subtotal
-        // update tax total
-        // update overall total
-    }
-})
-
-newTransaction.createCashTransaction(function(transaction){
-
-    var newCashTransaction  = new CashTransaction()
-    newCashTransaction.tendered = "Some amount of money"
-    newCashTransaction.change   = "another amount of money"
-
-    transaction.cashes.push(/*a new cash transaction here)
-
-    //after success+
-    transaction.payments++
-})
-newTransaction.createCardTransaction(function(transaction){
-
-    var newCardTransaction = new CardTransaction()
-    var response = MakeCallToAuthNetAPI() // insert code here
-
-    if (response.path.to.error){
-        // handle errors and display in UI
-    }
-
-    newCardTransaction.amount   = "some amount"
-    newCardTransaction.authCode = response.some.path.to.the.authCode
-    newCardTransaction.transId  = response.some.path.to.the.transId
-    newCardTransaction.message  = response.some.path.to.the.message
-    newCardTransaction.cardType = functionCallToSeeWhatTypeOfCard();
-
-    transaction.cards.push(/*a new cash transaction here)
-
-    //after success+
-     transaction.payments++
-})*/

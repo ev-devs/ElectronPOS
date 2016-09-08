@@ -1,4 +1,4 @@
-/*********************************************NOTE: BEGIN UPDATE  PRICE CODE*********************************************/
+/***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
         /*Update the global quantities of subtotal, tax, and total*/
@@ -8,31 +8,32 @@ function update_price(operation, quantity, placement, confirmed) {
             subtotal-=((item_list[placement].price * quantity));
         else if(operation == '~')
             subtotal-=quantity;
-        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",").toString());
-        tax = subtotal * .075;
-        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",").toString());
+        $("#subtotal").text("$" + accounting.formatNumber(subtotal, 2, ",") );
+        tax = subtotal * tax_rate;
+        $("#tax").text("$" + accounting.formatNumber(tax, 2, ",") );
         total = subtotal + tax;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
     else if(confirmed) {
         total-=quantity;
-        $("#total").text("$" + accounting.formatNumber(total, 2, ",").toString());
+        $("#total").text("$" + accounting.formatNumber(total, 2, ",") );
     }
 }
 
 /*********************************************NOTE: BEGIN VOID ORDER CODE*********************************************/
 /*A function that voids an order. Used to cancel orders and void orders aftercash or card has been paid*/
 function void_order(full_void) {
+    can_end_session = 1;
     confirm_flag = 0;
     cancel_flag = 0;
     /*Cash flag is set to 0 to denote the end of a cash transaction*/
     cash_flag = 0;
-    /**/
     card_flag = 0;
     scan_flag = 0;
     ticket_flag = 0;
     swipe_flag = 0;
     current_ticket = [-1, -1, "CODE"];
+    update_transaction_db();
     if(full_void == 1) {
       item_list.splice(0, item_list.length);/*Empties the item list*/
           /*Empties the left side*/
@@ -48,6 +49,7 @@ function void_order(full_void) {
       cur_transaction = {};
       setTimeout(function() {
           $('#enter-platinum').remove()
+          $('#enter-platinum-modal').remove()
           $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
       }, 1500);
     }
