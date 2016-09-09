@@ -51,7 +51,7 @@ $(document).on("click", ".void-all", function() {
   });
   //query = $(this).attr("id");
 });
-/*
+
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -137,7 +137,8 @@ $(document).on("click", ".confirm-void", function() {
       }
     });
   }
-}*/
+});
+
 function update_transaction_db() {
   Transaction.find({}, function(err, transactions_) {
     for(var i = 0; i < transactions_.length; i++) {
