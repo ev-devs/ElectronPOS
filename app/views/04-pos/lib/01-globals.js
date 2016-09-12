@@ -96,8 +96,8 @@ var scan_flag = 0;//Flag which denotes that the user can scan at any time assumi
 var ticket_flag = 0;//Flag which denotes that the user is handling a ticket transaction
 var swipe_flag = 0;//Flag which denotes if a swipe can happen
 var card_amt = 1; //Stores the
-var previous_page = "1";//Stores the previous page
-var current_page = "2";//Stores the current page
+var previous_page = "handle_order.html";//Stores the previous page
+var current_page = "handle_order.html";//Stores the current page
 var can_end_session = 1;//Denotes if a session can be ended
 
 var credit_card_can_be_charged = false;//denotes if a card can be charged

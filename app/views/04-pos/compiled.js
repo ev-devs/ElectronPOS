@@ -96,8 +96,8 @@ var scan_flag = 0;//Flag which denotes that the user can scan at any time assumi
 var ticket_flag = 0;//Flag which denotes that the user is handling a ticket transaction
 var swipe_flag = 0;//Flag which denotes if a swipe can happen
 var card_amt = 1; //Stores the
-var previous_page = "1";//Stores the previous page
-var current_page = "2";//Stores the current page
+var previous_page = "handle_order.html";//Stores the previous page
+var current_page = "handle_order.html";//Stores the current page
 var can_end_session = 1;//Denotes if a session can be ended
 
 var credit_card_can_be_charged = false;//denotes if a card can be charged
@@ -987,27 +987,6 @@ function error_in_used() {
     });
 }
 
-/***********************JBOARD.JS***********************/
-function jboardify(id, type) {
-    $('#' + id).jboard(type)
-}
-
-
-
-$('#search').jboard('standard')
-
-//$('#barcode').jboard('standard')
-
-//$('#enter-platinum').jboard('standard')
-
-$('#search').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
-$('#barcode').on( 'jpress', function(event, key){
-    console.log(key)
-})
-
 /***********************INVENTORY.JS***********************/
 /*var i_i = -1;
 
@@ -1092,6 +1071,27 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
+
+/***********************JBOARD.JS***********************/
+function jboardify(id, type) {
+    $('#' + id).jboard(type)
+}
+
+
+
+$('#search').jboard('standard')
+
+//$('#barcode').jboard('standard')
+
+//$('#enter-platinum').jboard('standard')
+
+$('#search').on( 'jpress', function(event, key){
+    console.log(key)
+})
+
+$('#barcode').on( 'jpress', function(event, key){
+    console.log(key)
+})
 
 /***********************PRINT.JS***********************/
 $(document).on("click", "#yes-receipt", function() {
@@ -1368,169 +1368,6 @@ function add_item(item_list_index, inventory_list_index, quantity, manual) {
 	update_price('+', quantity, item_list_index, 0);
 }
 
-var ay = [];
-$("#prev-transactions").click(function() {
-  if(can_end_session == 1) {
-    current_platinum = "NON";
-    confirm_flag = 1;
-    current_page = "prev_trans.html";
-    prev_page = "select_platinums.html";
-    $("#cancel").css("background-color", "red");
-    $("#cancel").text("Back");
-    refocus();
-    Transaction.find({}, function(err, transactions) {
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
-    });
-  }
-  else {
-    $('#modal8').openModal({
-      dismissible: true, // Modal can be dismissed by clicking outside of the modal
-      opacity: .5, // Opacity of modal background
-      in_duration: 300, // Transition in duration
-      out_duration: 200, // Transition out duration
-    });
-  }
-});
-
-
-var elem_id;
-$(document).on("click", ".transaction", function() {
-   elem_id = $(this).attr("id");
-   var guid = elem_id.substring(0, elem_id.search("_"));
-   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-   current_page = "indv_trans.html";
-   prev_page = "prev_trans.html";
-   var x = []
-   Transaction.findOne({guid : guid}, function(err, _transaction) {
-      x.push(_transaction);
-      x.push(j);
-      $("#confirm").text("Void");
-      $("#cancel").text("Back");
-      $("#confirm").css("background-color", "green");
-      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
-   });
-});
-
-//var query;
-$(document).on("click", ".void-all", function() {
-  $('#voidModal2').openModal({
-    dismissible: false, // Modal can be dismissed by clicking outside of the modal
-    opacity: .5, // Opacity of modal background
-    in_duration: 300, // Transition in duration
-    out_duration: 200, // Transition out duration
-  });
-  //query = $(this).attr("id");
-});
-
-$(document).on("click", ".confirm-void", function() {
-  current_platinum = "NONE";
-  confirm_flag = 0;
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
-  var guid = elem_id.substring(0, elem_id.search("_"));
-  var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
-  if($(this).attr("id") == "confirm-void-one") {
-    Transaction.findOne({ guid : guid }, function(err, transaction_) {
-      if(err) {
-        console.log("ERRORS");
-      }
-      else if(transaction_) {
-        var newTrans = new transaction();
-        newTrans.voidTransaction({
-            transId  : transaction_.cards[j].transId
-        }).then(function(obj){
-          if (!obj.error) {
-            console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
-            $("#" + elem_id).remove();
-            transaction_.cards[j].voidable = false;
-            transaction_.cards[j].voided = true;
-            transaction_.save(function(err){
-                if (err){
-                    console.log("Error in updating Trans " + err)
-                }
-                else {
-                    console.log("Updated Existing Trans")
-                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                }
-            });
-          }
-          else {
-              console.log(obj.transMessage)
-              console.log("Error Code:", obj.transErrorCode)
-              console.log("Error Text:", obj.transErrorText)
-          }
-        });
-      }
-      else if(!transaction_){
-        console.log("transaction does not exist");
-      }
-    });
-  }
-  else if($(this).attr("id") == "confirm-void-all") {
-    Transaction.findOne({ guid : query }, function(err, transaction_) {
-
-      for(var i = 0; i < transaction.cards.length; i++) {
-
-        if(err) {
-          console.log("ERRORS");
-        }
-        else if(transaction_) {
-          var newTrans = new transaction();
-          newTrans.voidTransaction({
-              transId  : transaction_.cards[i].transId
-          })
-          .then(function(obj){
-            if (!obj.error) {
-              console.log(obj.transMessage)
-              console.log("Transaction Id:", obj.transId)
-              $("#" + elem_id).remove();
-              transaction_.cards[i].voidable = false;
-              transaction_.cards[i].voided = true;
-              transaction_.save(function(err){
-                  if (err){
-                      console.log("Error in updating Trans " + err)
-                  }
-                  else {
-                      console.log("Updated Existing Trans")
-                      if(i ==  transaction_.cards.length - 1)
-                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                  }
-              });
-            }
-            else {
-                console.log(obj.transMessage)
-                console.log("Error Code:", obj.transErrorCode)
-                console.log("Error Text:", obj.transErrorText)
-            }
-          });
-        }
-      }
-    });
-  }
-});
-
-function update_transaction_db() {
-  Transaction.find({}, function(err, transactions_) {
-    for(var i = 0; i < transactions_.length; i++) {
-      for(var j = 0; j < transactions_[i].cards.length; j++) {
-        var cur_date = new Date().getTime();
-        var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
-        if(cur_date > deadline && transactions_[i].cards[j].voidable) {
-          transactions_[i].cards[j].voidable = false;;
-          transactions_[i].save(function(err){
-              if (err){
-                  console.log("Error in updating Trans " + err)
-              }
-              else {
-                  console.log("Updated Existing Trans")
-              }
-          });
-        }
-      }
-    }
-  });
-}
-
 /***********************TICKET.JS***********************/
 /*Function that verifies tif the current scanned item is a ticket. */
 function verify_ticket(barcode) {
@@ -1615,4 +1452,169 @@ function handle_tickets(barcode) {
 		cancel_flag = 1;
 		refocus();
 	}
+}
+
+var ay = [];
+$("#prev-transactions").click(function() {
+  if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    current_page = "prev_trans.html";
+    prev_page = "select_platinums.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
+    refocus();
+    Transaction.find({}, function(err, transactions) {
+      ay = transactions;
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
+    });
+  }
+  else {
+    $('#modal8').openModal({
+      dismissible: true, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
+
+
+var elem_id;
+$(document).on("click", ".transaction", function() {
+   elem_id = $(this).attr("id");
+   var guid = elem_id.substring(0, elem_id.search("_"));
+   var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+   current_page = "indv_trans.html";
+   prev_page = "prev_trans.html";
+   var x = []
+   Transaction.findOne({guid : guid}, function(err, _transaction) {
+      x.push(_transaction);
+      x.push(j);
+      $("#confirm").text("Void");
+      $("#cancel").text("Back");
+      $("#confirm").css("background-color", "green");
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/indv_trans.html', 'utf-8') , { transaction : x }));
+   });
+});
+
+var query;
+$(document).on("click", ".void-all", function() {
+  $('#voidModal2').openModal({
+    dismissible: false, // Modal can be dismissed by clicking outside of the modal
+    opacity: .5, // Opacity of modal background
+    in_duration: 300, // Transition in duration
+    out_duration: 200, // Transition out duration
+  });
+  query = $(this).attr("id");
+  console.log(query);
+});
+
+$(document).on("click", ".confirm-void", function() {
+  current_platinum = "NONE";
+  confirm_flag = 0;
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
+  if($(this).attr("id") == "confirm-void-one") {
+    var guid = elem_id.substring(0, elem_id.search("_"));
+    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
+    Transaction.findOne({ guid : guid }, function(err, transaction_) {
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction_) {
+        var newTrans = new transaction();
+        newTrans.voidTransaction({
+            transId  : transaction_.cards[j].transId
+        }).then(function(obj){
+          if (!obj.error) {
+            console.log(obj.transMessage)
+            console.log("Transaction Id:", obj.transId)
+            $("#" + elem_id).remove();
+            transaction_.cards[j].voidable = false;
+            transaction_.cards[j].voided = true;
+            transaction_.save(function(err){
+                if (err){
+                    console.log("Error in updating Trans " + err)
+                }
+                else {
+                    console.log("Updated Existing Trans")
+                    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+                }
+            });
+          }
+          else {
+              console.log(obj.transMessage)
+              console.log("Error Code:", obj.transErrorCode)
+              console.log("Error Text:", obj.transErrorText)
+          }
+        });
+      }
+      else if(!transaction_){
+        console.log("transaction does not exist");
+      }
+    });
+  }
+  else if($(this).attr("id") == "confirm-void-all") {
+    Transaction.findOne({ guid : query }, function(err, transaction_) {
+      console.log(transaction_);
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction_) {
+      for(var i = 0; i < transaction_.cards.length; i++) {
+          var newTrans = new transaction();
+          console.log(transaction_.cards[i].transId);
+          newTrans.voidTransaction({
+              transId  : transaction_.cards[i].transId
+          })
+          .then(function(obj){
+            if (!obj.error) {
+              console.log(obj.transMessage)
+              console.log("Transaction Id:", obj.transId)
+              $("#" + elem_id).remove();
+              transaction_.cards[i].voidable = false;
+              transaction_.cards[i].voided = true;
+              transaction_.save(function(err){
+                  if (err){
+                      console.log("Error in updating Trans " + err)
+                  }
+                  else {
+                      console.log("Updated Existing Trans")
+                      if(i ==  transaction_.cards.length - 1)
+                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+                  }
+              });
+            }
+            else {
+                console.log(obj.transMessage)
+                console.log("Error Code:", obj.transErrorCode)
+                console.log("Error Text:", obj.transErrorText)
+            }
+          });
+        }
+      }
+    });
+  }
+});
+
+function update_transaction_db() {
+  Transaction.find({}, function(err, transactions_) {
+    for(var i = 0; i < transactions_.length; i++) {
+      for(var j = 0; j < transactions_[i].cards.length; j++) {
+        var cur_date = new Date().getTime();
+        var deadline = transactions_[i].cards[j].dateCreated.getTime() + 86400000;
+        if(cur_date > deadline && transactions_[i].cards[j].voidable) {
+          transactions_[i].cards[j].voidable = false;;
+          transactions_[i].save(function(err){
+              if (err){
+                  console.log("Error in updating Trans " + err)
+              }
+              else {
+                  console.log("Updated Existing Trans")
+              }
+          });
+        }
+      }
+    }
+  });
 }

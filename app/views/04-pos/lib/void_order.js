@@ -9,6 +9,7 @@ $("#prev-transactions").click(function() {
     $("#cancel").text("Back");
     refocus();
     Transaction.find({}, function(err, transactions) {
+      ay = transactions;
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/prev_trans.html', 'utf-8') , { transactions : transactions }));
     });
   }
@@ -41,7 +42,7 @@ $(document).on("click", ".transaction", function() {
    });
 });
 
-//var query;
+var query;
 $(document).on("click", ".void-all", function() {
   $('#voidModal2').openModal({
     dismissible: false, // Modal can be dismissed by clicking outside of the modal
@@ -49,16 +50,17 @@ $(document).on("click", ".void-all", function() {
     in_duration: 300, // Transition in duration
     out_duration: 200, // Transition out duration
   });
-  //query = $(this).attr("id");
+  query = $(this).attr("id");
+  console.log(query);
 });
 
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
   $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Voiding" }));
-  var guid = elem_id.substring(0, elem_id.search("_"));
-  var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
   if($(this).attr("id") == "confirm-void-one") {
+    var guid = elem_id.substring(0, elem_id.search("_"));
+    var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
     Transaction.findOne({ guid : guid }, function(err, transaction_) {
       if(err) {
         console.log("ERRORS");
@@ -98,14 +100,14 @@ $(document).on("click", ".confirm-void", function() {
   }
   else if($(this).attr("id") == "confirm-void-all") {
     Transaction.findOne({ guid : query }, function(err, transaction_) {
-
-      for(var i = 0; i < transaction.cards.length; i++) {
-
-        if(err) {
-          console.log("ERRORS");
-        }
-        else if(transaction_) {
+      console.log(transaction_);
+      if(err) {
+        console.log("ERRORS");
+      }
+      else if(transaction_) {
+      for(var i = 0; i < transaction_.cards.length; i++) {
           var newTrans = new transaction();
+          console.log(transaction_.cards[i].transId);
           newTrans.voidTransaction({
               transId  : transaction_.cards[i].transId
           })
