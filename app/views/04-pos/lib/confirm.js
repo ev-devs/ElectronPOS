@@ -2,6 +2,7 @@
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
   if(confirm_flag == 1 && $("#confirm").text() != "Void" && current_page == "handle_order.html") {
+		console.log("A");
 		/*If the length of the list of item is 0 (empty list) then there is nothing to confirm. Otherwise render the pay options.*/
     if(item_list.length != 0) {
 			/*If we aren't in the middle of a transaction and can confirm normally then render the options*/
@@ -22,6 +23,7 @@ $("#confirm").click(function() {
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
 	else if(current_page == "return.html") {
+		console.log("B");
 		if(item_list.length != 0) {
 			previous_page = "return.html";
 			current_page = "card.html";
@@ -29,18 +31,20 @@ $("#confirm").click(function() {
 		}
 	}
   else if(cash_flag) {
+		console.log("C");
 		handle_cash();
   }
 	else if(card_flag) {
-
+		console.log("D");
 		if(current_page != "card.html")
 			handle_card();
 	}
 	else if($("#confirm").text() == "Accept") {
+		console.log("E");
 		acceptSignature()
 	}
 	else if($("#confirm").text() == "Void") {
-		console.log("VOID");
+		console.log("F");
 		$('#voidModal1').openModal({
 			dismissible: false, // Modal can be dismissed by clicking outside of the modal
 			opacity: .5, // Opacity of modal background
@@ -49,6 +53,7 @@ $("#confirm").click(function() {
 		});
 	}
 	else if(current_platinum == "NONE") {
+		console.log("G");
 		error_platinum();
 	}
 });

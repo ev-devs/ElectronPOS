@@ -1,4 +1,5 @@
 /***********************GLOBALS.JS***********************/
+//10:57-
 var request         = require('request');
 var mongoose        = require('mongoose');
 var ejs             = require('ejs');
