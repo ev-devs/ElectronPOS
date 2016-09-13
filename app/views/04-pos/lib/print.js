@@ -55,6 +55,8 @@ function printTheOrder(guid){
             })
             stream.on('error', function(error){
                 Materialize.toast(error, 10000)
+                console.log('THERE WAS AN ERROR WRITING TO THE reciept.txt FILE")
+		return
             })
 
             /*This is the header*/
