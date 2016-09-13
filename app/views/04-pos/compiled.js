@@ -15,12 +15,15 @@ var exec            = require('child_process').exec
 const ipc = require('electron').ipcRenderer
 // Global variables
 var inventory = [];
+var inventory_simple = [];
 var inventory_query = [];
 var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
 var user_input = ""; // user_input for platinums search
 var searched_leaders = []; //modified array of searched leaders
+var platinums_stack = [];
+var delete_flag = 0;
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
@@ -133,24 +136,47 @@ function alphabetize(list){
 		leaders_list.push(name.trim());
 	}
 	leaders_list.sort();
+	platinums_stack.push(leaders_list);
 }
 
-function search_list(list, input){
+/*
+ * Get the stack , user input, and flag
+ * I need it to access the last element in the stack, search the element for the user input, 
+ * put the searched strings into a new array and then put new array into the stack
+ * If delete flag set, take the stack, pop the last element, proceed as normal 
+*/
+function search_list(list, input, flag){
 	var searched = [];
+	if(list.length <= 0){
+		console.log("WARNING: EMPTY PLATINUMS STACK")
+	}
+	if(flag == 1){
+		list.pop()
+	}
+	var last_from_stack = list[list.length -1]
+	console.log(last_from_stack)
 	var Reg_input = new RegExp(input, "i")
-	for(i = 0; i < list.length; i++){
-		if(list[i].search(Reg_input) != -1){
-			searched.push(list[i]);
+	for(i = 0; i < last_from_stack.length; i++){
+		if(last_from_stack[i].search(Reg_input) != -1){
+			searched.push(last_from_stack[i]);
 		}
 	}
-	return searched
+	if(flag == 0){
+		list.push(searched)
+		return searched
+	}
+	else{
+		flag = 0;
+		return searched;
+	}
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-	console.log(leaders_list)
+   console.log(platinums_stack[0]);
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
 			user_input = user_input.substring(0,user_input.length - 1)
+			delete_flag = 1;
 		}
 		else{
 			var k = key
@@ -161,20 +187,26 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
 				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
 				 k == "9" || k == "0" || k == ";"){
-				Materialize.toast("Please Enter a Valid Character", 1000)
+				//$('#enter-platinum').val( $('#enter-platinum').val().substring(0, $('#enter-platinum').val().length - 1) )
+				Materialize.toast("Please Enter a Valid Character", 5000)
+				
 				k = " "
 			}
 			if(k == "space"){
 				k = " "
 			}
 			user_input = user_input + k
+			delete_flag = 0;
 		}
 		if(user_input != ""){
-			searched_leaders = search_list(leaders_list, user_input)
+			searched_leaders = search_list(platinums_stack, user_input, delete_flag)
 			display_list(searched_leaders);
 		}
 		else if(user_input == ""){
 			$("#platinums-list").empty();
+			platinums_stack = [];
+			platinums_stack.push(leaders_list)
+			delete_flag = 0;
 		}
 	}
 });
@@ -903,6 +935,79 @@ function fade_out() {
 
  $(".button-collapse").sideNav();
 
+/***********************INVENTORY.JS***********************/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1;
+
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
+});
+
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
+});
+
+$(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
@@ -986,91 +1091,6 @@ function error_in_used() {
         out_duration: 200, // Transition out duration
     });
 }
-
-/***********************INVENTORY.JS***********************/
-/*var i_i = -1;
-
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				}
-			}
-		}
-		else {
-			error_platinum();
-		}
-});
-
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
-});
-
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
-			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
-			}
-		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-	refocus();
-});
-
-$(document).on("click",  "#cancel_item_selection", function() {
-	refocus();
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
 
 /***********************JBOARD.JS***********************/
 function jboardify(id, type) {
@@ -1210,28 +1230,6 @@ function printTheOrder(guid){
         }
     })
 }
-
-$(document).on("click", "#return-items", function() {
-  if(can_end_session == 1) {
-    current_platinum = "NON";
-    confirm_flag = 1;
-    scan_flag = 1;
-    current_page = "return.html";
-    prev_page = "handle_order.html";
-    $("#cancel").css("background-color", "red");
-    $("#cancel").text("Back");
-    refocus();
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/return.html', 'utf-8') , {}));
-  }
-  else {
-    $('#modal8').openModal({
-      dismissible: true, // Modal can be dismissed by clicking outside of the modal
-      opacity: .5, // Opacity of modal background
-      in_duration: 300, // Transition in duration
-      out_duration: 200, // Transition out duration
-    });
-  }
-});
 
 /***********************SCAN.JS***********************/
 
@@ -1510,6 +1508,8 @@ $(document).on("click", ".void-all", function() {
   console.log(query);
 });
 
+var all_voided = true;
+var all_done = [];
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -1518,6 +1518,7 @@ $(document).on("click", ".confirm-void", function() {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
     Transaction.findOne({ guid : guid }, function(err, transaction_) {
+      console.log(transaction_.cards[j].transId);
       if(err) {
         console.log("ERRORS");
       }
@@ -1528,7 +1529,7 @@ $(document).on("click", ".confirm-void", function() {
         }).then(function(obj){
           if (!obj.error) {
             console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
+            console.log(obj.transId)
             $("#" + elem_id).remove();
             transaction_.cards[j].voidable = false;
             transaction_.cards[j].voided = true;
@@ -1556,7 +1557,6 @@ $(document).on("click", ".confirm-void", function() {
   }
   else if($(this).attr("id") == "confirm-void-all") {
     Transaction.findOne({ guid : query }, function(err, transaction_) {
-      console.log(transaction_);
       if(err) {
         console.log("ERRORS");
       }
@@ -1568,27 +1568,36 @@ $(document).on("click", ".confirm-void", function() {
               transId  : transaction_.cards[i].transId
           })
           .then(function(obj){
+            all_done.push("voided");
             if (!obj.error) {
               console.log(obj.transMessage)
               console.log("Transaction Id:", obj.transId)
-              $("#" + elem_id).remove();
-              transaction_.cards[i].voidable = false;
-              transaction_.cards[i].voided = true;
-              transaction_.save(function(err){
-                  if (err){
-                      console.log("Error in updating Trans " + err)
-                  }
-                  else {
-                      console.log("Updated Existing Trans")
-                      if(i ==  transaction_.cards.length - 1)
-                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                  }
-              });
+
+              if(all_done.length ==  transaction_.cards.length && all_voided) {
+                for(var x = 0; x < transaction_.cards.length; x++) {
+                  console.log(transaction_.cards[x]);
+                  transaction_.cards[x].voidable = false;
+                  transaction_.cards[x].voided = true;
+                }
+                transaction_.save(function(err){
+                    if (err){
+                        console.log("Error in updating Trans " + err)
+                    }
+                    else {
+                        console.log("Updated Existing Trans")
+                        console.log(all_done.length);
+                        console.log(transaction_.cards.length);
+                    }
+                });
+                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
             }
             else {
                 console.log(obj.transMessage)
                 console.log("Error Code:", obj.transErrorCode)
                 console.log("Error Text:", obj.transErrorText)
+                all_voided = false;
+                all_done.push("not voided");
             }
           });
         }
@@ -1618,3 +1627,25 @@ function update_transaction_db() {
     }
   });
 }
+
+$(document).on("click", "#return-items", function() {
+  if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    scan_flag = 1;
+    current_page = "return.html";
+    prev_page = "handle_order.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
+    refocus();
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/return.html', 'utf-8') , {}));
+  }
+  else {
+    $('#modal8').openModal({
+      dismissible: true, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
