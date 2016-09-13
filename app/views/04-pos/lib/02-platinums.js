@@ -19,9 +19,9 @@ function alphabetize(list){
 
 /*
  * Get the stack , user input, and flag
- * I need it to access the last element in the stack, search the element for the user input, 
+ * I need it to access the last element in the stack, search the element for the user input,
  * put the searched strings into a new array and then put new array into the stack
- * If delete flag set, take the stack, pop the last element, proceed as normal 
+ * If delete flag set, take the stack, pop the last element, proceed as normal
 */
 function search_list(list, input, flag){
 	var searched = [];
@@ -67,7 +67,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 				 k == "9" || k == "0" || k == ";"){
 				//$('#enter-platinum').val( $('#enter-platinum').val().substring(0, $('#enter-platinum').val().length - 1) )
 				Materialize.toast("Please Enter a Valid Character", 5000)
-				
+
 				k = " "
 			}
 			if(k == "space"){
@@ -112,6 +112,8 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
+	current_page = "handle_order.html";
+	previous_page = "handle_order.html";
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 

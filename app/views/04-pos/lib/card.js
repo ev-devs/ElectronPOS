@@ -50,115 +50,68 @@ function handle_card() {
 	}
 }
 
-/*
-function start_transaction(cardInfo) {
-
-	var newTrans = new transaction();
+function handle_virtual_terminal() {
 	newTrans.chargeCreditCard({
-					cardnumber  : "4242424242424242",
-					expdate     : "0220",
+					cardnumber  : cardInfo.account, //"4242424242424242",
+					expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+					ccv         : "123", // this can be anything since we don't send this to auth net anyways
+					amount      : card_amt.toString()
+		}).then(function(obj){
 			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option
-				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+					// catches error from the server
+					if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
+							console.warn("There was an error getting a response from the server")
+							Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
+							setTimeout(function(){
+									$("#cancel").css("background-color", "red");
+									$("#confirm").css("background-color", "green");
+									confirm_flag = 0;
+									card_flag = 1;
+									cancel_flag = 0;
+									previous_flag = 1;
+									$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Trasaction Id:", obj.transId)
+							console.log("Authorization Code:", obj.transAuthCode)
+							/*If all the money was on the card then go to the printing option*/
+							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+					}
 			}
 			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
+					// catches error from the server
+					if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
+							console.warn('We did not get a response from the server!')
+							Materialize.toast('There was an error getting a response from the server', 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Error Code:", obj.transErrorCode)
+							console.log("Error Text:", obj.transErrorText)
+							Materialize.toast(obj.transMessage, 8000)
+							Materialize.toast(obj.transErrorText, 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
 			}
 		});
 }
-*//*
-var card_date;
-function card_trans(transAuthCode, transId, transMessage) {
-	cur_transaction.createCardTransaction(function(transaction){
-		let CardTrans = {
-			guid     : transaction.guid,
-			amount   : card_amt,
-			authCode : transAuthCode,
-			transId  : transId,
-			message  : transMessage,
-			cardType : "Harambe",
-			dateCreated : new Date(),
-			voidable : true,
-			voided   : false
-		}
-		transaction.cards.push(CardTrans);
-		transaction.payments++;
-	});
-
-	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		print_init();
-	}
-	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		card_flag = 0;
-		confirm_flag = 0;
-		update_price('~', card_amt, 0, 1)
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		previous_flag = 1;
-		$("#cancel").css("background-color", "red");
-	}
-}*/
-/*
-var card_date;
-function card_trans(transAuthCode, transId, transMessage) {
-	cur_transaction.createCardTransaction(function(transaction){
-		let CardTrans = {
-			guid     : transaction.guid,
-			amount   : card_amt,
-			authCode : transAuthCode,
-			transId  : transId,
-			message  : transMessage,
-			cardType : "Harambe",
-			dateCreated : new Date(),
-			voidable : true,
-			voided   : false
-		}
-		transaction.cards.push(CardTrans);
-		transaction.payments++;
-	});
-
-	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		//void_order(1);
-		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		print_init();
-	}
-	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		card_flag = 0;
-		confirm_flag = 0;
-		update_price('~', card_amt, 0, 1)
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		previous_flag = 1;
-		$("#cancel"%B6010569719163353^11027541/89^25010004000060084713           ?;6010569719163353=25010004000060084713?).css("background-color", "red");
-	}
-}
-*/
-/*function card_call_to_auth() {
-var newTrans = new transaction();
-newTrans.chargeCreditCard({
-		cardnumber  : "4242424242424242",
-		expdate     : "0220",
-		ccv         : "123",
-		amount      : card_amt.toString()
-	}).then(function(obj){
-		if (!obj.error){
-			console.log(obj.transMessage)
-			console.log("Trasaction Id:", obj.transId)
-			console.log("Authorization Code:", obj.transAuthCode)
-			/*If all the money was on the card then go to the printing option
-			card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-		}
-		else {
-			console.log(obj.transMessage)
-			console.log("Error Code:", obj.transErrorCode)
-			console.log("Error Text:", obj.transErrorText)
-		}
-	});
-}*/

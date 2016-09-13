@@ -54,6 +54,8 @@ $(document).on("click", ".void-all", function() {
   console.log(query);
 });
 
+var all_voided = true;
+var all_done = [];
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -62,6 +64,7 @@ $(document).on("click", ".confirm-void", function() {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
     Transaction.findOne({ guid : guid }, function(err, transaction_) {
+      console.log(transaction_.cards[j].transId);
       if(err) {
         console.log("ERRORS");
       }
@@ -72,7 +75,7 @@ $(document).on("click", ".confirm-void", function() {
         }).then(function(obj){
           if (!obj.error) {
             console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
+            console.log(obj.transId)
             $("#" + elem_id).remove();
             transaction_.cards[j].voidable = false;
             transaction_.cards[j].voided = true;
@@ -82,6 +85,11 @@ $(document).on("click", ".confirm-void", function() {
                 }
                 else {
                     console.log("Updated Existing Trans")
+                    $("#cancel").removeAttr("style");
+                    $("#confirm").removeAttr("style");
+                    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                    $("#cancel").text("Cancel");
+                    $("#confirm").text("Confirm");
                     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
                 }
             });
@@ -100,7 +108,6 @@ $(document).on("click", ".confirm-void", function() {
   }
   else if($(this).attr("id") == "confirm-void-all") {
     Transaction.findOne({ guid : query }, function(err, transaction_) {
-      console.log(transaction_);
       if(err) {
         console.log("ERRORS");
       }
@@ -112,27 +119,41 @@ $(document).on("click", ".confirm-void", function() {
               transId  : transaction_.cards[i].transId
           })
           .then(function(obj){
+            all_done.push("voided");
             if (!obj.error) {
               console.log(obj.transMessage)
               console.log("Transaction Id:", obj.transId)
-              $("#" + elem_id).remove();
-              transaction_.cards[i].voidable = false;
-              transaction_.cards[i].voided = true;
-              transaction_.save(function(err){
-                  if (err){
-                      console.log("Error in updating Trans " + err)
-                  }
-                  else {
-                      console.log("Updated Existing Trans")
-                      if(i ==  transaction_.cards.length - 1)
-                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                  }
-              });
+
+              if(all_done.length ==  transaction_.cards.length && all_voided) {
+                for(var x = 0; x < transaction_.cards.length; x++) {
+                  console.log(transaction_.cards[x]);
+                  transaction_.cards[x].voidable = false;
+                  transaction_.cards[x].voided = true;
+                }
+                transaction_.save(function(err){
+                    if (err){
+                        console.log("Error in updating Trans " + err)
+                    }
+                    else {
+                        console.log("Updated Existing Trans")
+                        console.log(all_done.length);
+                        console.log(transaction_.cards.length);
+                    }
+                });
+                $("#cancel").removeAttr("style");
+                $("#confirm").removeAttr("style");
+                /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                $("#cancel").text("Cancel");
+                $("#confirm").text("Confirm");
+                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
             }
             else {
                 console.log(obj.transMessage)
                 console.log("Error Code:", obj.transErrorCode)
                 console.log("Error Text:", obj.transErrorText)
+                all_voided = false;
+                all_done.push("not voided");
             }
           });
         }

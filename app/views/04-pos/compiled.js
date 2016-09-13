@@ -15,6 +15,7 @@ var exec            = require('child_process').exec
 const ipc = require('electron').ipcRenderer
 // Global variables
 var inventory = [];
+var inventory_simple = [];
 var inventory_query = [];
 var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
@@ -115,6 +116,7 @@ Platinum.find({}, function(err, leaders) {
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
+  fill_simple_inventory(inventory);
 });
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();
@@ -140,9 +142,9 @@ function alphabetize(list){
 
 /*
  * Get the stack , user input, and flag
- * I need it to access the last element in the stack, search the element for the user input, 
+ * I need it to access the last element in the stack, search the element for the user input,
  * put the searched strings into a new array and then put new array into the stack
- * If delete flag set, take the stack, pop the last element, proceed as normal 
+ * If delete flag set, take the stack, pop the last element, proceed as normal
 */
 function search_list(list, input, flag){
 	var searched = [];
@@ -188,7 +190,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 				 k == "9" || k == "0" || k == ";"){
 				//$('#enter-platinum').val( $('#enter-platinum').val().substring(0, $('#enter-platinum').val().length - 1) )
 				Materialize.toast("Please Enter a Valid Character", 5000)
-				
+
 				k = " "
 			}
 			if(k == "space"){
@@ -233,6 +235,8 @@ $(document).on("click", ".platinum", function() {
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
 	can_end_session = 0;
+	current_page = "handle_order.html";
+	previous_page = "handle_order.html";
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
 
@@ -294,7 +298,7 @@ $("#cancel").click(function() {
     else if(current_page == "card_input.html") {
       console.log("5");
       current_page = "card.html";
-      previous_page = "card_amt";
+      previous_page = "card_amt.html";
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
     }
     else if(current_page == "prev_trans.html") {
@@ -408,118 +412,71 @@ function handle_card() {
 	}
 }
 
-/*
-function start_transaction(cardInfo) {
-
-	var newTrans = new transaction();
+function handle_virtual_terminal() {
 	newTrans.chargeCreditCard({
-					cardnumber  : "4242424242424242",
-					expdate     : "0220",
+					cardnumber  : cardInfo.account, //"4242424242424242",
+					expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+					ccv         : "123", // this can be anything since we don't send this to auth net anyways
+					amount      : card_amt.toString()
+		}).then(function(obj){
 			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				/*If all the money was on the card then go to the printing option
-				card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
+					// catches error from the server
+					if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
+							console.warn("There was an error getting a response from the server")
+							Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
+							setTimeout(function(){
+									$("#cancel").css("background-color", "red");
+									$("#confirm").css("background-color", "green");
+									confirm_flag = 0;
+									card_flag = 1;
+									cancel_flag = 0;
+									previous_flag = 1;
+									$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Trasaction Id:", obj.transId)
+							console.log("Authorization Code:", obj.transAuthCode)
+							/*If all the money was on the card then go to the printing option*/
+							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+					}
 			}
 			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
+					// catches error from the server
+					if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
+							console.warn('We did not get a response from the server!')
+							Materialize.toast('There was an error getting a response from the server', 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Error Code:", obj.transErrorCode)
+							console.log("Error Text:", obj.transErrorText)
+							Materialize.toast(obj.transMessage, 8000)
+							Materialize.toast(obj.transErrorText, 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
 			}
 		});
 }
-*//*
-var card_date;
-function card_trans(transAuthCode, transId, transMessage) {
-	cur_transaction.createCardTransaction(function(transaction){
-		let CardTrans = {
-			guid     : transaction.guid,
-			amount   : card_amt,
-			authCode : transAuthCode,
-			transId  : transId,
-			message  : transMessage,
-			cardType : "Harambe",
-			dateCreated : new Date(),
-			voidable : true,
-			voided   : false
-		}
-		transaction.cards.push(CardTrans);
-		transaction.payments++;
-	});
-
-	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		print_init();
-	}
-	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		card_flag = 0;
-		confirm_flag = 0;
-		update_price('~', card_amt, 0, 1)
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		previous_flag = 1;
-		$("#cancel").css("background-color", "red");
-	}
-}*/
-/*
-var card_date;
-function card_trans(transAuthCode, transId, transMessage) {
-	cur_transaction.createCardTransaction(function(transaction){
-		let CardTrans = {
-			guid     : transaction.guid,
-			amount   : card_amt,
-			authCode : transAuthCode,
-			transId  : transId,
-			message  : transMessage,
-			cardType : "Harambe",
-			dateCreated : new Date(),
-			voidable : true,
-			voided   : false
-		}
-		transaction.cards.push(CardTrans);
-		transaction.payments++;
-	});
-
-	if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		//void_order(1);
-		//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-		print_init();
-	}
-	else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-		card_flag = 0;
-		confirm_flag = 0;
-		update_price('~', card_amt, 0, 1)
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		previous_flag = 1;
-		$("#cancel"%B6010569719163353^11027541/89^25010004000060084713           ?;6010569719163353=25010004000060084713?).css("background-color", "red");
-	}
-}
-*/
-/*function card_call_to_auth() {
-var newTrans = new transaction();
-newTrans.chargeCreditCard({
-		cardnumber  : "4242424242424242",
-		expdate     : "0220",
-		ccv         : "123",
-		amount      : card_amt.toString()
-	}).then(function(obj){
-		if (!obj.error){
-			console.log(obj.transMessage)
-			console.log("Trasaction Id:", obj.transId)
-			console.log("Authorization Code:", obj.transAuthCode)
-			/*If all the money was on the card then go to the printing option
-			card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-		}
-		else {
-			console.log(obj.transMessage)
-			console.log("Error Code:", obj.transErrorCode)
-			console.log("Error Text:", obj.transErrorText)
-		}
-	});
-}*/
 
 /***********************CASH.JS***********************/
 $("#yes-cash").click(function () {
@@ -600,6 +557,8 @@ $("#confirm").click(function() {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
+		else
+			refocus();
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
@@ -1020,19 +979,6 @@ function error_in_used() {
 }
 
 /***********************INVENTORY.JS***********************/
-/*var i_i = -1;
-
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
@@ -1042,7 +988,8 @@ $("#search").on( 'jpress', function(event , key){
 					query = new RegExp(query, "i");
 					inventory_query.splice(0, inventory_query.length);
 					$("#item_list").empty();
-					var i = -1
+					var i = -1;
+
 				  inventory.find(function(e) {
 						i++;
 						if(e.barcode != null) {
@@ -1103,6 +1050,14 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
+
+//For the young man named Kevin
+function fill_simple_inventory(_inventory) {
+	for(var i = 0; i < _inventory.length; i++) {
+		var combined_title = _inventory.title + "-" + _inventory.price + "-_" + i;
+		inventory_simple.push(combined_title);
+	}
+}
 
 /***********************JBOARD.JS***********************/
 function jboardify(id, type) {
@@ -1542,6 +1497,8 @@ $(document).on("click", ".void-all", function() {
   console.log(query);
 });
 
+var all_voided = true;
+var all_done = [];
 $(document).on("click", ".confirm-void", function() {
   current_platinum = "NONE";
   confirm_flag = 0;
@@ -1550,6 +1507,7 @@ $(document).on("click", ".confirm-void", function() {
     var guid = elem_id.substring(0, elem_id.search("_"));
     var j = Number(elem_id.substring(elem_id.search("_") + 1, elem_id.length));
     Transaction.findOne({ guid : guid }, function(err, transaction_) {
+      console.log(transaction_.cards[j].transId);
       if(err) {
         console.log("ERRORS");
       }
@@ -1560,7 +1518,7 @@ $(document).on("click", ".confirm-void", function() {
         }).then(function(obj){
           if (!obj.error) {
             console.log(obj.transMessage)
-            console.log("Transaction Id:", obj.transId)
+            console.log(obj.transId)
             $("#" + elem_id).remove();
             transaction_.cards[j].voidable = false;
             transaction_.cards[j].voided = true;
@@ -1570,6 +1528,11 @@ $(document).on("click", ".confirm-void", function() {
                 }
                 else {
                     console.log("Updated Existing Trans")
+                    $("#cancel").removeAttr("style");
+                    $("#confirm").removeAttr("style");
+                    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                    $("#cancel").text("Cancel");
+                    $("#confirm").text("Confirm");
                     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
                 }
             });
@@ -1588,7 +1551,6 @@ $(document).on("click", ".confirm-void", function() {
   }
   else if($(this).attr("id") == "confirm-void-all") {
     Transaction.findOne({ guid : query }, function(err, transaction_) {
-      console.log(transaction_);
       if(err) {
         console.log("ERRORS");
       }
@@ -1600,27 +1562,41 @@ $(document).on("click", ".confirm-void", function() {
               transId  : transaction_.cards[i].transId
           })
           .then(function(obj){
+            all_done.push("voided");
             if (!obj.error) {
               console.log(obj.transMessage)
               console.log("Transaction Id:", obj.transId)
-              $("#" + elem_id).remove();
-              transaction_.cards[i].voidable = false;
-              transaction_.cards[i].voided = true;
-              transaction_.save(function(err){
-                  if (err){
-                      console.log("Error in updating Trans " + err)
-                  }
-                  else {
-                      console.log("Updated Existing Trans")
-                      if(i ==  transaction_.cards.length - 1)
-                      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
-                  }
-              });
+
+              if(all_done.length ==  transaction_.cards.length && all_voided) {
+                for(var x = 0; x < transaction_.cards.length; x++) {
+                  console.log(transaction_.cards[x]);
+                  transaction_.cards[x].voidable = false;
+                  transaction_.cards[x].voided = true;
+                }
+                transaction_.save(function(err){
+                    if (err){
+                        console.log("Error in updating Trans " + err)
+                    }
+                    else {
+                        console.log("Updated Existing Trans")
+                        console.log(all_done.length);
+                        console.log(transaction_.cards.length);
+                    }
+                });
+                $("#cancel").removeAttr("style");
+                $("#confirm").removeAttr("style");
+                /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                $("#cancel").text("Cancel");
+                $("#confirm").text("Confirm");
+                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
             }
             else {
                 console.log(obj.transMessage)
                 console.log("Error Code:", obj.transErrorCode)
                 console.log("Error Text:", obj.transErrorText)
+                all_voided = false;
+                all_done.push("not voided");
             }
           });
         }

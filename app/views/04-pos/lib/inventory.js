@@ -1,17 +1,4 @@
 /***********************INVENTORY.JS***********************/
-/*var i_i = -1;
-
-var inventory_item = function(item) {
-	i_i++;
-	if(item.barcode != null) {
-		if((item.title.search(query) != -1) || (item.barcode.search(query) != -1)) {
-			var item = Object.assign({}, item)
-			inventory_query.push(item);
-			item.title+=("-_" + i_i);
-		}
-	}
-}
-*/
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
@@ -21,7 +8,8 @@ $("#search").on( 'jpress', function(event , key){
 					query = new RegExp(query, "i");
 					inventory_query.splice(0, inventory_query.length);
 					$("#item_list").empty();
-					var i = -1
+					var i = -1;
+
 				  inventory.find(function(e) {
 						i++;
 						if(e.barcode != null) {
@@ -82,3 +70,11 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	refocus();
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
+
+//For the young man named Kevin
+function fill_simple_inventory(_inventory) {
+	for(var i = 0; i < _inventory.length; i++) {
+		var combined_title = _inventory.title + "-" + _inventory.price + "-_" + i;
+		inventory_simple.push(combined_title);
+	}
+}
