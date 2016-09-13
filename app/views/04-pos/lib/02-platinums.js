@@ -107,6 +107,7 @@ $(document).on("click", ".platinum", function() {
   }
 	confirm_flag = 1;
 	scan_flag = 1;
+	user_input = "";
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
@@ -118,7 +119,7 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
-		user_input = ""
+		user_input = "";
 		$('#enter-platinum').remove()
 		$('#enter-platinum-modal').remove()
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));

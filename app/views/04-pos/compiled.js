@@ -21,6 +21,8 @@ var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
 var user_input = ""; // user_input for platinums search
 var searched_leaders = []; //modified array of searched leaders
+var platinums_stack = [];
+var delete_flag = 0;
 var list_names = [];
 var a_list = [];
 var cur_transaction = {};
@@ -133,24 +135,47 @@ function alphabetize(list){
 		leaders_list.push(name.trim());
 	}
 	leaders_list.sort();
+	platinums_stack.push(leaders_list);
 }
 
-function search_list(list, input){
+/*
+ * Get the stack , user input, and flag
+ * I need it to access the last element in the stack, search the element for the user input, 
+ * put the searched strings into a new array and then put new array into the stack
+ * If delete flag set, take the stack, pop the last element, proceed as normal 
+*/
+function search_list(list, input, flag){
 	var searched = [];
+	if(list.length <= 0){
+		console.log("WARNING: EMPTY PLATINUMS STACK")
+	}
+	if(flag == 1){
+		list.pop()
+	}
+	var last_from_stack = list[list.length -1]
+	console.log(last_from_stack)
 	var Reg_input = new RegExp(input, "i")
-	for(i = 0; i < list.length; i++){
-		if(list[i].search(Reg_input) != -1){
-			searched.push(list[i]);
+	for(i = 0; i < last_from_stack.length; i++){
+		if(last_from_stack[i].search(Reg_input) != -1){
+			searched.push(last_from_stack[i]);
 		}
 	}
-	return searched
+	if(flag == 0){
+		list.push(searched)
+		return searched
+	}
+	else{
+		flag = 0;
+		return searched;
+	}
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-	console.log(leaders_list)
+   console.log(platinums_stack[0]);
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
 			user_input = user_input.substring(0,user_input.length - 1)
+			delete_flag = 1;
 		}
 		else{
 			var k = key
@@ -161,20 +186,26 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 				 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
 				 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
 				 k == "9" || k == "0" || k == ";"){
-				Materialize.toast("Please Enter a Valid Character", 1000)
+				//$('#enter-platinum').val( $('#enter-platinum').val().substring(0, $('#enter-platinum').val().length - 1) )
+				Materialize.toast("Please Enter a Valid Character", 5000)
+				
 				k = " "
 			}
 			if(k == "space"){
 				k = " "
 			}
 			user_input = user_input + k
+			delete_flag = 0;
 		}
 		if(user_input != ""){
-			searched_leaders = search_list(leaders_list, user_input)
+			searched_leaders = search_list(platinums_stack, user_input, delete_flag)
 			display_list(searched_leaders);
 		}
 		else if(user_input == ""){
 			$("#platinums-list").empty();
+			platinums_stack = [];
+			platinums_stack.push(leaders_list)
+			delete_flag = 0;
 		}
 	}
 });
@@ -197,6 +228,7 @@ $(document).on("click", ".platinum", function() {
   }
 	confirm_flag = 1;
 	scan_flag = 1;
+	user_input = "";
   current_platinum = $(this).attr("id");
   $("#" + current_platinum).addClass("green lighten-3");
 	refocus();
@@ -208,7 +240,7 @@ $("#platinum").click(function() {
 	if(current_platinum != "NONE" && confirm_flag == 1) {
 		current_platinum = "NONE";
 		confirm_flag = 0;
-		user_input = ""
+		user_input = "";
 		$('#enter-platinum').remove()
 		$('#enter-platinum-modal').remove()
 		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
