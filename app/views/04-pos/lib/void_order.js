@@ -85,6 +85,11 @@ $(document).on("click", ".confirm-void", function() {
                 }
                 else {
                     console.log("Updated Existing Trans")
+                    $("#cancel").removeAttr("style");
+                    $("#confirm").removeAttr("style");
+                    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                    $("#cancel").text("Cancel");
+                    $("#confirm").text("Confirm");
                     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
                 }
             });
@@ -135,6 +140,11 @@ $(document).on("click", ".confirm-void", function() {
                         console.log(transaction_.cards.length);
                     }
                 });
+                $("#cancel").removeAttr("style");
+                $("#confirm").removeAttr("style");
+                /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                $("#cancel").text("Cancel");
+                $("#confirm").text("Confirm");
                 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
               }
             }

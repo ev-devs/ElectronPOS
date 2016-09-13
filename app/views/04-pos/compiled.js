@@ -116,8 +116,9 @@ Platinum.find({}, function(err, leaders) {
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
+  fill_simple_inventory(inventory);
 });
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();
 
 /***********************PLATINUMS.JS***********************/
@@ -600,6 +601,8 @@ $("#confirm").click(function() {
         $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
       }
     }
+		else
+			refocus();
   }
 	/*To complete a card transaction, the confirm button must be pressed. If the confirm button is pressed while
 	the cash flag is raised then the confirm will Correspond to only a cahs confirm*/
@@ -935,79 +938,6 @@ function fade_out() {
 
  $(".button-collapse").sideNav();
 
-/***********************INVENTORY.JS***********************/
-var search_param = "";
-$("#search").on( 'jpress', function(event , key){
-		if(current_platinum != "NONE") {
-			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1;
-
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				}
-			}
-		}
-		else {
-			error_platinum();
-		}
-});
-
-$(document).on("click",  ".item", function() {
-  $("#selected_item").text($($(this).children()[0]).text().trim());
-  $("#selected_item").removeClass();
-  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
-	search_param = Number($($(this).children()[0]).attr("id"))
-	$('#modal3').openModal({
-		dismissible: false, // Modal can be dismissed by clicking outside of the modal
-		opacity: .5, // Opacity of modal background
-		in_duration: 300, // Transition in duration
-		out_duration: 200, // Transition out duration
-	});
-});
-
-$(document).on("click",  "#confirm_item_selection", function() {
-	var quantity = $("#selected_item_qnt").val();
-	var barcode = inventory[search_param].barcode;
-	if(quantity != 0 && quantity != "") {
-		//var i = -1
-		var i = find_in_customer_list("barcode", barcode)
-			if(i != -1/*undefined*/) {
-				item_list[i].cust_quantity+=Number(quantity);
-				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
-			}
-			else {
-				var item = inventory[Number($("#selected_item").attr("class"))]
-				item['cust_quantity'] = Number(quantity);
-				item_list.push(item);
-				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
-				f = 1;
-			}
-		}
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-	refocus();
-});
-
-$(document).on("click",  "#cancel_item_selection", function() {
-	refocus();
-	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
-});
-
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
@@ -1090,6 +1020,87 @@ function error_in_used() {
         in_duration: 300, // Transition in duration
         out_duration: 200, // Transition out duration
     });
+}
+
+/***********************INVENTORY.JS***********************/
+var search_param = "";
+$("#search").on( 'jpress', function(event , key){
+		if(current_platinum != "NONE") {
+			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1;
+
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
+			}
+		}
+		else {
+			error_platinum();
+		}
+});
+
+$(document).on("click",  ".item", function() {
+  $("#selected_item").text($($(this).children()[0]).text().trim());
+  $("#selected_item").removeClass();
+  $("#selected_item").addClass($($(this).children()[0]).attr("id"));
+	search_param = Number($($(this).children()[0]).attr("id"))
+	$('#modal3').openModal({
+		dismissible: false, // Modal can be dismissed by clicking outside of the modal
+		opacity: .5, // Opacity of modal background
+		in_duration: 300, // Transition in duration
+		out_duration: 200, // Transition out duration
+	});
+});
+
+$(document).on("click",  "#confirm_item_selection", function() {
+	var quantity = $("#selected_item_qnt").val();
+	var barcode = inventory[search_param].barcode;
+	if(quantity != 0 && quantity != "") {
+		//var i = -1
+		var i = find_in_customer_list("barcode", barcode)
+			if(i != -1/*undefined*/) {
+				item_list[i].cust_quantity+=Number(quantity);
+				add_item(i, Number($("#selected_item").attr("class")), quantity, 0)
+			}
+			else {
+				var item = inventory[Number($("#selected_item").attr("class"))]
+				item['cust_quantity'] = Number(quantity);
+				item_list.push(item);
+				add_item(item_list.length - 1, Number($("#selected_item").attr("class")), quantity, 1);
+				f = 1;
+			}
+		}
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+	refocus();
+});
+
+$(document).on("click",  "#cancel_item_selection", function() {
+	refocus();
+	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+});
+
+//For the young man named Kevin
+function fill_simple_inventory(_inventory) {
+	for(var i = 0; i < _inventory.length; i++) {
+		var combined_title = _inventory.title + "-" + _inventory.price + "-_" + i;
+		inventory_simple.push(combined_title);
+	}
 }
 
 /***********************JBOARD.JS***********************/
@@ -1230,6 +1241,28 @@ function printTheOrder(guid){
         }
     })
 }
+
+$(document).on("click", "#return-items", function() {
+  if(can_end_session == 1) {
+    current_platinum = "NON";
+    confirm_flag = 1;
+    scan_flag = 1;
+    current_page = "return.html";
+    prev_page = "handle_order.html";
+    $("#cancel").css("background-color", "red");
+    $("#cancel").text("Back");
+    refocus();
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/return.html', 'utf-8') , {}));
+  }
+  else {
+    $('#modal8').openModal({
+      dismissible: true, // Modal can be dismissed by clicking outside of the modal
+      opacity: .5, // Opacity of modal background
+      in_duration: 300, // Transition in duration
+      out_duration: 200, // Transition out duration
+    });
+  }
+});
 
 /***********************SCAN.JS***********************/
 
@@ -1539,6 +1572,11 @@ $(document).on("click", ".confirm-void", function() {
                 }
                 else {
                     console.log("Updated Existing Trans")
+                    $("#cancel").removeAttr("style");
+                    $("#confirm").removeAttr("style");
+                    /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                    $("#cancel").text("Cancel");
+                    $("#confirm").text("Confirm");
                     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
                 }
             });
@@ -1589,6 +1627,11 @@ $(document).on("click", ".confirm-void", function() {
                         console.log(transaction_.cards.length);
                     }
                 });
+                $("#cancel").removeAttr("style");
+                $("#confirm").removeAttr("style");
+                /*Sets the confirm flag back to one to denote that a normal completion can happen*/
+                $("#cancel").text("Cancel");
+                $("#confirm").text("Confirm");
                 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
               }
             }
@@ -1627,25 +1670,3 @@ function update_transaction_db() {
     }
   });
 }
-
-$(document).on("click", "#return-items", function() {
-  if(can_end_session == 1) {
-    current_platinum = "NON";
-    confirm_flag = 1;
-    scan_flag = 1;
-    current_page = "return.html";
-    prev_page = "handle_order.html";
-    $("#cancel").css("background-color", "red");
-    $("#cancel").text("Back");
-    refocus();
-    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/return.html', 'utf-8') , {}));
-  }
-  else {
-    $('#modal8').openModal({
-      dismissible: true, // Modal can be dismissed by clicking outside of the modal
-      opacity: .5, // Opacity of modal background
-      in_duration: 300, // Transition in duration
-      out_duration: 200, // Transition out duration
-    });
-  }
-});

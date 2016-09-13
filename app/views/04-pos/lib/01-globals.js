@@ -118,5 +118,5 @@ Inventory.find({}, function(err, _inventory) {
   inventory = _inventory;
   fill_simple_inventory(inventory);
 });
-$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
+$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/print.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();

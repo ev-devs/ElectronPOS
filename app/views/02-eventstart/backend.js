@@ -136,9 +136,3 @@ function validate_event(_type, _event, _code) {
     });
   });
 }
-/*
-ipc.on('event-validaton-success-reply', function (event, arg) {
-  const message = `Asynchronous message reply: ${arg}`
-  console.log('we have the message! ' + message)
-});
-*/
