@@ -45,7 +45,7 @@ $("#cancel").click(function() {
     else if(current_page == "card_input.html") {
       console.log("5");
       current_page = "card.html";
-      previous_page = "card_amt";
+      previous_page = "card_amt.html";
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
     }
     else if(current_page == "prev_trans.html") {
