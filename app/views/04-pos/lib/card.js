@@ -51,5 +51,67 @@ function handle_card() {
 }
 
 function handle_virtual_terminal() {
-	
+	newTrans.chargeCreditCard({
+					cardnumber  : cardInfo.account, //"4242424242424242",
+					expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+					ccv         : "123", // this can be anything since we don't send this to auth net anyways
+					amount      : card_amt.toString()
+		}).then(function(obj){
+			if (!obj.error){
+					// catches error from the server
+					if (obj.transMessage == null &&  obj.transId == null && obj.transAuthCode == null){
+							console.warn("There was an error getting a response from the server")
+							Materialize.toast('There was an error getting a response from the server', 8000) // 4000 is the duration of the toast
+							setTimeout(function(){
+									$("#cancel").css("background-color", "red");
+									$("#confirm").css("background-color", "green");
+									confirm_flag = 0;
+									card_flag = 1;
+									cancel_flag = 0;
+									previous_flag = 1;
+									$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Trasaction Id:", obj.transId)
+							console.log("Authorization Code:", obj.transAuthCode)
+							/*If all the money was on the card then go to the printing option*/
+							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+					}
+			}
+			else {
+					// catches error from the server
+					if (obj.transMessage == null && obj.transErrorCode == null && obj.transErrorText == null){
+							console.warn('We did not get a response from the server!')
+							Materialize.toast('There was an error getting a response from the server', 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
+					else {
+							console.log(obj.transMessage)
+							console.log("Error Code:", obj.transErrorCode)
+							console.log("Error Text:", obj.transErrorText)
+							Materialize.toast(obj.transMessage, 8000)
+							Materialize.toast(obj.transErrorText, 8000)
+							setTimeout(function(){
+								$("#cancel").css("background-color", "red");
+								$("#confirm").css("background-color", "green");
+								confirm_flag = 0;
+								card_flag = 1;
+								cancel_flag = 0;
+								previous_flag = 1;
+								$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
+							}, 3000)
+					}
+			}
+		});
 }
