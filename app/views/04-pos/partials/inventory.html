@@ -12,12 +12,14 @@
               else if(typeof query_results[result] == "string"){
                 var string_result = query_results[result]
                 var item_name = string_result.substring(0, string_result.search("-_"))
-                var inventory_place = string_result.substring(string_result.search("-_") + 2, string_result.length);
+                var inventory_place = string_result.substring(string_result.search("-_") + 2, string_result.length); %>
+                <a href="#!" class="collection-item item" id="<%=inventory_place%>"><span > <%= item_name %> </span></a>
+                <%
               }
 
 
           %>
-        <a href="#!" class="collection-item item" id="<%=inventory_place%>"><span > <%= item_name %> </span></a>
+        <!--<a href="#!" class="collection-item item" id="<%=inventory_place%>"><span > <%= item_name %> </span></a>-->
         <%}%>
       </div>
     </div>

@@ -95,8 +95,11 @@ $(document).on("click", ".confirm-void", function() {
             });
           }
           else {
+              Materialize.toast("There was an error getting a response from the server", 3000)
               setTimeout(function() {
-
+                $("#cancel").css("background-color", "red");
+                $("#confirm").css("background-color", "green");
+                $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
               }, 3000)
               console.log(obj.transMessage)
               console.log("Error Code:", obj.transErrorCode)
