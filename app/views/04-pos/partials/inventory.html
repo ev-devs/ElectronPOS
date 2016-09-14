@@ -3,8 +3,8 @@
     <div id="inventory-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll">
       <div class="collection" id="item-list" >
         <%for(result in query_results) {
-          var item_name = result.substring(0, result.find("-_"));
-          var inventory_place = result.substring(item.search("-_") + 2, item.length);
+          var item_name = result.substring(0, result.search("-_"));
+          var inventory_place = result.substring(result.search("-_") + 2, item.length);
           %>
         <a href="#!" class="collection-item item"><span id="<%=inventory_place%>">item_name</span></a>
         <!--<%=item_name%></span>-$<span id="item_price"><%=query_results[result][1]%></span>-->

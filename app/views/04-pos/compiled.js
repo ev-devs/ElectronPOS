@@ -525,6 +525,64 @@ function card_trans(transAuthCode, transId, transMessage, name, digits, card_typ
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
 }
 
+/***********************CASH.JS***********************/
+$("#yes-cash").click(function () {
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	print_init();
+});
+
+/*Renders the necessary partial for completing orders with cash.*/
+$(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
+  cash_flag = 1;
+	previous_page = "pay_choice.html";
+	current_page = "cash.html"
+	colorfy();
+	$('#tendered-modal').remove()
+	/*Renders the html file necessary to handle cash transactions*/
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+});
+
+function handle_cash() {
+	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+	cash_trans();
+	/*Renders the html file necessary to denote the transaction is complete*/
+	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+		$('#modal6').openModal({
+			dismissible: true, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
+	}
+	else {
+		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+		cash_flag = 0;
+		confirm_flag = 0;
+		$("#cancel").removeAttr("style");
+		$("#confirm").removeAttr("style");
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		$("#cancel").css("background-color", "red");
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+	}
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
+	});
+}
+
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
@@ -644,64 +702,6 @@ function init_transaction() {
 
 				transaction.items.push(item);
 			}
-	});
-}
-
-/***********************CASH.JS***********************/
-$("#yes-cash").click(function () {
-	//void_order(1);
-	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	print_init();
-});
-
-/*Renders the necessary partial for completing orders with cash.*/
-$(document).on("click", "#cash", function () {
-	/*Sets the cash flag to true to denote a cash transaction is in process*/
-  cash_flag = 1;
-	previous_page = "pay_choice.html";
-	current_page = "cash.html"
-	colorfy();
-	$('#tendered-modal').remove()
-	/*Renders the html file necessary to handle cash transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
-function handle_cash() {
-	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cash_trans();
-	/*Renders the html file necessary to denote the transaction is complete*/
-	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-		$('#modal6').openModal({
-			dismissible: true, // Modal can be dismissed by clicking outside of the modal
-			opacity: .5, // Opacity of modal background
-			in_duration: 300, // Transition in duration
-			out_duration: 200, // Transition out duration
-		});
-	}
-	else {
-		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-		cash_flag = 0;
-		confirm_flag = 0;
-		$("#cancel").removeAttr("style");
-		$("#confirm").removeAttr("style");
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		$("#cancel").css("background-color", "red");
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-	}
-}
-
-function cash_trans(){
-	cur_transaction.createCashTransaction(function(transaction){
-
-			let CashTrans = {
-				guid 			: transaction.guid,
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
-				dateCreated : new Date()
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
 	});
 }
 
@@ -869,6 +869,42 @@ ipc.on('ibo-session-end-reply', function (event, arg) {
   console.log(message)
   window.location.assign('../03-beginsession/index.html')
 })
+
+/***********************FRONTEND.JS***********************/
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
 
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
@@ -1076,42 +1112,6 @@ function fill_simple_inventory(_inventory_) {
 	console.log(inventory_simple);
 	inventory_stack.push(inventory_simple)
 }
-
-/***********************FRONTEND.JS***********************/
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
-
-
- $(".button-collapse").sideNav();
 
 /***********************JBOARD.JS***********************/
 function jboardify(id, type) {
