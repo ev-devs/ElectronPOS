@@ -139,7 +139,8 @@ function card_trans(transAuthCode, transId, transMessage, name, digits, card_typ
             cardType : card_type,
             dateCreated : new Date(),
             voidable : true,
-            voided   : false
+            voided   : false,
+						signature : "NONE"
         }
         transaction.cards.push(CardTrans);
         transaction.payments++;

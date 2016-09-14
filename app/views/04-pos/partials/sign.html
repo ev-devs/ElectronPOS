@@ -31,10 +31,8 @@ function acceptSignature() {
     }
     else {
         console.log ( signaturePad.toDataURL() )
-        console.log(card_amt);
-        console.log(cur_transaction);
-
         if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
+            cur_transaction.cards[cur_transaction.cards.length - 1].signature = signaturePad.toDataURL();
             print_init();
         }
         else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
@@ -46,9 +44,11 @@ function acceptSignature() {
             previous_page = "handle_order.html";
             previous_flag = 1;
             $("#cancel").css("background-color", "red");
+            cur_transaction.cards[cur_transaction.cards.length - 1].signature = signaturePad.toDataURL();
         }
         $("#cancel").text("Cancel");
         $("#confirm").text("Confirm");
+        console.log("PNG DATA" + cur_transaction.cards[cur_transaction.cards.length - 1].signature)
     }
 }
 

@@ -11,7 +11,8 @@ var Card = new mongoose.Schema({
     cardType    : { type : String, required : true },
     dateCreated : { type : Date,   required : true },
     voidable    : { type : Boolean, required : true },
-    voided      : { type : Boolean, required : true }
+    voided      : { type : Boolean, required : true },
+    signature   : { type : String }
 })
 
 var CardTrans = TransactionConnection.model('CardTrans', Card);

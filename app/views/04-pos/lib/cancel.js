@@ -82,6 +82,14 @@ $("#cancel").click(function() {
       previous_page = "select_platinums.html"
       $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {}));
     }
+    else if(current_page == "inventory.html") {
+      console.log("10");
+      current_page = "handle_order.html";
+      previous_page = "handle_order.html";
+      $("#cancel").removeAttr("style");
+      $("#cancel").text("cancel");
+      $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/' + current_page, 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
+    }
 	}
   else if($("#cancel").text() == "Clear") {
     console.log("We cleared");

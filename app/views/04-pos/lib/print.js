@@ -103,23 +103,24 @@ function printTheOrder(guid){
             stream.write('EndCards\n\n')
 
             stream.end()
-
+            console.log("WRITE END");
             exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
+                console.log("EXEC BEGIN");
                 if (error){
                     console.error('ERROR running python script')
-		    Materialize.toast(error, 100000)
+		                Materialize.toast(error, 100000)
                     console.log(error)
-	            return
+	                   return
                 }
-		if (stderr){
-		    console.error("Error on runtime of python print script")
-		    console.error(stderr)
-		}
+		            if (stderr){
+		                console.error("Error on runtime of python print script")
+		                console.error(stderr)
+		            }
                 if (stdout) {
-        	    console.error("Everything SEEMS fine");
-		            console.log(stdout)
-    		}
-
+        	         console.error("Everything SEEMS fine");
+		                 console.log(stdout)
+    		       }
+               console.log(error, stderr, stdout);
             })
         }
     })
