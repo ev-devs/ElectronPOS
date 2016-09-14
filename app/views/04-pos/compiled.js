@@ -9,8 +9,9 @@ var mongoose        = require('mongoose');
 var _               = require("underscore");
 var transaction     = require('../../lib/create_transaction.js');
 var HashTable       = require('hashtable');
-var fs              = require('fs')
-var exec            = require('child_process').exec
+var fs              = require('fs');
+var exec            = require('child_process').exec;
+var creditCardValidator = require('credit-card-validator');
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 // Global variables
@@ -179,7 +180,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 			user_input = user_input.substring(0,user_input.length - 1)
 			delete_flag = 1;
 		}
-		else{
+		else {
 			var k = key
 			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
 				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
@@ -412,10 +413,19 @@ function handle_card() {
 	}
 }
 
+var card_type;
+var card_holder;
+var card_num;
+var card_exp;
 function handle_virtual_terminal() {
+	card_type = creditCardValidator.getCardName($("#card_num").val());
+	card_holder = $("#first_name").val() + " " + $("#last_name").val();
+	card_num = $("#card_num").val();
+	card_exp = $("#m_exp").val() + $("#y_exp").val();
+	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
-					cardnumber  : cardInfo.account, //"4242424242424242",
-					expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+					cardnumber  : card_num, //"4242424242424242",
+					expdate     : card_exp, //"0220",
 					ccv         : "123", // this can be anything since we don't send this to auth net anyways
 					amount      : card_amt.toString()
 		}).then(function(obj){
@@ -440,7 +450,9 @@ function handle_virtual_terminal() {
 							console.log("Trasaction Id:", obj.transId)
 							console.log("Authorization Code:", obj.transAuthCode)
 							/*If all the money was on the card then go to the printing option*/
-							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+							card_flag = 0;
+							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, card_holder, card_num, card_type);
+							card_num = "";
 					}
 			}
 			else {
@@ -476,6 +488,29 @@ function handle_virtual_terminal() {
 					}
 			}
 		});
+}
+function card_trans(transAuthCode, transId, transMessage, name, digits, card_type) {
+    cur_transaction.createCardTransaction(function(transaction){
+        let CardTrans = {
+            guid     : transaction.guid,
+            amount   : card_amt,
+            card_holder : name,
+            digits : digits.substring(digits.length - 4, digits.length), //Stores last 4 digits
+            authCode : transAuthCode,
+            transId  : transId,
+            message  : transMessage,
+            cardType : card_type,
+            dateCreated : new Date(),
+            voidable : true,
+            voided   : false
+        }
+        transaction.cards.push(CardTrans);
+        transaction.payments++;
+    });
+    $("#cancel").text("Clear");
+    $("#confirm").text("Accept");
+
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
 }
 
 /***********************CASH.JS***********************/
@@ -576,8 +611,28 @@ $("#confirm").click(function() {
   }
 	else if(card_flag) {
 		console.log("D");
-		if(current_page != "card.html")
+		if(current_page != "card.html" && current_page != "card_input.html")
 			handle_card();
+		else if (current_page == "card_input.html") {
+			if($("#card_type").val() != "" && $("#first_name").val() != ""
+			&& $("#last_name").val() != "" && $("#card_num").val() != ""
+			&& $("#m_exp").val() != "" && $("#y_exp").val()) {
+				if(isNaN($("#m_exp").val()) || isNaN($("#y_exp").val())) {
+					Materialize.toast('Please input a proper date!', 3000)
+				}
+			  else if(isNaN($("#card_num").val())) {
+					Materialize.toast('Please input a proper card number!', 3000)
+				}
+				else {
+					handle_virtual_terminal();
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
+				}
+			}
+			else {
+				Materialize.toast('Please input all the proper fields!', 3000)
+			}
+		}
+
 	}
 	else if($("#confirm").text() == "Accept") {
 		console.log("E");
@@ -637,61 +692,6 @@ function init_transaction() {
 			}
 	});
 }
-/*console.log("card flag");
-if(current_page == "card_input.html") {
-	console.log("JUAN");
-	if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
-	console.log("JUANA")
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-					cardnumber  : "4242424242424242",
-					expdate     : "0220",
-					ccv         : "123",
-					amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				//card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-				cur_transaction.createCardTransaction(function(transaction){
-					let CardTrans = {
-						guid     : transaction.guid,
-						amount   : card_amt,
-						authCode : obj.transAuthCode,
-						transId  : obj.transId,
-						message  : obj.transMessage,
-						cardType : "Harambe",
-						dateCreated : new Date(),
-						voidable : true,
-						voided   : false
-					}
-					transaction.cards.push(CardTrans);
-					transaction.payments++;
-				});
-
-				if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					print_init();
-				}
-				else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					card_flag = 0;
-					confirm_flag = 0;
-					update_price('~', card_amt, 0, 1)
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-					current_page = "pay_choice.html";
-					previous_page = "handle_order.html";
-					previous_flag = 1;
-					$("#cancel").css("background-color", "red");
-				}
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		})
-	}
-	*/
 
 /***********************DELETE.JS***********************/
 /*When a finger is on the screen and on an item record the start point.
@@ -945,6 +945,10 @@ function void_order(full_void) {
       previous_page = "1";
       current_page = "2";
       cur_transaction = {};
+      user_input = "";
+      /*searched_leaders = []; //modified array of searched leaders
+      platinums_stack = [];*/
+      delete_flag = 0;
       //setTimeout(function() {
           $('#enter-platinum').remove()
           $('#enter-platinum-modal').remove()

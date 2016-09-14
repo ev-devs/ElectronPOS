@@ -49,6 +49,10 @@ function void_order(full_void) {
       previous_page = "1";
       current_page = "2";
       cur_transaction = {};
+      user_input = "";
+      /*searched_leaders = []; //modified array of searched leaders
+      platinums_stack = [];*/
+      delete_flag = 0;
       //setTimeout(function() {
           $('#enter-platinum').remove()
           $('#enter-platinum-modal').remove()

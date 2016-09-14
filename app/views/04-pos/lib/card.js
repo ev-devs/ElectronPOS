@@ -50,10 +50,19 @@ function handle_card() {
 	}
 }
 
+var card_type;
+var card_holder;
+var card_num;
+var card_exp;
 function handle_virtual_terminal() {
+	card_type = creditCardValidator.getCardName($("#card_num").val());
+	card_holder = $("#first_name").val() + " " + $("#last_name").val();
+	card_num = $("#card_num").val();
+	card_exp = $("#m_exp").val() + $("#y_exp").val();
+	var newTrans = new transaction();
 	newTrans.chargeCreditCard({
-					cardnumber  : cardInfo.account, //"4242424242424242",
-					expdate     : cardInfo.expMonth + cardInfo.expYear, //"0220",
+					cardnumber  : card_num, //"4242424242424242",
+					expdate     : card_exp, //"0220",
 					ccv         : "123", // this can be anything since we don't send this to auth net anyways
 					amount      : card_amt.toString()
 		}).then(function(obj){
@@ -78,7 +87,9 @@ function handle_virtual_terminal() {
 							console.log("Trasaction Id:", obj.transId)
 							console.log("Authorization Code:", obj.transAuthCode)
 							/*If all the money was on the card then go to the printing option*/
-							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, name, digits);
+							card_flag = 0;
+							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, card_holder, card_num, card_type);
+							card_num = "";
 					}
 			}
 			else {
@@ -114,4 +125,27 @@ function handle_virtual_terminal() {
 					}
 			}
 		});
+}
+function card_trans(transAuthCode, transId, transMessage, name, digits, card_type) {
+    cur_transaction.createCardTransaction(function(transaction){
+        let CardTrans = {
+            guid     : transaction.guid,
+            amount   : card_amt,
+            card_holder : name,
+            digits : digits.substring(digits.length - 4, digits.length), //Stores last 4 digits
+            authCode : transAuthCode,
+            transId  : transId,
+            message  : transMessage,
+            cardType : card_type,
+            dateCreated : new Date(),
+            voidable : true,
+            voided   : false
+        }
+        transaction.cards.push(CardTrans);
+        transaction.payments++;
+    });
+    $("#cancel").text("Clear");
+    $("#confirm").text("Accept");
+
+    $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
 }

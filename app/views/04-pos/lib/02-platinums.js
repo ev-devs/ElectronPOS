@@ -26,10 +26,14 @@ function alphabetize(list){
 function search_list(list, input, flag){
 	var searched = [];
 	if(list.length <= 0){
-		console.log("WARNING: EMPTY PLATINUMS STACK")
+		console.log("WARNING: EMPTY STACK")
+	}
+	if(input == ""){
+		return [];
 	}
 	if(flag == 1){
 		list.pop()
+		return list[list.length - 1]
 	}
 	var last_from_stack = list[list.length -1]
 	console.log(last_from_stack)
@@ -56,7 +60,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 			user_input = user_input.substring(0,user_input.length - 1)
 			delete_flag = 1;
 		}
-		else{
+		else {
 			var k = key
 			if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
 				k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
@@ -82,6 +86,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 		}
 		else if(user_input == ""){
 			$("#platinums-list").empty();
+			searched_leaders = [];
 			platinums_stack = [];
 			platinums_stack.push(leaders_list)
 			delete_flag = 0;

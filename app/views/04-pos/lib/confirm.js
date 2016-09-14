@@ -38,8 +38,28 @@ $("#confirm").click(function() {
   }
 	else if(card_flag) {
 		console.log("D");
-		if(current_page != "card.html")
+		if(current_page != "card.html" && current_page != "card_input.html")
 			handle_card();
+		else if (current_page == "card_input.html") {
+			if($("#card_type").val() != "" && $("#first_name").val() != ""
+			&& $("#last_name").val() != "" && $("#card_num").val() != ""
+			&& $("#m_exp").val() != "" && $("#y_exp").val()) {
+				if(isNaN($("#m_exp").val()) || isNaN($("#y_exp").val())) {
+					Materialize.toast('Please input a proper date!', 3000)
+				}
+			  else if(isNaN($("#card_num").val())) {
+					Materialize.toast('Please input a proper card number!', 3000)
+				}
+				else {
+					handle_virtual_terminal();
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/process.html', 'utf-8') , { current: "Processing" }));
+				}
+			}
+			else {
+				Materialize.toast('Please input all the proper fields!', 3000)
+			}
+		}
+
 	}
 	else if($("#confirm").text() == "Accept") {
 		console.log("E");
@@ -99,58 +119,3 @@ function init_transaction() {
 			}
 	});
 }
-/*console.log("card flag");
-if(current_page == "card_input.html") {
-	console.log("JUAN");
-	if($("#first_name").val() != "" && $("#last_name").val() != "" && $("#m_exp").val() != "" && $("#y_exp").val() != "") {
-	console.log("JUANA")
-	var newTrans = new transaction();
-	newTrans.chargeCreditCard({
-					cardnumber  : "4242424242424242",
-					expdate     : "0220",
-					ccv         : "123",
-					amount      : card_amt.toString()
-		}).then(function(obj){
-			if (!obj.error){
-				console.log(obj.transMessage)
-				console.log("Trasaction Id:", obj.transId)
-				console.log("Authorization Code:", obj.transAuthCode)
-				//card_trans(obj.transAuthCode, obj.transId, obj.transMessage);
-				cur_transaction.createCardTransaction(function(transaction){
-					let CardTrans = {
-						guid     : transaction.guid,
-						amount   : card_amt,
-						authCode : obj.transAuthCode,
-						transId  : obj.transId,
-						message  : obj.transMessage,
-						cardType : "Harambe",
-						dateCreated : new Date(),
-						voidable : true,
-						voided   : false
-					}
-					transaction.cards.push(CardTrans);
-					transaction.payments++;
-				});
-
-				if(card_amt == Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					print_init();
-				}
-				else if(card_amt < Number(accounting.formatNumber(total, 2, ",").replace(/,/g, ""))) {
-					card_flag = 0;
-					confirm_flag = 0;
-					update_price('~', card_amt, 0, 1)
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-					current_page = "pay_choice.html";
-					previous_page = "handle_order.html";
-					previous_flag = 1;
-					$("#cancel").css("background-color", "red");
-				}
-			}
-			else {
-				console.log(obj.transMessage)
-				console.log("Error Code:", obj.transErrorCode)
-				console.log("Error Text:", obj.transErrorText)
-			}
-		})
-	}
-	*/

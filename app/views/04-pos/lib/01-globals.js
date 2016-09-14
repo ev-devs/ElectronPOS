@@ -9,14 +9,21 @@ var mongoose        = require('mongoose');
 var _               = require("underscore");
 var transaction     = require('../../lib/create_transaction.js');
 var HashTable       = require('hashtable');
-var fs              = require('fs')
-var exec            = require('child_process').exec
+var fs              = require('fs');
+var exec            = require('child_process').exec;
+var creditCardValidator = require('credit-card-validator');
 /*used to communicate with main process*/
 const ipc = require('electron').ipcRenderer
 // Global variables
 var inventory = [];
 var inventory_simple = [];
 var inventory_query = [];
+var inventory_input = ""; // user_input for inventory search
+var searched_inventory = []; //modified array of searched inventory
+var inventory_stack = [];  // stack of arrays for inventory
+var inventory_delete_flag = 0; //signals if delete key was pressed in inventory
+
+
 var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
