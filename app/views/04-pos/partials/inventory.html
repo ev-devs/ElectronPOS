@@ -2,12 +2,22 @@
   <div class="col s12">
     <div id="inventory-list-body" style="margin-top: 10px; margin-bottom: 10px; overflow-y: scroll">
       <div class="collection" id="item-list" >
-        <%for(result in query_results) {
-          var item_name = result.substring(0, result.search("-_"));
-          var inventory_place = result.substring(result.search("-_") + 2, item.length);
+        <%
+
+        for(result in query_results) {
+
+              if (typeof query_results[result] == "function"){
+                // do nothing
+              }
+              else if(typeof query_results[result] == "string"){
+                var string_result = query_results[result]
+                var item_name = string_result.substring(0, string_result.search("-_"))
+                var inventory_place = string_result.substring(string_result.search("-_") + 2, string_result.length);
+              }
+
+
           %>
-        <a href="#!" class="collection-item item"><span id="<%=inventory_place%>">item_name</span></a>
-        <!--<%=item_name%></span>-$<span id="item_price"><%=query_results[result][1]%></span>-->
+        <a href="#!" class="collection-item item"id="<%=inventory_place%>"><span > <%= item_name %> </span></a>
         <%}%>
       </div>
     </div>

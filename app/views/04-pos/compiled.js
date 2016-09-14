@@ -1005,7 +1005,7 @@ function error_in_used() {
 
 /***********************INVENTORY.JS***********************/
 var search_param = "";
-$("#search").on( 'jpress', function(event , key){
+$("#search").on('jpress', function(event, key){
 		if(current_platinum != "NONE") {
 			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
 				if(key == "delete"){
@@ -1025,14 +1025,14 @@ $("#search").on( 'jpress', function(event , key){
 					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
 					console.log("THIS IS THE SEARCHED INVENTORY vvvvvv")
 					console.log(searched_inventory);
-					
+
 					//display_list(searched_inventory);
 				}
 				else if(inventory_input == ""){
 					searched_inventory = [];
 					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
 					inventory_stack = [];
-					inventory_stack.push(leaders_list)
+					inventory_stack.push(inventory_simple)
 					inventory_delete_flag = 0;
 				}
 				//var query = $(this).val();
@@ -1054,7 +1054,7 @@ $("#search").on( 'jpress', function(event , key){
 							//}
 						//}
 					//});
-					
+
 				//}
 			}
 		}
