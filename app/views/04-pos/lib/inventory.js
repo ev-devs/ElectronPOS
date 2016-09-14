@@ -88,7 +88,7 @@ $(document).on("click",  "#confirm_item_selection", function() {
 			console.log("NO ITEM QUANTITY ADDED");
 		}
 		inventory_input = "";
-		$("#search").text("");
+		$("#search").val("");
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
@@ -96,7 +96,7 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	inventory_input = "";
 	$("#cancel").removeAttr("style");
 	$("#cancel").text("Cancel");
-	$("#search").text("");
+	$("#search").val("");
 	current_page = "handle_order.html";
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });

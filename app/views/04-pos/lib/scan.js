@@ -36,7 +36,7 @@ $("#barcode").change(function() {
         console.log("Not found");
     });;
   }
-	else if(k == -1 && current_platinum != "NONE"){
+	else if(k == -1 && current_platinum != "NONE") {
     console.log("E");
 	  var i;
 	  var places = [];
@@ -46,10 +46,13 @@ $("#barcode").change(function() {
 		j = places[0]; //inventory_list_index
 	  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
 	  with the code below.*/
-	  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
+    if(places == -1) {
+      Materialize.toast("NOT IN INVENTORY", 2000);
+    }
+	  else if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
 			add_item(i, j, 1, 0);
 		}
-	  $("#barcode").focus();
+	  refocus();
 	}
 	else {
 		error_platinum();

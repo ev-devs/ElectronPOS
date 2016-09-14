@@ -95,6 +95,9 @@ $(document).on("click", ".confirm-void", function() {
             });
           }
           else {
+              setTimeout(function() {
+
+              }, 3000)
               console.log(obj.transMessage)
               console.log("Error Code:", obj.transErrorCode)
               console.log("Error Text:", obj.transErrorText)

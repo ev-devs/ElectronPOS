@@ -1093,7 +1093,7 @@ $(document).on("click",  "#confirm_item_selection", function() {
 			console.log("NO ITEM QUANTITY ADDED");
 		}
 		inventory_input = "";
-		$("#search").text("");
+		$("#search").val("");
 });
 
 $(document).on("click",  "#cancel_item_selection", function() {
@@ -1101,7 +1101,7 @@ $(document).on("click",  "#cancel_item_selection", function() {
 	inventory_input = "";
 	$("#cancel").removeAttr("style");
 	$("#cancel").text("Cancel");
-	$("#search").text("");
+	$("#search").val("");
 	current_page = "handle_order.html";
 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/handle_order.html', 'utf-8') , {"platinum" : current_platinum.replace(/1/g, " ").replace(/2/g, ",")}));
 });
@@ -1325,7 +1325,7 @@ $("#barcode").change(function() {
         console.log("Not found");
     });;
   }
-	else if(k == -1 && current_platinum != "NONE"){
+	else if(k == -1 && current_platinum != "NONE") {
     console.log("E");
 	  var i;
 	  var places = [];
@@ -1335,10 +1335,13 @@ $("#barcode").change(function() {
 		j = places[0]; //inventory_list_index
 	  /*If the item in the list has a quantity of one then this means it is not present on the gui and must be put into the gui
 	  with the code below.*/
-	  if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
+    if(places == -1) {
+      Materialize.toast("NOT IN INVENTORY", 2000);
+    }
+	  else if(i != -1 && current_platinum != "NONE" && scan_flag == 1) {
 			add_item(i, j, 1, 0);
 		}
-	  $("#barcode").focus();
+	  refocus();
 	}
 	else {
 		error_platinum();
@@ -1605,6 +1608,9 @@ $(document).on("click", ".confirm-void", function() {
             });
           }
           else {
+              setTimeout(function() {
+
+              }, 3000)
               console.log(obj.transMessage)
               console.log("Error Code:", obj.transErrorCode)
               console.log("Error Text:", obj.transErrorText)
