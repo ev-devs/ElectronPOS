@@ -1,29 +1,65 @@
+//take the user input and check if delete.
+//  if not delete, then append char to inventory input string
+// Search each element in the inventory simple array for the inventory input strings
+// If found append element to a new arra
+// put new array onto stack and display array
+// IF delete key was pressed, remove the last char from the inventory input string &
+// pop the last array on the stack and display previous array.
+//For the young man named Kevin
+
 /***********************INVENTORY.JS***********************/
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
 			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1;
-
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				if(key == "delete"){
+					inventory_input = inventory_input.substring(0,inventory_input.length - 1)
+					inventory_delete_flag = 1;
 				}
+				else {
+					var k = key
+					if(k == "space"){
+						k = " "
+					}
+					inventory_input = inventory_input + k
+					inventory_delete_flag = 0;
+				}
+				if(inventory_input != ""){
+					searched_inventory = search_list(inventory_stack, inventory_input, inventory_delete_flag)
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
+					console.log("THIS IS THE SEARCHED INVENTORY vvvvvv")
+					console.log(searched_inventory);
+					
+					//display_list(searched_inventory);
+				}
+				else if(inventory_input == ""){
+					searched_inventory = [];
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
+					inventory_stack = [];
+					inventory_stack.push(leaders_list)
+					inventory_delete_flag = 0;
+				}
+				//var query = $(this).val();
+				//if(scan_flag == 1) {
+					//query = new RegExp(query, "i");
+					//inventory_query.splice(0, inventory_query.length);
+					//$("#item_list").empty();
+					//var i = -1;
+
+				  //inventory.find(function(e) {
+					//	i++;
+						//if(e.barcode != null) {
+							//if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								//var item = [];
+								//item.push(e.title);
+								//item.push(e.price);
+								//item[0]+=("-_" + i);
+								//inventory_query.push(item);
+							//}
+						//}
+					//});
+					
+				//}
 			}
 		}
 		else {
@@ -78,4 +114,5 @@ function fill_simple_inventory(_inventory_) {
 		inventory_simple.push(combined_title);
 	}
 	console.log(inventory_simple);
+	inventory_stack.push(inventory_simple)
 }
