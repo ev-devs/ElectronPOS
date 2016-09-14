@@ -55,6 +55,8 @@ function printTheOrder(guid){
             })
             stream.on('error', function(error){
                 Materialize.toast(error, 10000)
+                console.log('THERE WAS AN ERROR WRITING TO THE reciept.txt FILE")
+		return
             })
 
             /*This is the header*/
@@ -104,13 +106,20 @@ function printTheOrder(guid){
 
             exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
                 if (error){
-                    Materialize.toast(error, 100000)
+                    console.error('ERROR running python script')
+		    Materialize.toast(error, 100000)
                     console.log(error)
+	            return
                 }
-                console.log(stdout)
-                console.log(stderr)
-                Materialize.toast(stdout, 10000)
-                Materialize.toast(stderr, 10000)
+		if (stderr){
+		    console.error("Error on runtime of python print script")
+		    console.error(stderr)
+		}
+                if (stdout) {
+        	    console.error("Everything SEEMS fine"
+		    console.log(stdout)
+    		}
+
             })
         }
     })
