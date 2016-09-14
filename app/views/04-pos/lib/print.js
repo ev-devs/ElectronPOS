@@ -56,7 +56,7 @@ function printTheOrder(guid){
             stream.on('error', function(error){
                 Materialize.toast(error, 10000)
                 console.log("THERE WAS AN ERROR WRITING TO THE reciept.txt FILE")
-		return
+		            return
             })
 
             /*This is the header*/
@@ -98,7 +98,7 @@ function printTheOrder(guid){
 
             stream.write('BeginCards\n')
             for (let k = 0; k < cards.length; k++){
-                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + ','+ cards[k].amount + '\n')
+                stream.write(cards[k].cardType + ',' + cards[k].digits + ',' + cards[k].card_holder + ',' + cards[k].authCode + ','  + cards[k].transId + ','+ cards[k].amount + ',' + cards[k].signature +'\n')
             }
             stream.write('EndCards\n\n')
 

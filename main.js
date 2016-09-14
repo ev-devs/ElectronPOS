@@ -10,7 +10,7 @@ const ipc = electron.ipcMain
 // captures envoiirnment variables
 const shellEnv = require('shell-env');
 
-/* When electron is not started by bash, evnironment variables need to be loaded manually*/
+/* When electron is not s-tarted by bash, evnironment variables need to be loaded manually*/
 process.env = shellEnv.sync()
 
 // This is used to update our sessions
