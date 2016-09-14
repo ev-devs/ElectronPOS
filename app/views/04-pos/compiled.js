@@ -18,6 +18,12 @@ const ipc = require('electron').ipcRenderer
 var inventory = [];
 var inventory_simple = [];
 var inventory_query = [];
+var inventory_input = ""; // user_input for inventory search
+var searched_inventory = []; //modified array of searched inventory
+var inventory_stack = [];  // stack of arrays for inventory
+var inventory_delete_flag = 0; //signals if delete key was pressed in inventory
+
+
 var URL = process.env.EQ_URL;
 var deviceID = process.env.EQ_DEVICE_ID;
 var leaders_list = []; // list of leaders pulled from the server
@@ -117,7 +123,8 @@ Platinum.find({}, function(err, leaders) {
 Inventory.find({}, function(err, _inventory) {
  // gets leaders in alphabetic order places the result in leaders_list
   inventory = _inventory;
-  fill_simple_inventory(inventory);
+  fill_simple_inventory(_inventory);
+  console.log(_inventory);
 });
 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 1})); //renders the neccessary partial on window assignment
 update_transaction_db();
@@ -150,10 +157,14 @@ function alphabetize(list){
 function search_list(list, input, flag){
 	var searched = [];
 	if(list.length <= 0){
-		console.log("WARNING: EMPTY PLATINUMS STACK")
+		console.log("WARNING: EMPTY STACK")
+	}
+	if(input == ""){
+		return [];
 	}
 	if(flag == 1){
 		list.pop()
+		return list[list.length - 1]
 	}
 	var last_from_stack = list[list.length -1]
 	console.log(last_from_stack)
@@ -206,6 +217,7 @@ $(document).on( "jpress", "#enter-platinum" , function(event, key){
 		}
 		else if(user_input == ""){
 			$("#platinums-list").empty();
+			searched_leaders = [];
 			platinums_stack = [];
 			platinums_stack.push(leaders_list)
 			delete_flag = 0;
@@ -1056,11 +1068,12 @@ $(document).on("click",  "#cancel_item_selection", function() {
 });
 
 //For the young man named Kevin
-function fill_simple_inventory(_inventory) {
-	for(var i = 0; i < _inventory.length; i++) {
-		var combined_title = _inventory.title + "-" + _inventory.price + "-_" + i;
+function fill_simple_inventory(_inventory_) {
+	for(var i = 0; i < _inventory_.length; i++) {
+		var combined_title = _inventory_[i].title + "-" + _inventory_[i].price + "-_" + i;
 		inventory_simple.push(combined_title);
 	}
+	console.log(inventory_simple);
 }
 
 /***********************JBOARD.JS***********************/
@@ -1141,6 +1154,8 @@ function printTheOrder(guid){
             })
             stream.on('error', function(error){
                 Materialize.toast(error, 10000)
+                console.log("THERE WAS AN ERROR WRITING TO THE reciept.txt FILE")
+		return
             })
 
             /*This is the header*/
@@ -1190,13 +1205,20 @@ function printTheOrder(guid){
 
             exec('sudo python ' + __dirname + '/../../../kprint/print.py', function(error , stdout, stderr ){
                 if (error){
-                    Materialize.toast(error, 100000)
+                    console.error('ERROR running python script')
+		    Materialize.toast(error, 100000)
                     console.log(error)
+	            return
                 }
-                console.log(stdout)
-                console.log(stderr)
-                Materialize.toast(stdout, 10000)
-                Materialize.toast(stderr, 10000)
+		if (stderr){
+		    console.error("Error on runtime of python print script")
+		    console.error(stderr)
+		}
+                if (stdout) {
+        	    console.error("Everything SEEMS fine");
+		            console.log(stdout)
+    		}
+
             })
         }
     })

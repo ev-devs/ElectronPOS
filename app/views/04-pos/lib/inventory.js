@@ -1,85 +1,29 @@
 /***********************INVENTORY.JS***********************/
-
-//take the user input and check if delete.
-//  if not delete, then append char to inventory input string
-// Search each element in the inventory simple array for the inventory input strings
-// If found append element to a new arra
-// put new array onto stack and display array
-// IF delete key was pressed, remove the last char from the inventory input string &
-// pop the last array on the stack and display previous array.
-
 var search_param = "";
-$(document).on( "jpress", "#search" , function(event, key){
+$("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
 			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				if(key == "delete"){
-					if(inventory_input != ""){
-						inventory_input = inventory_input.substring(0,inventory_input.length - 1)
-					}
-					else if(inventory_input == ""){
-						inventory_input = "";
-					}
-					inventory_delete_flag = 1;
-				}
-				else {
-					var k = key
-					//Solve special Character case
-					// if(k == "?" || k =="#" || k == "@" || k == "/" || k == "\\" || k == "<" ||
-					// 	k == ">" || k == "." || k == "," || k == "\"" || k == "\'" || k == "{" ||
-					// 	k == "}" || k == "[" || k == "]" || k == "$" || k == "%" || k == "^" ||
-					// 	 k == "*" || k == "(" || k == ")" || k == "`" || k == "~" || k == "+" ||
-					// 	 k == "-" || k == "=" || k == "_" || k == "|" || k == "1" || k == "2" ||
-					// 	 k == "3" || k == "4" || k == "5" ||k == "6" || k == "7" || k == "8" ||
-					// 	 k == "9" || k == "0" || k == ";"){
-					// 	//$('#enter-platinum').val( $('#enter-platinum').val().substring(0, $('#enter-platinum').val().length - 1) )
-					// 	Materialize.toast("Please Enter a Valid Character", 5000)
-					//
-					// 	k = " "
-					// }
-					if(k == "space"){
-						k = " ";
-					}
-					inventory_input = inventory_input + k;
-					inventory_delete_flag = 0;
-				}
-				if(inventory_input != ""){
-					searched_inventory = search_list(inventory_stack, inventory_input, inventory_delete_flag)
-					display_list(searched_inventory);
-				}
-				if(inventory_input == ""){
-					$("#platinums-list").empty();
-					var inventory_input = ""; // user_input for inventory search
-					var searched_inventory = []; //modified array of searched inventory
-					var inventory_stack = [];  // stack of arrays for inventory
-					inventory_stack.push(inventory_simple);
-					var inventory_delete_flag = 0; //signals if delete key was pressed in inventory
-				}
+				var query = $(this).val();
+				if(scan_flag == 1) {
+					query = new RegExp(query, "i");
+					inventory_query.splice(0, inventory_query.length);
+					$("#item_list").empty();
+					var i = -1;
 
-
-
-				// var query = $(this).val();
-				// if(scan_flag == 1) {
-				// 	query = new RegExp(query, "i");
-				// 	inventory_query.splice(0, inventory_query.length);
-				// 	$("#item_list").empty();
-				// 	var i = -1;
-				//
-				//   inventory.find(function(e) {
-				// 		i++;
-				// 		if(e.barcode != null) {
-				// 			if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-				// 				var item = [];
-				// 				item.push(e.title);
-				// 				item.push(e.price);
-				// 				item[0]+=("-_" + i);
-				// 				inventory_query.push(item);
-							// }
-					//
-					//
-					// 	}
-					// });
-				// 	$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
-				// }
+				  inventory.find(function(e) {
+						i++;
+						if(e.barcode != null) {
+							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								var item = [];
+								item.push(e.title);
+								item.push(e.price);
+								item[0]+=("-_" + i);
+								inventory_query.push(item);
+							}
+						}
+					});
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				}
 			}
 		}
 		else {
@@ -128,10 +72,10 @@ $(document).on("click",  "#cancel_item_selection", function() {
 });
 
 //For the young man named Kevin
-function fill_simple_inventory(_inventory) {
-	for(var i = 0; i < _inventory.length; i++) {
-		var combined_title = _inventory.title + "-" + _inventory.price + "-_" + i;
+function fill_simple_inventory(_inventory_) {
+	for(var i = 0; i < _inventory_.length; i++) {
+		var combined_title = _inventory_[i].title + "-" + _inventory_[i].price + "-_" + i;
 		inventory_simple.push(combined_title);
 	}
-	inventory_stack.push(inventory_simple);
+	console.log(inventory_simple);
 }
