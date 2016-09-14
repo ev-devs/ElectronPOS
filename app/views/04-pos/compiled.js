@@ -167,7 +167,7 @@ function search_list(list, input, flag){
 		return list[list.length - 1]
 	}
 	var last_from_stack = list[list.length -1]
-	console.log(last_from_stack)
+	//console.log(last_from_stack)
 	var Reg_input = new RegExp(input, "i")
 	for(i = 0; i < last_from_stack.length; i++){
 		if(last_from_stack[i].search(Reg_input) != -1){
@@ -185,7 +185,7 @@ function search_list(list, input, flag){
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-   console.log(platinums_stack[0]);
+  // console.log(platinums_stack[0]);
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
 			user_input = user_input.substring(0,user_input.length - 1)
@@ -525,64 +525,6 @@ function card_trans(transAuthCode, transId, transMessage, name, digits, card_typ
     $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/sign.html', 'utf-8') , {}));
 }
 
-/***********************CASH.JS***********************/
-$("#yes-cash").click(function () {
-	//void_order(1);
-	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
-	print_init();
-});
-
-/*Renders the necessary partial for completing orders with cash.*/
-$(document).on("click", "#cash", function () {
-	/*Sets the cash flag to true to denote a cash transaction is in process*/
-  cash_flag = 1;
-	previous_page = "pay_choice.html";
-	current_page = "cash.html"
-	colorfy();
-	$('#tendered-modal').remove()
-	/*Renders the html file necessary to handle cash transactions*/
-  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
-});
-
-function handle_cash() {
-	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
-	cash_trans();
-	/*Renders the html file necessary to denote the transaction is complete*/
-	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
-		$('#modal6').openModal({
-			dismissible: true, // Modal can be dismissed by clicking outside of the modal
-			opacity: .5, // Opacity of modal background
-			in_duration: 300, // Transition in duration
-			out_duration: 200, // Transition out duration
-		});
-	}
-	else {
-		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
-		cash_flag = 0;
-		confirm_flag = 0;
-		$("#cancel").removeAttr("style");
-		$("#confirm").removeAttr("style");
-		current_page = "pay_choice.html";
-		previous_page = "handle_order.html";
-		$("#cancel").css("background-color", "red");
-		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
-	}
-}
-
-function cash_trans(){
-	cur_transaction.createCashTransaction(function(transaction){
-
-			let CashTrans = {
-				guid 			: transaction.guid,
-				tendered  : Number($("#tendered").val().replace(/,/g, "")),
-				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
-				dateCreated : new Date()
-			}
-			transaction.cashes.push(CashTrans);
-			transaction.payments++;
-	});
-}
-
 /***********************CONFIRM.JS***********************/
 $("#confirm").click(function() {
 	/*If the confirm flag is raised then a normal confirm can happen meaning render  the pay options page*/
@@ -702,6 +644,64 @@ function init_transaction() {
 
 				transaction.items.push(item);
 			}
+	});
+}
+
+/***********************CASH.JS***********************/
+$("#yes-cash").click(function () {
+	//void_order(1);
+	//$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/completed.html', 'utf-8') , {}));
+	print_init();
+});
+
+/*Renders the necessary partial for completing orders with cash.*/
+$(document).on("click", "#cash", function () {
+	/*Sets the cash flag to true to denote a cash transaction is in process*/
+  cash_flag = 1;
+	previous_page = "pay_choice.html";
+	current_page = "cash.html"
+	colorfy();
+	$('#tendered-modal').remove()
+	/*Renders the html file necessary to handle cash transactions*/
+  $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/cash.html', 'utf-8') , {}));
+});
+
+function handle_cash() {
+	/*Updates the cur_transaction JSON object with the proper information for the transaction*/
+	cash_trans();
+	/*Renders the html file necessary to denote the transaction is complete*/
+	if(Number($("#tendered").val().replace(/,/g, "")) >= accounting.formatNumber(total, 2, ",").replace(/,/g, "")) {
+		$('#modal6').openModal({
+			dismissible: true, // Modal can be dismissed by clicking outside of the modal
+			opacity: .5, // Opacity of modal background
+			in_duration: 300, // Transition in duration
+			out_duration: 200, // Transition out duration
+		});
+	}
+	else {
+		update_price('~', Number($("#tendered").val().replace(/,/g, "")), 0, 1)
+		cash_flag = 0;
+		confirm_flag = 0;
+		$("#cancel").removeAttr("style");
+		$("#confirm").removeAttr("style");
+		current_page = "pay_choice.html";
+		previous_page = "handle_order.html";
+		$("#cancel").css("background-color", "red");
+		$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/pay_choice.html', 'utf-8') , {}));
+	}
+}
+
+function cash_trans(){
+	cur_transaction.createCashTransaction(function(transaction){
+
+			let CashTrans = {
+				guid 			: transaction.guid,
+				tendered  : Number($("#tendered").val().replace(/,/g, "")),
+				change 		: Number($("#change").text().substring(1, $("#change").text().length)),
+				dateCreated : new Date()
+			}
+			transaction.cashes.push(CashTrans);
+			transaction.payments++;
 	});
 }
 
@@ -870,42 +870,6 @@ ipc.on('ibo-session-end-reply', function (event, arg) {
   window.location.assign('../03-beginsession/index.html')
 })
 
-/***********************FRONTEND.JS***********************/
-document.addEventListener('refocus', function(e) {
-  $("#barcode").focus();
-})
-
-function refocus() {
-  var event = new CustomEvent('refocus');
-  document.dispatchEvent(event);
-}
-
-
-/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
-$("#n_cancel").click(function() {
-  refocus()
-});
-
-/*NOTE: BEGIN CASH TRANSACTION CODE */
-$(document).on( "jpress", "#tendered", function() {
-  if($(this).val() >= total) {
-    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
-    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
-  }
-  else
-    $("#change").text(0);
-});
-
-/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
-function fade_out() {
-  $("#thanks").addClass("fadeOut");
-  refocus();
-	/*Render platinums list FIX*/
-}
-
-
- $(".button-collapse").sideNav();
-
 /***********************FUNCTIONS.JS***********************/
 function update_price(operation, quantity, placement, confirmed) {
     if(!confirmed) {
@@ -994,32 +958,68 @@ function error_in_used() {
     });
 }
 
+//take the user input and check if delete.
+//  if not delete, then append char to inventory input string
+// Search each element in the inventory simple array for the inventory input strings
+// If found append element to a new arra
+// put new array onto stack and display array
+// IF delete key was pressed, remove the last char from the inventory input string &
+// pop the last array on the stack and display previous array.
+//For the young man named Kevin
+
 /***********************INVENTORY.JS***********************/
 var search_param = "";
 $("#search").on( 'jpress', function(event , key){
 		if(current_platinum != "NONE") {
 			if (!(key == "enter" || key=="shift" || key == "123" || key == "ABC")){
-				var query = $(this).val();
-				if(scan_flag == 1) {
-					query = new RegExp(query, "i");
-					inventory_query.splice(0, inventory_query.length);
-					$("#item_list").empty();
-					var i = -1;
-
-				  inventory.find(function(e) {
-						i++;
-						if(e.barcode != null) {
-							if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
-								var item = [];
-								item.push(e.title);
-								item.push(e.price);
-								item[0]+=("-_" + i);
-								inventory_query.push(item);
-							}
-						}
-					});
-					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : inventory_query}));
+				if(key == "delete"){
+					inventory_input = inventory_input.substring(0,inventory_input.length - 1)
+					inventory_delete_flag = 1;
 				}
+				else {
+					var k = key
+					if(k == "space"){
+						k = " "
+					}
+					inventory_input = inventory_input + k
+					inventory_delete_flag = 0;
+				}
+				if(inventory_input != ""){
+					searched_inventory = search_list(inventory_stack, inventory_input, inventory_delete_flag)
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
+					console.log("THIS IS THE SEARCHED INVENTORY vvvvvv")
+					console.log(searched_inventory);
+					
+					//display_list(searched_inventory);
+				}
+				else if(inventory_input == ""){
+					searched_inventory = [];
+					$('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/inventory.html', 'utf-8') , {"query_results" : searched_inventory}));
+					inventory_stack = [];
+					inventory_stack.push(leaders_list)
+					inventory_delete_flag = 0;
+				}
+				//var query = $(this).val();
+				//if(scan_flag == 1) {
+					//query = new RegExp(query, "i");
+					//inventory_query.splice(0, inventory_query.length);
+					//$("#item_list").empty();
+					//var i = -1;
+
+				  //inventory.find(function(e) {
+					//	i++;
+						//if(e.barcode != null) {
+							//if((e.title.search(query) != -1) || (e.barcode.search(query) != -1)) {
+								//var item = [];
+								//item.push(e.title);
+								//item.push(e.price);
+								//item[0]+=("-_" + i);
+								//inventory_query.push(item);
+							//}
+						//}
+					//});
+					
+				//}
 			}
 		}
 		else {
@@ -1074,7 +1074,44 @@ function fill_simple_inventory(_inventory_) {
 		inventory_simple.push(combined_title);
 	}
 	console.log(inventory_simple);
+	inventory_stack.push(inventory_simple)
 }
+
+/***********************FRONTEND.JS***********************/
+document.addEventListener('refocus', function(e) {
+  $("#barcode").focus();
+})
+
+function refocus() {
+  var event = new CustomEvent('refocus');
+  document.dispatchEvent(event);
+}
+
+
+/*If the button is pressed to not cancel the order then refocus the page on the barcode input*/
+$("#n_cancel").click(function() {
+  refocus()
+});
+
+/*NOTE: BEGIN CASH TRANSACTION CODE */
+$(document).on( "jpress", "#tendered", function() {
+  if($(this).val() >= total) {
+    var change = $(this).val() - accounting.formatNumber(total, 2, ",").replace(/,/g, "");
+    $("#change").text("$" + accounting.formatNumber(change, 2, ","));
+  }
+  else
+    $("#change").text(0);
+});
+
+/*A function that fades out the html element with id "thanks". USed in the "completed.html" file.*/
+function fade_out() {
+  $("#thanks").addClass("fadeOut");
+  refocus();
+	/*Render platinums list FIX*/
+}
+
+
+ $(".button-collapse").sideNav();
 
 /***********************JBOARD.JS***********************/
 function jboardify(id, type) {

@@ -36,7 +36,7 @@ function search_list(list, input, flag){
 		return list[list.length - 1]
 	}
 	var last_from_stack = list[list.length -1]
-	console.log(last_from_stack)
+	//console.log(last_from_stack)
 	var Reg_input = new RegExp(input, "i")
 	for(i = 0; i < last_from_stack.length; i++){
 		if(last_from_stack[i].search(Reg_input) != -1){
@@ -54,7 +54,7 @@ function search_list(list, input, flag){
 }
 
 $(document).on( "jpress", "#enter-platinum" , function(event, key){
-   console.log(platinums_stack[0]);
+  // console.log(platinums_stack[0]);
    if(key != "shift" && key != "enter" && key != "123" && key != "ABC") {
 		if(key == "delete"){
 			user_input = user_input.substring(0,user_input.length - 1)
