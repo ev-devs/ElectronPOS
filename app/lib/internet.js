@@ -71,8 +71,13 @@ var psk = "";
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
 $(document).on('click', '#accept', function() {
-  psk = $("#keyboard").val();
-  psk = bashify(psk);
+  if(!no_psk) {
+    psk = $("#keyboard").val();
+    psk = bashify(psk);
+  }
+  else {
+    psk = "NONE"
+  }
   console.log("NAME: {" + ap_name + "}");
   console.log("PSK: {" + psk + "}");
   var status = "";
@@ -141,17 +146,21 @@ function bashify(word) {
   return word.slice(0, word.length - 1);
 }
 
+var no_psk = false;
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
 
-
+  if($(this).hasClass("psk_on")) {
     $('#modal1').openModal({
         opacity : 0
     });
     $('#keyboard-modal').openModal({
         opacity : 0
     });
-
+  }
+  else {
+    no_psk = true;
+  }
   ap_name = $(this).attr('id');
   $("#remove").remove();
   $("#proceed").remove();

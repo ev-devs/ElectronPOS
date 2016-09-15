@@ -62,11 +62,11 @@
                   <%for(var i = 0; i < output.length - 1; i++) { %>
                       <!--If there is a wifi password on then render this html-->
                        <% if(output[i].psk == "on") { %>
-                         <a href="#!" class="collection-item wifi_option" id="<%= output[i].essid%>"><%= output[i].essid%>
+                         <a href="#!" class="collection-item wifi_option psk_on" id="<%= output[i].essid%>"><%= output[i].essid%>
                          <span class="badge typcn typcn-lock-closed" style="font-size: 2em"></span>
                       <!--If not then render this -->
                        <%} else if (output[i].psk == "off") { %>
-                         <a href="#!" class="collection-item wifi_option" id="<%= output[i].essid%>"><%= output[i].essid%>
+                         <a href="#!" class="collection-item wifi_option psk_off" id="<%= output[i].essid%>"><%= output[i].essid%>
                          <span class="typcn typcn-lock-open right" style="font-size: 2em"></span>
                        <%}%>
                      </a>
