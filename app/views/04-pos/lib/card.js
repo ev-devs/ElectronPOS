@@ -88,6 +88,7 @@ function handle_virtual_terminal() {
 							console.log("Authorization Code:", obj.transAuthCode)
 							/*If all the money was on the card then go to the printing option*/
 							card_flag = 0;
+							Materialize.toast("Successfully charged the card!", 3000);
 							card_trans(obj.transAuthCode, obj.transId, obj.transMessage, card_holder, card_num, card_type);
 							card_num = "";
 					}

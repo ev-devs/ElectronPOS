@@ -84,6 +84,7 @@ $(document).on("click", ".confirm-void", function() {
                     console.log("Error in updating Trans " + err)
                 }
                 else {
+                    Materialize.toast("Successfully voided the transaction!", 3000)
                     console.log("Updated Existing Trans")
                     $("#cancel").removeAttr("style");
                     $("#confirm").removeAttr("style");
@@ -141,6 +142,7 @@ $(document).on("click", ".confirm-void", function() {
                         console.log("Error in updating Trans " + err)
                     }
                     else {
+                        Materialize.toast("Successfully voided the transactions!", 3000)
                         console.log("Updated Existing Trans")
                         console.log(all_done.length);
                         console.log(transaction_.cards.length);
@@ -152,6 +154,9 @@ $(document).on("click", ".confirm-void", function() {
                 $("#cancel").text("Cancel");
                 $("#confirm").text("Confirm");
                 $('#right-middle').html(ejs.render(fs.readFileSync( __dirname + '/partials/select_platinums.html', 'utf-8') , {"A" : 0}));
+              }
+              else {
+                  Materialize.toast("One or more transactions did not successfully void! Try again!", 3000);
               }
             }
             else {

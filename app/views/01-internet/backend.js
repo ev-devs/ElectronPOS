@@ -1,6 +1,6 @@
 /********THIS IS OUR REQUIREMENTS THAT WE NEED TO EXECUTS OUR FILES *********/
 var util       = require('util') /*this is for our utility needs*/
-var execSync   = require('child_process').execSync /*This is for our child process needs*/
+var exec  = require('child_process').exec /*This is for our child process needs*/
 var spawnSync  = require('child_process').spawnSync
 
 var internet   = require('../../lib/internet.js') /* This executes our bash scripts*/
@@ -322,9 +322,24 @@ function insertInventoryToDatabase(inventory){
 }
 
 $('#retry').click(function(event){
-
-    var ping = execSync('sudo ping -c 1 google.com') // this is a single ping
-    console.log(ping)
-    $( "#proceed" ).trigger( "click" );
-
+    asynch_ping().then(function(obj) {
+      if(obj.search("0 received") != -1) {
+        console.log("Needs connection");
+        $('#status_div').html(ejs.render(fs.readFileSync( __dirname + '/partials/try_again.html', 'utf-8') , {}));
+        window.open("http://www.facebook.com", "", "menubar=yes");
+      }
+      else {
+        $("#retry").hide();
+        $( "#proceed" ).trigger( "click" );
+      }
+    });
 });
+
+function asynch_ping() {
+  $('#status_div').html(ejs.render(fs.readFileSync( __dirname + '/partials/ping_loader.html', 'utf-8') , {}));
+  return new Promise(function(resolve, reject) {
+    exec('sudo ping -c 1 www.google.com', (error, stdout, stderr) => {
+      resolve(stdout);
+    });
+  });
+}
