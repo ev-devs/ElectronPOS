@@ -71,6 +71,10 @@ var psk = "";
 /*Upon accepting a Wi-Fi connection this funtion will run the script which handels connection. If the password is wrong then the connection will
 not happen*/
 $(document).on('click', '#accept', function() {
+  document.dispatchEvent(processConnection);
+});
+var processConnection = new CustomEvent('processConnection', {});
+document.addEventListener('processConnection', function(e) {
   if(!no_psk) {
     psk = $("#keyboard").val();
     psk = bashify(psk);
@@ -116,8 +120,6 @@ $(document).on('click', '#accept', function() {
   <span id=\"connecting\">Connecting...</span>";
   $("#connection_holder").append(load);
 });
-
-
 
 function connect(ap_name, psk) {
   execSync("sudo " + __dirname + "/../../dixonconnect/wifi_rem.sh ");
