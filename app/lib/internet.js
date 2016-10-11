@@ -152,7 +152,7 @@ function bashify(word) {
 var no_psk = false;
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
-
+  ap_name = $(this).attr('id');
   if($(this).hasClass("psk_on")) {
     $('#modal1').openModal({
         opacity : 0
@@ -165,7 +165,6 @@ $(document).on('click', '.wifi_option', function() {
     no_psk = true;
     document.dispatchEvent(processConnection);
   }
-  ap_name = $(this).attr('id');
   $("#remove").remove();
   $("#proceed").remove();
 });
