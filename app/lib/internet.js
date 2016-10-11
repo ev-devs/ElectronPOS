@@ -73,6 +73,7 @@ not happen*/
 $(document).on('click', '#accept', function() {
   document.dispatchEvent(processConnection);
 });
+
 var processConnection = new CustomEvent('processConnection', {});
 document.addEventListener('processConnection', function(e) {
   if(!no_psk) {
@@ -162,6 +163,7 @@ $(document).on('click', '.wifi_option', function() {
   }
   else {
     no_psk = true;
+    document.dispatchEvent(processConnection);
   }
   ap_name = $(this).attr('id');
   $("#remove").remove();
