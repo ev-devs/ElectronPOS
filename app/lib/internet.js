@@ -153,6 +153,7 @@ var no_psk = false;
 /*Simply grabs the name of the access point which is stored in two ways, as the id and the text of the <a> tag*/
 $(document).on('click', '.wifi_option', function() {
   ap_name = $(this).attr('id');
+  no_psk = false;
   if($(this).hasClass("psk_on")) {
     $('#modal1').openModal({
         opacity : 0
